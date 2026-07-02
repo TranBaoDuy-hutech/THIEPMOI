@@ -1,984 +1,1734 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thiệp Mời Tốt Nghiệp — Trần Bảo Duy</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg-void: #02040a;
-    --bg-card: rgba(8, 14, 27, 0.88);
-    --accent-cyan: #00f0ff;
-    --accent-purple: #bd00ff;
-    --accent-pink: #ff007f;
-    --accent-green: #00ff66;
-    --text-primary: #f1f5f9;
-    --text-secondary: #64748b;
-    --text-light: #94a3b8;
-    --neon-glow: 0 0 20px rgba(0, 240, 255, 0.35);
-    --neon-glow-green: 0 0 20px rgba(0, 255, 102, 0.35);
-    --neon-glow-pink: 0 0 20px rgba(255, 0, 127, 0.35);
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    background-color: var(--bg-void);
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 2rem 1rem;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* Canvas background */
-  #binaryCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -10;
-    pointer-events: none;
-  }
-
-  /* Control Panel */
-  .control-panel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 1.5rem;
-    z-index: 10;
-  }
-
-  .mode-switch-container {
-    background: rgba(8, 14, 27, 0.7);
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    padding: 4px;
-    border-radius: 30px;
-    display: flex;
-    gap: 4px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  }
-
-  .mode-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-light);
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .mode-btn.active {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: var(--neon-glow);
-  }
-
-  .audio-toggle {
-    background: rgba(8, 14, 27, 0.7);
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--text-light);
-    transition: all 0.3s;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  }
-
-  .audio-toggle:hover {
-    color: var(--accent-cyan);
-    border-color: var(--accent-cyan);
-    box-shadow: var(--neon-glow);
-  }
-
-  /* App Views */
-  .app-container {
-    width: 100%;
-    max-width: 480px;
-    perspective: 1200px;
-    z-index: 5;
-  }
-
-  .view-wrapper {
-    position: relative;
-    width: 100%;
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-style: preserve-3d;
-  }
-
-  .app-view {
-    width: 100%;
-    backface-visibility: hidden;
-    transition: opacity 0.5s ease-in-out;
-  }
-
-  .code-view {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    transform: rotateY(180deg);
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .app-container.show-code-mode .view-wrapper {
-    transform: rotateY(180deg);
-  }
-
-  .app-container.show-code-mode .visual-view {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .app-container.show-code-mode .code-view {
-    opacity: 1;
-    pointer-events: auto;
-    position: relative;
-  }
-
-  /* VISUAL MODE: Card Styling with Animated Gradient Border */
-  .card-wrap {
-    position: relative;
-    width: 100%;
-    border-radius: 28px;
-    box-shadow: 0 50px 100px -30px rgba(0,0,0,0.95), 0 0 30px rgba(0, 240, 255, 0.05);
-    transition: transform 0.1s ease-out;
-    padding: 2.2px; /* thickness of neon border */
-    overflow: hidden;
-    display: flex;
-  }
-
-  .card-wrap::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      var(--accent-cyan) 80deg,
-      transparent 120deg,
-      transparent 180deg,
-      var(--accent-purple) 260deg,
-      transparent 300deg,
-      transparent 360deg
-    );
-    animation: rotateBorder 5s linear infinite;
-    z-index: 1;
-  }
-
-  @keyframes rotateBorder {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .card {
-    background: var(--bg-card);
-    border-radius: 26px; /* slightly smaller to fit perfectly inside border wrapper */
-    overflow: hidden;
-    position: relative;
-    backdrop-filter: blur(24px);
-    width: 100%;
-    z-index: 2;
-  }
-
-  /* Micro-HUD Corner Elements */
-  .hud-corner {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border: 2px solid var(--accent-cyan);
-    opacity: 0.65;
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  .hud-corner.top-left {
-    top: 14px;
-    left: 14px;
-    border-right: none;
-    border-bottom: none;
-  }
-
-  .hud-corner.top-right {
-    top: 14px;
-    right: 14px;
-    border-left: none;
-    border-bottom: none;
-  }
-
-  .hud-corner.bottom-left {
-    bottom: 14px;
-    left: 14px;
-    border-right: none;
-    border-top: none;
-  }
-
-  .hud-corner.bottom-right {
-    bottom: 14px;
-    right: 14px;
-    border-left: none;
-    border-top: none;
-  }
-
-  .grid-bg {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    background-image:
-      linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
-    background-size: 28px 28px;
-    opacity: 0.85;
-  }
-
-  .glow {
-    position: absolute;
-    z-index: -1;
-    top: -90px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 350px;
-    height: 220px;
-    background: radial-gradient(ellipse at center, rgba(0, 240, 255, 0.3), transparent 70%);
-    pointer-events: none;
-  }
-
-  .content {
-    padding: 2.6rem 2.2rem 0;
-  }
-
-  /* Simulated Sys bar */
-  .sys-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.8rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding-bottom: 0.5rem;
-    letter-spacing: 0.05em;
-  }
-
-  .sys-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .sys-dot.online {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent-green);
-    box-shadow: 0 0 6px var(--accent-green);
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    color: var(--accent-cyan);
-    text-transform: uppercase;
-  }
-
-  .eyebrow .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent-green);
-    box-shadow: 0 0 8px var(--accent-green);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
-    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
-  }
-
-  .headline {
-    margin: 1rem 0 0.2rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: clamp(2.15rem, 8.5vw, 2.9rem);
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #ffffff 20%, #a5f3fc 50%, var(--accent-cyan) 80%, var(--accent-purple));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .subhead {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 500;
-    font-size: 1.05rem;
-    color: var(--text-light);
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .subhead-code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    background: rgba(0, 240, 255, 0.1);
-    color: var(--accent-cyan);
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 240, 255, 0.15);
-  }
-
-  .school-line {
-    font-size: 0.95rem;
-    color: var(--text-light);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-
-  .school-line strong {
-    color: #ffffff;
-    font-weight: 600;
-  }
-
-  .photo-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 0.4rem 0 1.2rem;
-  }
-
-  .photo-frame {
-    width: min(220px, 72vw);
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(0, 240, 255, 0.2);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35), var(--neon-glow);
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  .photo-frame img {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-
-  .phone-link {
-    color: var(--accent-cyan);
-    text-decoration: none;
-    font-weight: 700;
-  }
-
-  .tag-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    justify-content: center;
-    margin: 0 0 1rem;
-  }
-
-  .tag-pill {
-    padding: 0.4rem 0.7rem;
-    border-radius: 999px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent-cyan);
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid rgba(0, 240, 255, 0.16);
-  }
-
-  .formal-note {
-    padding: 1rem 1.05rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    margin-bottom: 1.2rem;
-  }
-
-  .section-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 0.35rem;
-  }
-
-  .formal-note p {
-    font-size: 0.9rem;
-    line-height: 1.65;
-    color: var(--text-light);
-  }
-
-  .trace {
-    display: flex;
-    align-items: center;
-    margin: 0 0 1.5rem;
-  }
-
-  .trace .line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,240,255,0.15) 20%, rgba(0,240,255,0.15) 80%, transparent);
-  }
-
-  .trace .node {
-    width: 6px;
-    height: 6px;
-    background: var(--accent-cyan);
-    border-radius: 50%;
-    margin: 0 8px;
-    box-shadow: var(--neon-glow);
-  }
-
-  .info-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.9rem;
-    margin-bottom: 1.5rem;
-  }
-
-  @media (min-width: 400px) {
-    .info-row {
-      grid-template-columns: 1fr 1fr;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thiệp Mời Tốt Nghiệp — Trần Bảo Duy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg-void: #030711;
+      --bg-card: rgba(9, 14, 26, 0.92);
+      --accent-cyan: #22d3ee;
+      --accent-cyan-dim: #0e7490;
+      --accent-cyan-rgb: 34, 211, 238;
+      --accent-green: #34d399;
+      --text-primary: #f1f5f9;
+      --text-secondary: #5b6b85;
+      --text-light: #94a3b8;
+      --neon-glow: 0 0 22px rgba(var(--accent-cyan-rgb), 0.35);
+      --neon-glow-green: 0 0 18px rgba(52, 211, 153, 0.28);
+      --hairline: rgba(148, 163, 184, 0.12);
     }
-  }
 
-  .info-chip {
-    background: rgba(13, 21, 38, 0.6);
-    border: 1px solid rgba(0, 240, 255, 0.1);
-    border-radius: 16px;
-    padding: 1rem 1.1rem;
-    transition: all 0.3s;
-    cursor: default;
-    position: relative;
-    overflow: hidden;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .info-chip::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.05), transparent);
-    pointer-events: none;
-  }
+    body {
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-  .info-chip:hover {
-    border-color: var(--accent-cyan);
-    background: rgba(13, 21, 38, 0.85);
-    box-shadow: var(--neon-glow);
-    transform: translateY(-2px);
-  }
+    /* Boot sequence overlay */
+    .boot-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-void);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
 
-  .info-chip .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    color: var(--accent-cyan);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.45rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+    .boot-overlay.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-  .info-chip .value {
-    font-size: 0.88rem;
-    color: #ffffff;
-    font-weight: 600;
-    line-height: 1.45;
-  }
+    .boot-console {
+      width: min(300px, 82vw);
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-  .invite-text {
-    font-size: 0.94rem;
-    line-height: 1.7;
-    color: var(--text-light);
-    margin-bottom: 2rem;
-  }
+    .boot-line {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      margin-bottom: 7px;
+      opacity: 0;
+      animation: fadeInUp 0.4s ease both;
+    }
 
-  .invite-text strong {
-    color: #ffffff;
-  }
+    .boot-progress {
+      height: 4px;
+      background: rgba(var(--accent-cyan-rgb), 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
 
-  /* Utility Buttons */
-  .button-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 2rem;
-  }
+    .boot-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      transition: width 0.18s ease;
+    }
 
-  .action-btn {
-    background: rgba(8, 14, 27, 0.85);
-    border: 1px solid rgba(0, 240, 255, 0.2);
-    color: #ffffff;
-    padding: 12px 14px;
-    border-radius: 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
+    .boot-status {
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      text-align: right;
+    }
 
-  .action-btn:hover {
-    border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
-    box-shadow: var(--neon-glow);
-    transform: translateY(-3px);
-  }
+    /* Cursor ambient glow */
+    .cursor-glow {
+      position: fixed;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--accent-cyan-rgb), 0.1), transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      filter: blur(2px);
+    }
 
-  .perforation {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
+    button {
+      font-family: inherit;
+    }
 
-  .perforation .notch {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--bg-void);
-    flex-shrink: 0;
-    z-index: 5;
-  }
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 2px;
+    }
 
-  .perforation .notch.left { margin-left: -10px; }
-  .perforation .notch.right { margin-right: -10px; }
+    /* Background grid, no rain — a still, disciplined signal instead of noise */
+    #gridCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -10;
+      pointer-events: none;
+    }
 
-  .perforation .dashes {
-    flex: 1;
-    height: 0;
-    border-top: 1.5px dashed rgba(0, 240, 255, 0.2);
-  }
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -9;
+      pointer-events: none;
+    }
 
-  .stub {
-    padding: 1.2rem 2.2rem 1.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    position: relative;
-  }
+    /* Subtle CRT vignette + scanline sheen over the whole page */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.35) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 3px);
+      mix-blend-mode: overlay;
+      opacity: 0.6;
+    }
 
-  /* Glowing red laser scanner overlay on barcode */
-  .barcode-container {
-    height: 34px;
-    flex: 1;
-    max-width: 140px;
-    position: relative;
-    overflow: hidden;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
+    /* Control Panel */
+    .control-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 1.5rem;
+      z-index: 10;
+    }
 
-  .barcode {
-    height: 100%;
-    width: 100%;
-    background-image: repeating-linear-gradient(
-      90deg,
-      #94a3b8 0px, #94a3b8 1.5px,
-      transparent 1.5px, transparent 3.5px,
-      #94a3b8 3.5px, #94a3b8 5px,
-      transparent 5px, transparent 8px
-    );
-    opacity: 0.65;
-  }
+    .mode-switch-container {
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid var(--hairline);
+      padding: 4px;
+      border-radius: 30px;
+      display: flex;
+      gap: 4px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
 
-  .laser-line {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 2.2px;
-    background: var(--accent-pink);
-    box-shadow: var(--neon-glow-pink), 0 0 10px var(--accent-pink);
-    animation: laserScan 2s ease-in-out infinite;
-  }
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-  @keyframes laserScan {
-    0%, 100% { top: 0%; }
-    50% { top: 94%; }
-  }
+    .mode-btn.active {
+      background: var(--accent-cyan);
+      color: #04141a;
+      font-weight: 700;
+      box-shadow: var(--neon-glow);
+    }
 
-  .status-line {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent-green);
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-weight: 700;
-  }
+    .audio-toggle {
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid var(--hairline);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
 
-  .status-line::after {
-    content: "";
-    width: 6px;
-    height: 12px;
-    background: var(--accent-green);
-    animation: blink 1.2s step-end infinite;
-  }
+    .audio-toggle:hover {
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: var(--neon-glow);
+    }
 
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
+    /* App Views */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      perspective: 1200px;
+      z-index: 5;
+    }
 
-  .footer-code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.74rem;
-    font-weight: 700;
-    color: var(--accent-cyan);
-    letter-spacing: 0.04em;
-  }
+    .view-wrapper {
+      position: relative;
+      width: 100%;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
 
-  /* CODE MODE: VS Code Mockup */
-  .ide-card {
-    background: #050910;
-    border-radius: 24px;
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    overflow: hidden;
-    box-shadow: 0 50px 100px -30px rgba(0,0,0,0.95), var(--neon-glow);
-    font-family: 'JetBrains Mono', monospace;
-  }
+    .app-view {
+      width: 100%;
+      backface-visibility: hidden;
+      transition: opacity 0.5s ease-in-out;
+    }
 
-  .ide-header {
-    background: #0a0f1d;
-    padding: 12px 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
+    .code-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transform: rotateY(180deg);
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  .ide-dots {
-    display: flex;
-    gap: 6px;
-  }
+    .app-container.show-code-mode .view-wrapper {
+      transform: rotateY(180deg);
+    }
 
-  .ide-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
+    .app-container.show-code-mode .visual-view {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  .ide-dot.red { background: #ff5f56; }
-  .ide-dot.yellow { background: #ffbd2e; }
-  .ide-dot.green { background: #27c93f; }
+    .app-container.show-code-mode .code-view {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+    }
 
-  .ide-title {
-    font-size: 0.75rem;
-    color: var(--text-light);
-    font-weight: 500;
-  }
+    /* VISUAL MODE: Card Styling with a single disciplined signal sweep */
+    .card-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: 28px;
+      box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.95), 0 0 30px rgba(var(--accent-cyan-rgb), 0.05);
+      transition: transform 0.1s ease-out;
+      padding: 1.5px;
+      overflow: hidden;
+      display: flex;
+    }
 
-  .ide-run-btn {
-    background: rgba(0, 255, 102, 0.1);
-    color: var(--accent-green);
-    border: 1px solid rgba(0, 255, 102, 0.2);
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s;
-    font-weight: 600;
-  }
+    .card-wrap::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg,
+          transparent 0deg,
+          var(--accent-cyan) 40deg,
+          transparent 90deg,
+          transparent 360deg);
+      animation: rotateBorder 6s linear infinite;
+      z-index: 1;
+      opacity: 0.75;
+    }
 
-  .ide-run-btn:hover {
-    background: var(--accent-green);
-    color: #050811;
-    box-shadow: var(--neon-glow-green);
-    transform: translateY(-1px);
-  }
+    @keyframes rotateBorder {
+      0% {
+        transform: rotate(0deg);
+      }
 
-  .ide-main {
-    display: flex;
-    height: 390px;
-  }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
 
-  .ide-sidebar {
-    width: 48px;
-    background: #03060c;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 14px;
-    gap: 18px;
-    color: #475569;
-  }
+    .card {
+      background: var(--bg-card);
+      border-radius: 27px;
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(24px);
+      width: 100%;
+      z-index: 2;
+    }
 
-  .ide-sidebar-icon {
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: color 0.3s;
-  }
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgba(var(--accent-cyan-rgb), 0.18), transparent 45%);
+      transition: opacity 0.35s ease;
+    }
 
-  .ide-sidebar-icon.active {
-    color: var(--accent-cyan);
-    filter: drop-shadow(0 0 5px var(--accent-cyan));
-  }
+    .card-wrap:hover .card-glare {
+      opacity: 1;
+    }
 
-  .ide-editor-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #060a12;
-  }
+    .hud-corner {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--accent-cyan);
+      opacity: 0.5;
+      z-index: 10;
+      pointer-events: none;
+    }
 
-  .ide-tabs {
-    background: #03060c;
-    display: flex;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
+    .hud-corner.top-left {
+      top: 14px;
+      left: 14px;
+      border-right: none;
+      border-bottom: none;
+    }
 
-  .ide-tab {
-    padding: 10px 18px;
-    font-size: 0.75rem;
-    color: var(--text-light);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    background: #03060c;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
+    .hud-corner.top-right {
+      top: 14px;
+      right: 14px;
+      border-left: none;
+      border-bottom: none;
+    }
 
-  .ide-tab.active {
-    background: #060a12;
-    color: #ffffff;
-    border-top: 2.5px solid var(--accent-cyan);
-  }
+    .hud-corner.bottom-left {
+      bottom: 14px;
+      left: 14px;
+      border-right: none;
+      border-top: none;
+    }
 
-  .ide-editor {
-    flex: 1;
-    padding: 18px;
-    overflow-y: auto;
-    font-size: 0.82rem;
-    line-height: 1.55;
-  }
+    .hud-corner.bottom-right {
+      bottom: 14px;
+      right: 14px;
+      border-left: none;
+      border-top: none;
+    }
 
-  /* Code Syntax Highlighting */
-  .code-keyword { color: #f472b6; }
-  .code-string { color: #34d399; }
-  .code-number { color: #fb923c; }
-  .code-property { color: #60a5fa; }
-  .code-comment { color: #64748b; font-style: italic; }
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgba(var(--accent-cyan-rgb), 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--accent-cyan-rgb), 0.035) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.85;
+    }
 
-  /* RSVP TERMINAL: Shell */
-  .terminal-wrap {
-    margin-top: 1.5rem;
-    background: rgba(5, 9, 18, 0.95);
-    border: 1px solid rgba(0, 240, 255, 0.2);
-    border-radius: 20px;
-    overflow: hidden;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.85);
-    backdrop-filter: blur(15px);
-  }
+    .glow {
+      position: absolute;
+      z-index: -1;
+      top: -90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 350px;
+      height: 220px;
+      background: radial-gradient(ellipse at center, rgba(var(--accent-cyan-rgb), 0.22), transparent 70%);
+      pointer-events: none;
+    }
 
-  .terminal-header {
-    background: rgba(10, 16, 30, 0.95);
-    padding: 10px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
+    .content {
+      padding: 2.6rem 2.2rem 0;
+    }
 
-  .terminal-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-light);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-  }
+    .sys-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
 
-  .terminal-body {
-    padding: 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--text-primary);
-    min-height: 160px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+    .sys-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-  .terminal-prompt {
-    color: var(--accent-cyan);
-  }
+    .sys-dot.online {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
 
-  .terminal-input-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    border-bottom: 1px dashed rgba(0, 240, 255, 0.2);
-    padding-bottom: 4px;
-  }
+    .sys-item.live-counter {
+      font-variant-numeric: tabular-nums;
+      color: var(--accent-cyan);
+    }
 
-  .terminal-input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--accent-green);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    flex: 1;
-  }
+    .sys-item.live-counter .tick {
+      display: inline-block;
+      animation: tickPop 0.35s ease;
+    }
 
-  .terminal-btn {
-    background: var(--accent-green);
-    border: none;
-    color: #050811;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
+    @keyframes tickPop {
+      0% {
+        transform: translateY(-4px);
+        opacity: 0.3;
+      }
 
-  .terminal-btn:hover {
-    box-shadow: var(--neon-glow-green);
-    transform: scale(1.05);
-  }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
-  .terminal-line {
-    word-break: break-all;
-    line-height: 1.45;
-  }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      animation: glitchFlicker 9s infinite;
+    }
 
-  /* Audio notification popup */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #050910;
-    border: 1px solid var(--accent-cyan);
-    padding: 12px 20px;
-    border-radius: 12px;
-    color: #ffffff;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    z-index: 100;
-    box-shadow: var(--neon-glow);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transform: translateY(150px);
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+    @keyframes glitchFlicker {
 
-  .toast.show {
-    transform: translateY(0);
-  }
+      0%,
+      96%,
+      100% {
+        text-shadow: none;
+        transform: translate(0, 0);
+      }
 
-  /* SVG Icons */
-  .icon {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-    display: inline-block;
-    vertical-align: middle;
-  }
+      97% {
+        text-shadow: -2px 0 var(--accent-cyan), 2px 0 var(--accent-green);
+        transform: translate(-1px, 0);
+      }
 
-  @media (prefers-reduced-motion: reduce) {
-    .view-wrapper { transition: none; }
-    .app-container.show-code-mode .view-wrapper { transform: none; }
-    .card-wrap::before { animation: none; }
-    .laser-line { animation: none; }
-  }
-</style>
+      98% {
+        text-shadow: 2px 0 var(--accent-cyan), -2px 0 var(--accent-green);
+        transform: translate(1px, 0);
+      }
+
+      99% {
+        text-shadow: none;
+        transform: translate(0, 0);
+      }
+    }
+
+    .eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+      }
+
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(52, 211, 153, 0);
+      }
+
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+      }
+    }
+
+    .headline {
+      margin: 1rem 0 0.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.15rem, 8.5vw, 2.9rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 25%, #bff6fc 55%, var(--accent-cyan) 85%);
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 6s ease-in-out infinite;
+      cursor: default;
+      position: relative;
+    }
+
+    /* RGB-split glitch triggered on hover/tap */
+    .headline.glitch-active {
+      animation: gradientShift 6s ease-in-out infinite, headlineShake 0.35s steps(2, end);
+    }
+
+    .headline.glitch-active::before,
+    .headline.glitch-active::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      -webkit-background-clip: initial;
+      background-clip: initial;
+      background: none;
+      overflow: hidden;
+    }
+
+    .headline.glitch-active::before {
+      color: var(--accent-cyan);
+      opacity: 0.75;
+      animation: glitchSliceA 0.35s steps(2, end);
+    }
+
+    .headline.glitch-active::after {
+      color: var(--accent-green);
+      opacity: 0.75;
+      animation: glitchSliceB 0.35s steps(2, end);
+    }
+
+    @keyframes headlineShake {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      20% {
+        transform: translate(-2px, 1px);
+      }
+
+      40% {
+        transform: translate(2px, -1px);
+      }
+
+      60% {
+        transform: translate(-1px, 0);
+      }
+
+      80% {
+        transform: translate(1px, 1px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes glitchSliceA {
+      0% {
+        clip-path: inset(0 0 85% 0);
+        transform: translate(-3px, -1px);
+      }
+
+      25% {
+        clip-path: inset(20% 0 60% 0);
+        transform: translate(3px, 1px);
+      }
+
+      50% {
+        clip-path: inset(55% 0 20% 0);
+        transform: translate(-2px, 0);
+      }
+
+      75% {
+        clip-path: inset(10% 0 70% 0);
+        transform: translate(2px, -1px);
+      }
+
+      100% {
+        clip-path: inset(0 0 100% 0);
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes glitchSliceB {
+      0% {
+        clip-path: inset(70% 0 5% 0);
+        transform: translate(3px, 1px);
+      }
+
+      25% {
+        clip-path: inset(35% 0 40% 0);
+        transform: translate(-3px, -1px);
+      }
+
+      50% {
+        clip-path: inset(5% 0 75% 0);
+        transform: translate(2px, 0);
+      }
+
+      75% {
+        clip-path: inset(60% 0 15% 0);
+        transform: translate(-2px, 1px);
+      }
+
+      100% {
+        clip-path: inset(100% 0 0 0);
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes gradientShift {
+
+      0%,
+      100% {
+        background-position: 0% center;
+      }
+
+      50% {
+        background-position: 100% center;
+      }
+    }
+
+    .subhead {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 1.05rem;
+      color: var(--text-light);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .subhead-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: rgba(var(--accent-cyan-rgb), 0.1);
+      color: var(--accent-cyan);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+    }
+
+    .school-line {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .school-line strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .photo-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 0.4rem 0 1.2rem;
+    }
+
+    .photo-frame {
+      width: min(220px, 72vw);
+      aspect-ratio: 1 / 1;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35), var(--neon-glow);
+      background: rgba(255, 255, 255, 0.04);
+      position: relative;
+    }
+
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
+      transform: translateX(-150%);
+      animation: photoShine 5.5s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    @keyframes photoShine {
+
+      0%,
+      55% {
+        transform: translateX(-150%);
+      }
+
+      100% {
+        transform: translateX(150%);
+      }
+    }
+
+    .photo-frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.2s ease;
+    }
+
+    .photo-frame:hover img {
+      animation: photoGlitch 0.7s steps(6, end);
+    }
+
+    @keyframes photoGlitch {
+      0% {
+        clip-path: inset(0 0 0 0);
+        transform: translate(0, 0);
+        filter: hue-rotate(0deg);
+      }
+
+      15% {
+        clip-path: inset(10% 0 60% 0);
+        transform: translate(-4px, 0);
+        filter: hue-rotate(20deg);
+      }
+
+      30% {
+        clip-path: inset(50% 0 10% 0);
+        transform: translate(4px, 0);
+        filter: hue-rotate(-15deg);
+      }
+
+      45% {
+        clip-path: inset(20% 0 40% 0);
+        transform: translate(-2px, 0);
+        filter: hue-rotate(10deg);
+      }
+
+      60% {
+        clip-path: inset(0 0 75% 0);
+        transform: translate(3px, 0);
+        filter: hue-rotate(-10deg);
+      }
+
+      80% {
+        clip-path: inset(65% 0 5% 0);
+        transform: translate(-1px, 0);
+        filter: hue-rotate(5deg);
+      }
+
+      100% {
+        clip-path: inset(0 0 0 0);
+        transform: translate(0, 0);
+        filter: hue-rotate(0deg);
+      }
+    }
+
+    .photo-frame:hover {
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35), 0 0 26px rgba(var(--accent-cyan-rgb), 0.45);
+    }
+
+    .avatar-fallback {
+      display: none;
+      position: absolute;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.4rem;
+      background:
+        linear-gradient(rgba(var(--accent-cyan-rgb), 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--accent-cyan-rgb), 0.05) 1px, transparent 1px),
+        radial-gradient(ellipse at center, rgba(var(--accent-cyan-rgb), 0.12), transparent 75%);
+      background-size: 18px 18px, 18px 18px, 100% 100%;
+    }
+
+    .avatar-fallback .monogram {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 3.2rem;
+      letter-spacing: -0.02em;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 24px rgba(var(--accent-cyan-rgb), 0.4);
+    }
+
+    .avatar-fallback .caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .phone-link {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      justify-content: center;
+      margin: 0 0 1rem;
+    }
+
+    .tag-pill {
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      background: rgba(var(--accent-cyan-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+    }
+
+    .formal-note {
+      padding: 1rem 1.05rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline);
+      margin-bottom: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+
+    .formal-note p {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--text-light);
+    }
+
+    .trace {
+      display: flex;
+      align-items: center;
+      margin: 0 0 1.5rem;
+    }
+
+    .trace .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(var(--accent-cyan-rgb), 0.18) 20%, rgba(var(--accent-cyan-rgb), 0.18) 80%, transparent);
+    }
+
+    .trace .node {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      margin: 0 8px;
+      box-shadow: var(--neon-glow);
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 400px) {
+      .info-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .info-chip {
+      background: rgba(13, 21, 38, 0.55);
+      border: 1px solid var(--hairline);
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      transition: all 0.3s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-chip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.05), transparent);
+      pointer-events: none;
+    }
+
+    .info-chip:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(13, 21, 38, 0.85);
+      box-shadow: var(--neon-glow);
+      transform: translateY(-2px);
+    }
+
+    .info-chip .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .info-chip .value {
+      font-size: 0.88rem;
+      color: #ffffff;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    /* Utility Buttons */
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .action-btn {
+      background: rgba(9, 14, 26, 0.85);
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      box-shadow: var(--neon-glow);
+      transform: translateY(-3px);
+    }
+
+    .action-btn.is-loading {
+      pointer-events: none;
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .action-btn.is-success {
+      pointer-events: none;
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+      box-shadow: var(--neon-glow-green);
+    }
+
+    .btn-spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(var(--accent-cyan-rgb), 0.25);
+      border-top-color: var(--accent-cyan);
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .btn-check {
+      display: inline-flex;
+      animation: fadeInUp 0.3s ease both;
+    }
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .perforation {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+
+    .perforation .notch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg-void);
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .perforation .notch.left {
+      margin-left: -10px;
+    }
+
+    .perforation .notch.right {
+      margin-right: -10px;
+    }
+
+    .perforation .dashes {
+      flex: 1;
+      height: 0;
+      border-top: 1.5px dashed rgba(var(--accent-cyan-rgb), 0.2);
+    }
+
+    .stub {
+      padding: 1.2rem 2.2rem 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .qr-ring-wrap {
+      position: relative;
+    }
+
+    .qr-pulse-ring {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid var(--accent-cyan);
+      opacity: 0;
+      animation: qrPulse 2.6s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes qrPulse {
+      0% {
+        opacity: 0.55;
+        transform: translateX(-50%) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(1.4);
+      }
+    }
+
+    .qr-container {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 6px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.25);
+      background: #04141a;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-container img,
+    .qr-container canvas,
+    .qr-container table {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 2px;
+    }
+
+    .qr-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-cyan);
+      box-shadow: var(--neon-glow), 0 0 8px var(--accent-cyan);
+      animation: laserScan 2.4s ease-in-out infinite;
+    }
+
+    .schedule-log {
+      padding: 1rem 1.05rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline);
+      margin-bottom: 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .schedule-log .log-title {
+      font-size: 0.62rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .schedule-log .log-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
+
+    .log-line {
+      display: flex;
+      gap: 0.7rem;
+      font-size: 0.78rem;
+      line-height: 1.9;
+      color: var(--text-light);
+    }
+
+    .log-line .ts {
+      color: var(--accent-cyan);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .log-line .arrow {
+      color: var(--accent-green);
+    }
+
+    .sign-off {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      margin-bottom: 1.4rem;
+      line-height: 1.6;
+    }
+
+    /* Entrance choreography */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-wrap {
+      animation: cardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: scale(0.97) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .content>* {
+      animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .content>*:nth-child(1) {
+      animation-delay: 0.08s;
+    }
+
+    .content>*:nth-child(2) {
+      animation-delay: 0.14s;
+    }
+
+    .content>*:nth-child(3) {
+      animation-delay: 0.20s;
+    }
+
+    .content>*:nth-child(4) {
+      animation-delay: 0.26s;
+    }
+
+    .content>*:nth-child(5) {
+      animation-delay: 0.32s;
+    }
+
+    .content>*:nth-child(6) {
+      animation-delay: 0.38s;
+    }
+
+    .content>*:nth-child(7) {
+      animation-delay: 0.44s;
+    }
+
+    .content>*:nth-child(8) {
+      animation-delay: 0.50s;
+    }
+
+    .content>*:nth-child(9) {
+      animation-delay: 0.56s;
+    }
+
+    .content>*:nth-child(10) {
+      animation-delay: 0.62s;
+    }
+
+    .content>*:nth-child(11) {
+      animation-delay: 0.68s;
+    }
+
+    .content>*:nth-child(12) {
+      animation-delay: 0.74s;
+    }
+
+    .content>*:nth-child(13) {
+      animation-delay: 0.80s;
+    }
+
+    .terminal-wrap {
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+    }
+
+    /* Ripple feedback on buttons */
+    .action-btn,
+    .terminal-btn,
+    .mode-btn,
+    .audio-toggle,
+    .ide-run-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(0);
+      animation: rippleAnim 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(3.2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes laserScan {
+
+      0%,
+      100% {
+        top: 0%;
+      }
+
+      50% {
+        top: 94%;
+      }
+    }
+
+    .status-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent-green);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+    }
+
+    .status-line::after {
+      content: "";
+      width: 6px;
+      height: 12px;
+      background: var(--accent-green);
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      50% {
+        opacity: 1;
+      }
+
+      51%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .footer-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      letter-spacing: 0.04em;
+    }
+
+    /* CODE MODE: VS Code Mockup */
+    .ide-card {
+      background: #050910;
+      border-radius: 24px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+      overflow: hidden;
+      box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.95), var(--neon-glow);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ide-header {
+      background: #0a0f1d;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .ide-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ide-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .ide-dot.red {
+      background: #ff5f56;
+    }
+
+    .ide-dot.yellow {
+      background: #ffbd2e;
+    }
+
+    .ide-dot.green {
+      background: #27c93f;
+    }
+
+    .ide-title {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .ide-run-btn {
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .ide-run-btn:hover {
+      background: var(--accent-green);
+      color: #050811;
+      box-shadow: var(--neon-glow-green);
+      transform: translateY(-1px);
+    }
+
+    .ide-main {
+      display: flex;
+      height: 390px;
+    }
+
+    .ide-sidebar {
+      width: 48px;
+      background: #03060c;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 14px;
+      gap: 18px;
+      color: #475569;
+    }
+
+    .ide-sidebar-icon {
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .ide-sidebar-icon.active {
+      color: var(--accent-cyan);
+      filter: drop-shadow(0 0 5px var(--accent-cyan));
+    }
+
+    .ide-editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #060a12;
+    }
+
+    .ide-tabs {
+      background: #03060c;
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .ide-tab {
+      padding: 10px 18px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      background: #03060c;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .ide-tab.active {
+      background: #060a12;
+      color: #ffffff;
+      border-top: 2.5px solid var(--accent-cyan);
+    }
+
+    .ide-editor {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .code-keyword {
+      color: #f472b6;
+    }
+
+    .code-string {
+      color: #34d399;
+    }
+
+    .code-number {
+      color: #fb923c;
+    }
+
+    .code-property {
+      color: #60a5fa;
+    }
+
+    .code-comment {
+      color: #64748b;
+      font-style: italic;
+    }
+
+    /* RSVP TERMINAL */
+    .terminal-wrap {
+      margin-top: 1.5rem;
+      background: rgba(5, 9, 18, 0.95);
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+      border-radius: 20px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(15px);
+    }
+
+    .terminal-header {
+      background: rgba(10, 16, 30, 0.95);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .terminal-body {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .terminal-prompt {
+      color: var(--accent-cyan);
+    }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      border-bottom: 1px dashed rgba(var(--accent-cyan-rgb), 0.2);
+      padding-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .terminal-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--accent-green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .terminal-input:focus-visible {
+      outline: none;
+    }
+
+    .terminal-btn {
+      background: var(--accent-green);
+      border: none;
+      color: #052018;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .terminal-btn:hover {
+      box-shadow: var(--neon-glow-green);
+      transform: scale(1.05);
+    }
+
+    .terminal-line {
+      word-break: break-all;
+      line-height: 1.45;
+    }
+
+    /* Audio notification popup */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #050910;
+      border: 1px solid var(--accent-cyan);
+      padding: 12px 20px;
+      border-radius: 12px;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      z-index: 100;
+      box-shadow: var(--neon-glow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(150px);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .view-wrapper,
+      .card-wrap::before,
+      .scan-line,
+      .eyebrow,
+      .eyebrow .dot,
+      .status-line::after,
+      .headline,
+      .photo-frame::after,
+      .qr-pulse-ring,
+      .card-wrap,
+      .content>*,
+      .terminal-wrap,
+      .ripple,
+      .cursor-glow,
+      .card-glare {
+        animation: none;
+        transition: none;
+      }
+
+      .app-container.show-code-mode .view-wrapper {
+        transform: none;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-  <!-- Background Binary Rain -->
-  <canvas id="binaryCanvas"></canvas>
+  <div class="boot-overlay" id="bootOverlay" aria-hidden="true">
+    <div class="boot-console">
+      <div class="boot-line" style="animation-delay:0.1s">[BOOT] Initializing invitation.exe</div>
+      <div class="boot-line" style="animation-delay:0.35s">[ OK ] Loading graduate profile</div>
+      <div class="boot-line" style="animation-delay:0.6s">[ OK ] Establishing secure connection</div>
+      <div class="boot-line" style="animation-delay:0.85s">[ OK ] Rendering interface</div>
+      <div class="boot-progress">
+        <div class="boot-progress-bar" id="bootBar"></div>
+      </div>
+      <div class="boot-status" id="bootStatus">0%</div>
+    </div>
+  </div>
 
-  <!-- Top bar / Control panel -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <canvas id="gridCanvas" aria-hidden="true"></canvas>
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="crt-overlay" aria-hidden="true"></div>
+
   <div class="control-panel">
-    <div class="mode-switch-container">
-      <button class="mode-btn active" id="btnVisualMode" onclick="toggleMode('visual')">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+    <div class="mode-switch-container" role="tablist" aria-label="Chuyển đổi giao diện thiệp mời">
+      <button class="mode-btn active" id="btnVisualMode" onclick="toggleMode('visual')" role="tab" aria-selected="true">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+        </svg>
         Visual Card
       </button>
-      <button class="mode-btn" id="btnCodeMode" onclick="toggleMode('code')">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+      <button class="mode-btn" id="btnCodeMode" onclick="toggleMode('code')" role="tab" aria-selected="false">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+        </svg>
         Developer IDE
       </button>
     </div>
-    <button class="audio-toggle" id="audioToggle" onclick="toggleAudio()" title="Bật/Tắt âm thanh">
-      <svg class="icon" id="audioIcon" viewBox="0 0 24 24"><path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/></svg>
+    <button class="audio-toggle" id="audioToggle" onclick="toggleAudio()" aria-label="Bật/Tắt âm thanh"
+      title="Bật/Tắt âm thanh">
+      <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z" />
+      </svg>
     </button>
   </div>
 
-  <!-- Main Card Container -->
   <div class="app-container" id="appContainer">
     <div class="view-wrapper">
-      
+
       <!-- VISUAL CARD VIEW -->
       <div class="app-view visual-view" id="visualView">
         <div class="card-wrap" id="cardWrap">
           <div class="card">
-            <!-- HUD ornaments -->
+            <div class="card-glare"></div>
             <div class="hud-corner top-left"></div>
             <div class="hud-corner top-right"></div>
             <div class="hud-corner bottom-left"></div>
@@ -986,23 +1736,22 @@
 
             <div class="grid-bg"></div>
             <div class="glow"></div>
-            
+
             <div class="content">
-              <!-- Network / Sys Status Bar -->
               <div class="sys-bar">
                 <span class="sys-item"><span class="sys-dot online"></span>SYS: ONLINE</span>
-                <span class="sys-item">PORT: 443</span>
+                <span class="sys-item live-counter">👁 <span id="guestCounter">128</span></span>
                 <span class="sys-item">🔒 SECURE SSL</span>
               </div>
 
               <span class="eyebrow"><span class="dot"></span>Graduation 2026</span>
-              <h1 class="headline" id="gradName">Trần Bảo Duy</h1>
-              
+              <h1 class="headline" id="gradName" data-text="Trần Bảo Duy">Trần Bảo Duy</h1>
+
               <p class="subhead">
                 <span>Chính thức hoàn thành chương trình đại học</span>
-                <span class="subhead-code">&lt;IT_Engineer&gt;</span>
+                <span class="subhead-code">&lt;Software_Engineer v1.0.0/&gt;</span>
               </p>
-              
+
               <p class="school-line">
                 Kỹ sư <strong>Công nghệ Thông tin</strong><br>
                 Trường Đại học Công nghệ TP.HCM — <strong>HUTECH</strong>
@@ -1010,7 +1759,12 @@
 
               <div class="photo-wrap">
                 <div class="photo-frame">
-                  <img src="images/BDUY.png" alt="Ảnh Bảo Duy">
+                  <img src="images/BDUY.png" alt="Ảnh chân dung Trần Bảo Duy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback">
+                    <span class="monogram">BD</span>
+                    <span class="caption">IT Engineer · Class of 2026</span>
+                  </div>
                 </div>
               </div>
 
@@ -1021,58 +1775,77 @@
               </div>
 
               <div class="formal-note">
-                <h2 class="section-title">Lễ Tốt nghiệp 2026</h2>
-                <p>Thay mặt gia đình, tôi xin trân trọng kính mời quý vị, gia đình và bạn bè đến tham dự buổi lễ đánh dấu một cột mốc quan trọng trong hành trình học tập và trưởng thành của Bảo Duy.</p>
+                <h2 class="section-title">Graduation 2026</h2>
+                <p>Thay mặt gia đình, tôi xin trân trọng kính mời quý vị, gia đình và bạn bè đến tham dự buổi lễ đánh
+                  dấu một cột mốc quan trọng trong hành trình học tập và trưởng thành của Bảo Duy.</p>
               </div>
 
               <div class="trace">
-                <span class="line"></span><span class="node"></span><span class="line"></span><span class="node"></span><span class="line"></span>
+                <span class="line"></span><span class="node"></span><span class="line"></span><span
+                  class="node"></span><span class="line"></span>
               </div>
 
               <div class="info-row">
                 <div class="info-chip">
                   <div class="label">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                    </svg>
                     Thời gian
                   </div>
                   <div class="value">07:30 • Thứ Năm, 29/10/2026</div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                    Địa điểm
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M6.62 10.79a15.91 15.91 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.2 2.2Z" />
+                    </svg>
+                    Liên hệ
                   </div>
-                  <div class="value">Cơ sở Thủ Đức — Khu Công nghệ cao TP.HCM</div>
+                  <div class="value"><a class="phone-link" href="tel:0329810650">0329810650</a></div>
                 </div>
               </div>
 
               <div class="info-chip" style="margin-bottom: 1.2rem;">
                 <div class="label">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M6.62 10.79a15.91 15.91 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.2 2.2Z"/></svg>
-                  Liên hệ
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                  </svg>
+                  Địa điểm
                 </div>
-                <div class="value"><a class="phone-link" href="tel:0329810650">0329810650</a></div>
+                <div class="value">Cơ sở Thủ Đức: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM
+                </div>
               </div>
-
-              <p class="invite-text">
-                Trân trọng kính mời Quý vị đến tham dự buổi lễ và cùng nhau chia sẻ niềm vui của 
-                <strong>Bảo Duy</strong> trong khoảnh khắc kết thúc hành trình bốn năm theo đuổi đam mê
-                Công nghệ Thông tin với sự chuyên nghiệp, nỗ lực và lòng quyết tâm bền bỉ.
-              </p>
             </div>
 
-            <!-- Action buttons -->
             <div class="content" style="padding-top: 0;">
               <div class="button-group">
-                <button class="action-btn" onclick="exportCalendar()">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm-5-8h-2v2h2v-2zm-4 0H8v2h2v-2zm8 0h-2v2h2v-2zm-4 4h-2v2h2v-2zm-4 0H8v2h2v-2z"/></svg>
-                  Thêm vào Lịch
+                <button class="action-btn" id="btnCalendar" onclick="exportCalendar()">
+                  <span class="btn-content" id="btnCalendarContent">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm-5-8h-2v2h2v-2zm-4 0H8v2h2v-2zm8 0h-2v2h2v-2zm-4 4h-2v2h2v-2zm-4 0H8v2h2v-2z" />
+                    </svg>
+                    Thêm vào Lịch
+                  </span>
                 </button>
-                <button class="action-btn" onclick="openMap()">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                  Bản Đồ Chỉ Đường
+                <button class="action-btn" id="btnMap" onclick="openMap()">
+                  <span class="btn-content" id="btnMapContent">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                    Bản Đồ Chỉ Đường
+                  </span>
                 </button>
               </div>
+            </div>
+
+            <div class="content" style="padding-top: 0; padding-bottom: 1.2rem;">
+              <p class="sign-off">// Với tất cả sự trân trọng, hẹn gặp bạn tại buổi lễ.<br>— Trần Bảo Duy</p>
             </div>
 
             <div class="perforation">
@@ -1082,13 +1855,15 @@
             </div>
 
             <div class="stub">
-              <!-- Barcode with sweeping laser scanner -->
-              <div class="barcode-container">
-                <div class="barcode"></div>
-                <div class="laser-line"></div>
+              <div class="qr-ring-wrap" style="display:flex; flex-direction:column; align-items:center;">
+                <div class="qr-pulse-ring"></div>
+                <div class="qr-container" id="qrCode">
+                  <div class="scan-line"></div>
+                </div>
+                <span class="qr-caption">Quét để chỉ đường</span>
               </div>
               <span class="status-line">SYSTEM_ACTIVE</span>
-              <span class="footer-code">#IT_2026</span>
+              <span class="footer-code">TICKET #IT_22_26</span>
             </div>
           </div>
         </div>
@@ -1105,21 +1880,21 @@
             </div>
             <div class="ide-title">graduation_invite.json — Visual Studio Code</div>
             <button class="ide-run-btn" onclick="compileCode()">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
               Run Code
             </button>
           </div>
-          
+
           <div class="ide-main">
-            <!-- VS Code Left Sidebar -->
             <div class="ide-sidebar">
               <span class="ide-sidebar-icon active">📁</span>
               <span class="ide-sidebar-icon">🔍</span>
               <span class="ide-sidebar-icon">🌿</span>
               <span class="ide-sidebar-icon">⚙️</span>
             </div>
-            
-            <!-- VS Code Editor -->
+
             <div class="ide-editor-container">
               <div class="ide-tabs">
                 <div class="ide-tab active">
@@ -1146,458 +1921,658 @@
         <span class="ide-dot green"></span>
       </div>
       <div class="terminal-title">
-        <svg class="icon" style="color: var(--accent-cyan); width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 12H4v-2h11v2zm5-4H4V8h16v4z"/></svg>
+        <svg class="icon" style="color: var(--accent-cyan); width: 14px; height: 14px;" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 12H4v-2h11v2zm5-4H4V8h16v4z" />
+        </svg>
         bash — rsvp_sync.sh
       </div>
       <div style="font-size: 0.65rem; color: var(--text-secondary);">tty1</div>
     </div>
     <div class="terminal-body" id="terminalBody">
       <div class="terminal-line"><span class="terminal-prompt">visitor@baoduy-grad:~$</span> ./rsvp_sync.sh</div>
-      <div class="terminal-line" style="color: var(--text-light);">[INFO] Initializing handshake with graduation server...</div>
-      <div class="terminal-line" style="color: var(--accent-cyan);">[READY] Please enter guest credentials to confirm attendance.</div>
+      <div class="terminal-line" style="color: var(--text-light);">[INFO] Đang xác nhận danh sách khách mời...</div>
+      <div class="terminal-line" style="color: var(--accent-cyan);">[READY] Vui lòng nhập tên để xác nhận tham dự.
+      </div>
       <div class="terminal-input-row" id="terminalInputRow">
         <span class="terminal-prompt">Guest Name:</span>
-        <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn và nhấn Enter..." autocomplete="off" onkeydown="handleTerminalKey(event)">
+        <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn và nhấn Enter..."
+          autocomplete="off" aria-label="Tên khách mời" onkeydown="handleTerminalKey(event)">
         <button class="terminal-btn" onclick="submitRSVP()">Confirm</button>
       </div>
     </div>
   </div>
 
-  <!-- Audio Toast Notification -->
-  <div class="toast" id="toast">
-    <svg class="icon" style="color: var(--accent-cyan)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg class="icon" style="color: var(--accent-cyan)" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+    </svg>
     <span id="toastMessage">Thông báo từ hệ thống</span>
   </div>
 
-<script>
-  // Sound system configurations
-  let soundEnabled = false;
-  let audioCtx = null;
+  <script>
+    // In-memory session state — no localStorage (not supported in this environment)
+    let sessionRSVP = null;
 
-  function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-  }
+    // Sound system
+    let soundEnabled = false;
+    let audioCtx = null;
 
-  function toggleAudio() {
-    soundEnabled = !soundEnabled;
-    const audioIcon = document.getElementById('audioIcon');
-    if (soundEnabled) {
-      initAudio();
-      audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
-      showToast("🔈 Sound effects enabled");
-      playBeep(800, 0.1, 'sine');
-    } else {
-      audioIcon.innerHTML = `<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/>`;
-      showToast("🔇 Sound effects muted");
-    }
-  }
-
-  function playBeep(freq = 600, duration = 0.08, type = 'sine') {
-    if (!soundEnabled) return;
-    try {
-      initAudio();
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-      
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    } catch (e) {
-      console.log("Audio play blocked/failed:", e);
     }
-  }
 
-  // Toast notifications
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').innerText = message;
-    toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 3000);
-  }
-
-  // 3D Card Tilt Effect
-  const cardWrap = document.getElementById('cardWrap');
-  if (cardWrap) {
-    cardWrap.addEventListener('mousemove', (e) => {
-      const rect = cardWrap.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      const xc = rect.width / 2;
-      const yc = rect.height / 2;
-      
-      const angleX = (yc - y) / 18;
-      const angleY = (x - xc) / 18;
-      
-      cardWrap.style.transform = `perspective(1200px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale3d(1.025, 1.025, 1.025)`;
-    });
-
-    cardWrap.addEventListener('mouseleave', () => {
-      cardWrap.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-    });
-  }
-
-  // View Switcher (Visual vs Code)
-  function toggleMode(mode) {
-    const container = document.getElementById('appContainer');
-    const btnVisual = document.getElementById('btnVisualMode');
-    const btnCode = document.getElementById('btnCodeMode');
-    
-    playBeep(900, 0.05, 'triangle');
-    
-    if (mode === 'code') {
-      container.classList.add('show-code-mode');
-      btnVisual.classList.remove('active');
-      btnCode.classList.add('active');
-    } else {
-      container.classList.remove('show-code-mode');
-      btnVisual.classList.add('active');
-      btnCode.classList.remove('active');
+    function toggleAudio() {
+      soundEnabled = !soundEnabled;
+      const audioIcon = document.getElementById('audioIcon');
+      if (soundEnabled) {
+        initAudio();
+        audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
+        showToast("🔈 Đã bật âm thanh");
+        playBeep(800, 0.1, 'sine');
+      } else {
+        audioIcon.innerHTML = `<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/>`;
+        showToast("🔇 Đã tắt âm thanh");
+      }
     }
-  }
 
-  // JSON Invitation Data for IDE Editor
-  const invitationJSON = {
-    "event": "Graduation Ceremony 2026",
-    "graduate": {
-      "name": "Trần Bảo Duy",
-      "major": "Information Technology",
-      "specialization": "Software Engineering",
-      "university": "HUTECH University"
-    },
-    "schedule": {
-      "date": "2026-10-29",
-      "time": "07:30 AM (GMT+7)",
-      "timezone": "Asia/Ho_Chi_Minh"
-    },
-    "venue": {
-      "campus": "Thủ Đức Campus",
-      "zone": "Saigon Hi-Tech Park (SHTP)",
-      "city": "Ho Chi Minh City, Vietnam"
-    },
-    "rsvp_status": "PENDING"
-  };
-
-  // Populate JSON with syntax highlighting in Code mode
-  function loadJSONCode() {
-    const codeElement = document.getElementById('jsonCode');
-    const jsonString = JSON.stringify(invitationJSON, null, 2);
-    
-    // Simple syntax highlighting parser
-    const highlighted = jsonString
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
-        let cls = 'code-number';
-        if (/^"/.test(match)) {
-          if (/:$/.test(match)) {
-            cls = 'code-property';
-          } else {
-            cls = 'code-string';
-          }
-        } else if (/true|false/.test(match)) {
-          cls = 'code-keyword';
-        } else if (/null/.test(match)) {
-          cls = 'code-keyword';
+    function playBeep(freq = 600, duration = 0.08, type = 'sine') {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
         }
-        return '<span class="' + cls + '">' + match + '</span>';
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.log("Audio play blocked/failed:", e);
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // 3D Card Tilt Effect + mouse-follow glare
+    const cardWrap = document.getElementById('cardWrap');
+    if (cardWrap) {
+      cardWrap.addEventListener('mousemove', (e) => {
+        const rect = cardWrap.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const xc = rect.width / 2;
+        const yc = rect.height / 2;
+        const angleX = (yc - y) / 22;
+        const angleY = (x - xc) / 22;
+        cardWrap.style.transform = `perspective(1200px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale3d(1.015, 1.015, 1.015)`;
+        cardWrap.style.setProperty('--mx', (x / rect.width * 100) + '%');
+        cardWrap.style.setProperty('--my', (y / rect.height * 100) + '%');
       });
-      
-    codeElement.innerHTML = highlighted;
-  }
 
-  // Compile Code simulator action
-  function compileCode() {
-    playBeep(1100, 0.1, 'sawtooth');
-    showToast("⚙️ Executing code block...");
-    
-    const terminalBody = document.getElementById('terminalBody');
-    const inputRow = document.getElementById('terminalInputRow');
-    
-    // Print build simulation into terminal
-    const lines = [
-      `<div class="terminal-line" style="color: var(--accent-green);">$ python invite.py --verify-attendance</div>`,
-      `<div class="terminal-line">[INFO] Parsing config.json...</div>`,
-      `<div class="terminal-line">[SUCCESS] Verification checksum matched. [0xDEADC0DE]</div>`,
-      `<div class="terminal-line">[OUTPUT] "Chính thức tốt nghiệp! Chào mừng quý khách ghé thăm."</div>`
-    ];
-    
-    lines.forEach((lineHtml, idx) => {
-      setTimeout(() => {
-        const div = document.createElement('div');
-        div.innerHTML = lineHtml;
-        terminalBody.insertBefore(div, inputRow);
-        terminalBody.scrollTop = terminalBody.scrollHeight;
-        playBeep(400 + idx * 100, 0.04, 'sine');
-      }, idx * 300);
+      cardWrap.addEventListener('mouseleave', () => {
+        cardWrap.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      });
+    }
+
+    // Ambient cursor glow that trails the pointer
+    const cursorGlow = document.getElementById('cursorGlow');
+    let glowTargetX = -1000, glowTargetY = -1000, glowX = -1000, glowY = -1000;
+    let glowActive = false;
+    window.addEventListener('mousemove', (e) => {
+      glowTargetX = e.clientX;
+      glowTargetY = e.clientY;
+      if (!glowActive && cursorGlow) {
+        glowActive = true;
+        cursorGlow.style.opacity = '1';
+      }
     });
-
-    // Auto switch to visual card view to show output after 1.8s
-    setTimeout(() => {
-      toggleMode('visual');
-      showToast("✨ Code compiled successfully!");
-    }, 1800);
-  }
-
-  // RSVP Terminal Actions
-  function handleTerminalKey(event) {
-    if (event.key === 'Enter') {
-      submitRSVP();
-    } else {
-      // Play a typing keyboard sound
-      playBeep(1000 + Math.random() * 500, 0.03, 'triangle');
+    window.addEventListener('mouseout', () => {
+      if (cursorGlow) cursorGlow.style.opacity = '0';
+      glowActive = false;
+    });
+    function animateGlow() {
+      if (cursorGlow) {
+        glowX += (glowTargetX - glowX) * 0.12;
+        glowY += (glowTargetY - glowY) * 0.12;
+        cursorGlow.style.left = glowX + 'px';
+        cursorGlow.style.top = glowY + 'px';
+      }
+      requestAnimationFrame(animateGlow);
     }
-  }
-
-  function submitRSVP() {
-    const input = document.getElementById('guestName');
-    const guestName = input.value.trim();
-    
-    if (!guestName) {
-      playBeep(150, 0.3, 'sawtooth');
-      showToast("⚠️ Vui lòng nhập tên của bạn!");
-      return;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      animateGlow();
     }
 
-    input.value = "";
-    const terminalBody = document.getElementById('terminalBody');
-    const inputRow = document.getElementById('terminalInputRow');
-    
-    // Hide terminal input temporarily to focus on Git logs
-    inputRow.style.display = "none";
-    
-    const steps = [
-      { text: `$ git add --rsvp "${guestName}"`, color: 'var(--text-primary)' },
-      { text: `$ git commit -m "feat(rsvp): confirm attendance for ${guestName}"`, color: 'var(--text-primary)' },
-      { text: `[main ${Math.random().toString(16).substring(2, 8)}] feat(rsvp): add guest ${guestName}`, color: 'var(--text-light)' },
-      { text: `$ git push origin master`, color: 'var(--text-primary)' },
-      { text: `Enumerating objects: 5, done.`, color: 'var(--text-light)' },
-      { text: `Counting objects: 100% (5/5), done.`, color: 'var(--text-light)' },
-      { text: `Writing objects: 100% (3/3), 324 bytes | 324.00 KiB/s, done.`, color: 'var(--text-light)' },
-      { text: `To github.com/baoduytran/graduation-rsvp.git`, color: 'var(--text-light)' },
-      { text: `   b2c58ef..${Math.random().toString(16).substring(2, 8)}  master -> master`, color: 'var(--text-light)' },
-      { text: `[SUCCESS] RSVP Confirmed! Welcome to the ceremony, ${guestName}!`, color: 'var(--accent-green)' }
-    ];
+    // Magnetic pull for the primary action buttons
+    function attachMagnetic(el, strength = 12) {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const dx = e.clientX - rect.left - rect.width / 2;
+        const dy = e.clientY - rect.top - rect.height / 2;
+        el.style.transition = 'transform 0.06s linear';
+        el.style.transform = `translate(${dx / strength}px, ${dy / strength}px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        el.style.transform = 'translate(0, 0)';
+      });
+    }
 
-    steps.forEach((step, idx) => {
-      setTimeout(() => {
-        const div = document.createElement('div');
-        div.className = 'terminal-line';
-        div.style.color = step.color;
-        div.innerText = step.text;
-        terminalBody.appendChild(div);
-        terminalBody.scrollTop = terminalBody.scrollHeight;
-        
-        if (idx === steps.length - 1) {
-          playBeep(880, 0.3, 'sine');
-          // Update local invitation data & storage
-          localStorage.setItem('rsvp_guest', guestName);
-          showToast(`✅ RSVP Confirmed: ${guestName}`);
-          
-          // Re-render input with confirmed greeting
-          const successDiv = document.createElement('div');
-          successDiv.className = 'terminal-line';
-          successDiv.style.color = 'var(--accent-cyan)';
-          successDiv.innerHTML = `<span style="color:var(--text-light)">Access Token:</span> 0x${Math.random().toString(16).substring(2, 10).toUpperCase()}`;
-          terminalBody.appendChild(successDiv);
-          terminalBody.scrollTop = terminalBody.scrollHeight;
-        } else {
-          playBeep(600 + idx * 80, 0.05, 'triangle');
+    function initMagnetic() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.querySelectorAll('.action-btn').forEach((el) => attachMagnetic(el, 10));
+    }
+
+    // Boot sequence on first load
+    function runBootSequence() {
+      const overlay = document.getElementById('bootOverlay');
+      if (!overlay) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        overlay.remove();
+        return;
+      }
+      const bar = document.getElementById('bootBar');
+      const status = document.getElementById('bootStatus');
+      let pct = 0;
+      const timer = setInterval(() => {
+        pct += Math.random() * 16 + 9;
+        if (pct >= 100) pct = 100;
+        bar.style.width = pct + '%';
+        status.textContent = Math.floor(pct) + '%';
+        if (pct >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            overlay.classList.add('hide');
+            setTimeout(() => overlay.remove(), 700);
+          }, 250);
         }
-      }, idx * 250);
-    });
-  }
+      }, 170);
+    }
 
-  // Pre-load saved RSVP
-  function checkSavedRSVP() {
-    const savedGuest = localStorage.getItem('rsvp_guest');
-    if (savedGuest) {
+    // View Switcher
+    function toggleMode(mode) {
+      const container = document.getElementById('appContainer');
+      const btnVisual = document.getElementById('btnVisualMode');
+      const btnCode = document.getElementById('btnCodeMode');
+
+      playBeep(900, 0.05, 'triangle');
+
+      if (mode === 'code') {
+        container.classList.add('show-code-mode');
+        btnVisual.classList.remove('active');
+        btnVisual.setAttribute('aria-selected', 'false');
+        btnCode.classList.add('active');
+        btnCode.setAttribute('aria-selected', 'true');
+      } else {
+        container.classList.remove('show-code-mode');
+        btnVisual.classList.add('active');
+        btnVisual.setAttribute('aria-selected', 'true');
+        btnCode.classList.remove('active');
+        btnCode.setAttribute('aria-selected', 'false');
+      }
+    }
+
+    const invitationJSON = {
+      "version": "1.0.0",
+      "build": {
+        "commit": "a3f9c1e",
+        "compiledAt": "2026-07-01T00:00:00+07:00"
+      },
+      "event": "Graduation Ceremony 2026",
+      "graduate": {
+        "name": "Trần Bảo Duy",
+        "major": "Information Technology",
+        "specialization": "Software Engineering",
+        "university": "HUTECH University"
+      },
+      "schedule": {
+        "date": "2026-10-29",
+        "time": "07:30 (GMT+7)",
+        "timezone": "Asia/Ho_Chi_Minh",
+        "agenda": [
+          { "time": "07:00", "item": "Check-in" },
+          { "time": "07:30", "item": "Opening ceremony" },
+          { "time": "08:15", "item": "Diploma presentation" },
+          { "time": "09:30", "item": "Photo session" },
+          { "time": "10:30", "item": "Reception" }
+        ]
+      },
+      "venue": {
+        "campus": "Thủ Đức Campus",
+        "zone": "Saigon Hi-Tech Park (SHTP)",
+        "city": "Ho Chi Minh City, Vietnam"
+      },
+      "dress_code": "Business casual",
+      "rsvp_deadline": "2026-10-20",
+      "contact": "0329810650",
+      "ticket": "IT26-0001",
+      "rsvp_status": "PENDING"
+    };
+
+    function loadJSONCode() {
+      const codeElement = document.getElementById('jsonCode');
+      const jsonString = JSON.stringify(invitationJSON, null, 2);
+
+      const highlighted = jsonString
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+          let cls = 'code-number';
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? 'code-property' : 'code-string';
+          } else if (/true|false|null/.test(match)) {
+            cls = 'code-keyword';
+          }
+          return '<span class="' + cls + '">' + match + '</span>';
+        });
+
+      codeElement.innerHTML = highlighted;
+    }
+
+    function compileCode() {
+      playBeep(1100, 0.1, 'sawtooth');
+      showToast("⚙️ Đang thực thi khối lệnh...");
+
+      const terminalBody = document.getElementById('terminalBody');
+      const inputRow = document.getElementById('terminalInputRow');
+
+      const lines = [
+        `<div class="terminal-line" style="color: var(--accent-green);">$ python invite.py --verify-attendance</div>`,
+        `<div class="terminal-line">[INFO] Parsing graduation_invite.json...</div>`,
+        `<div class="terminal-line">[SUCCESS] Dữ liệu hợp lệ. Sẵn sàng gửi lời mời.</div>`
+      ];
+
+      lines.forEach((lineHtml, idx) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.innerHTML = lineHtml;
+          terminalBody.insertBefore(div, inputRow);
+          terminalBody.scrollTop = terminalBody.scrollHeight;
+          playBeep(400 + idx * 100, 0.04, 'sine');
+        }, idx * 300);
+      });
+
+      setTimeout(() => {
+        toggleMode('visual');
+        showToast("✨ Biên dịch hoàn tất!");
+      }, 1400);
+    }
+
+    // RSVP Terminal Actions
+    function handleTerminalKey(event) {
+      if (event.key === 'Enter') {
+        submitRSVP();
+      } else {
+        playBeep(1000 + Math.random() * 500, 0.03, 'triangle');
+      }
+    }
+
+    function submitRSVP() {
+      const input = document.getElementById('guestName');
+      const guestName = input.value.trim();
+
+      if (!guestName) {
+        playBeep(150, 0.3, 'sawtooth');
+        showToast("⚠️ Vui lòng nhập tên của bạn!");
+        return;
+      }
+
+      input.value = "";
       const terminalBody = document.getElementById('terminalBody');
       const inputRow = document.getElementById('terminalInputRow');
       inputRow.style.display = "none";
-      
-      const div = document.createElement('div');
-      div.className = 'terminal-line';
-      div.style.color = 'var(--accent-green)';
-      div.innerText = `[WELCOME BACK] RSVP confirmed for: ${savedGuest}`;
-      terminalBody.appendChild(div);
-      
-      const tokenDiv = document.createElement('div');
-      tokenDiv.className = 'terminal-line';
-      tokenDiv.style.color = 'var(--accent-cyan)';
-      tokenDiv.innerHTML = `<span style="color:var(--text-light)">Verification Status:</span> AUTHORIZED (0x3F52E109)`;
-      terminalBody.appendChild(tokenDiv);
-      
-      // Update local config JSON
-      invitationJSON.rsvp_status = "CONFIRMED";
+
+      const steps = [
+        { text: `$ git add --rsvp "${guestName}"`, color: 'var(--text-primary)' },
+        { text: `$ git commit -m "feat(rsvp): confirm attendance for ${guestName}"`, color: 'var(--text-primary)' },
+        { text: `[main ${Math.random().toString(16).substring(2, 8)}] 1 guest added, 0 conflicts`, color: 'var(--text-light)' },
+        { text: `$ git tag ticket/IT26-${String(Math.floor(Math.random() * 90) + 10).padStart(4, '0')}`, color: 'var(--text-light)' },
+        { text: `[SUCCESS] Đã xác nhận tham dự — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`, color: 'var(--accent-green)' }
+      ];
+
+      steps.forEach((step, idx) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = 'terminal-line';
+          div.style.color = step.color;
+          div.innerText = step.text;
+          terminalBody.appendChild(div);
+          terminalBody.scrollTop = terminalBody.scrollHeight;
+
+          if (idx === steps.length - 1) {
+            playBeep(880, 0.3, 'sine');
+            sessionRSVP = guestName;
+            invitationJSON.rsvp_status = "CONFIRMED";
+            loadJSONCode();
+            showToast(`✅ Đã xác nhận: ${guestName}`);
+            fireConfetti();
+          } else {
+            playBeep(600 + idx * 80, 0.05, 'triangle');
+          }
+        }, idx * 250);
+      });
     }
-  }
 
-  // Calendar Event Generator (.ics)
-  function exportCalendar() {
-    playBeep(700, 0.1, 'sine');
-    
-    // ICS file content formatting
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Graduation Invitation//NONSGML v1.0//EN",
-      "BEGIN:VEVENT",
-      "UID:" + new Date().getTime() + "@duytran.it",
-      "DTSTAMP:20260701T000000Z",
-      "DTSTART;TZID=Asia/Ho_Chi_Minh:20261029T073000",
-      "DTEND;TZID=Asia/Ho_Chi_Minh:20261029T113000",
-      "SUMMARY:Lễ Tốt nghiệp Kỹ sư IT — Trần Bảo Duy",
-      "DESCRIPTION:Trân trọng kính mời bạn đến tham dự Lễ Tốt nghiệp của Trần Bảo Duy tại Trường Đại học HUTECH.",
-      "LOCATION:Cơ sở Thủ Đức — Khu Công nghệ cao TP.HCM, Việt Nam",
-      "END:VEVENT",
-      "END:VCALENDAR"
-    ].join("\r\n");
+    // Ripple click feedback
+    function attachRipple(el) {
+      el.addEventListener('click', (e) => {
+        const rect = el.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        const size = Math.max(rect.width, rect.height) * 1.4;
+        ripple.className = 'ripple';
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        el.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 650);
+      });
+    }
 
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "LeTotNghiep_BaoDuy.ics";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    showToast("📅 File lịch (.ics) đã được tải xuống");
-  }
+    function initRipples() {
+      document.querySelectorAll('.action-btn, .terminal-btn, .mode-btn, .audio-toggle, .ide-run-btn')
+        .forEach(attachRipple);
+    }
 
-  // Maps Redirect
-  function openMap() {
-    playBeep(700, 0.1, 'sine');
-    window.open("https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao", "_blank");
-  }
+    // Confetti burst on RSVP success
+    function fireConfetti() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.inset = '0';
+      canvas.style.zIndex = '200';
+      canvas.style.pointerEvents = 'none';
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      document.body.appendChild(canvas);
+      const cctx = canvas.getContext('2d');
+      const colors = ['#22d3ee', '#34d399', '#ffffff'];
+      const originX = window.innerWidth / 2;
+      const originY = window.innerHeight * 0.45;
 
-  // Text Decryption / Scramble effect on load
-  function scrambleText(element, finalString, duration = 800) {
-    const chars = '01<>/[]{}-_#+*&%$@!';
-    const start = performance.now();
-    
-    function update(time) {
-      const elapsed = time - start;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      let result = '';
-      for (let i = 0; i < finalString.length; i++) {
-        if (finalString[i] === ' ' || finalString[i] === '\n' || finalString[i] === '—' || finalString[i] === '•') {
-          result += finalString[i];
-        } else if (i < progress * finalString.length) {
-          result += finalString[i];
+      const particles = Array.from({ length: 70 }, () => ({
+        x: originX + (Math.random() - 0.5) * 60,
+        y: originY,
+        vx: (Math.random() - 0.5) * 9,
+        vy: Math.random() * -7 - 2,
+        size: Math.random() * 4 + 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        life: 1
+      }));
+
+      let frame = 0;
+      function step() {
+        frame++;
+        cctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.vy += 0.16;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.012;
+          cctx.globalAlpha = Math.max(p.life, 0);
+          cctx.fillStyle = p.color;
+          cctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        cctx.globalAlpha = 1;
+        if (frame < 90) {
+          requestAnimationFrame(step);
         } else {
-          result += chars[Math.floor(Math.random() * chars.length)];
+          canvas.remove();
         }
       }
-      element.innerHTML = result;
-      
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      }
+      requestAnimationFrame(step);
     }
-    requestAnimationFrame(update);
-  }
+    function exportCalendar() {
+      playBeep(700, 0.1, 'sine');
+      runButtonSequence('btnCalendar', 'btnCalendarContent', '', 'Thêm vào Lịch');
 
-  // Binary Falling Rain Matrix Effect
-  const canvas = document.getElementById('binaryCanvas');
-  const ctx = canvas.getContext('2d');
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Graduation Invitation//NONSGML v1.0//EN",
+        "BEGIN:VEVENT",
+        "UID:" + new Date().getTime() + "@duytran.it",
+        "DTSTAMP:20260701T000000Z",
+        "DTSTART;TZID=Asia/Ho_Chi_Minh:20261029T073000",
+        "DTEND;TZID=Asia/Ho_Chi_Minh:20261029T113000",
+        "SUMMARY:Lễ Tốt nghiệp Kỹ sư IT — Trần Bảo Duy",
+        "DESCRIPTION:Trân trọng kính mời bạn đến tham dự Lễ Tốt nghiệp của Trần Bảo Duy tại Trường Đại học HUTECH.",
+        "LOCATION:Cơ sở Thủ Đức — Khu Công nghệ cao TP.HCM, Việt Nam",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
 
-  let width = canvas.width = window.innerWidth;
-  let height = canvas.height = window.innerHeight;
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "LeTotNghiep_BaoDuy.ics";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-  const font = "14px 'JetBrains Mono', monospace";
-  ctx.font = font;
-
-  const columns = Math.floor(width / 18);
-  const yPositions = Array(columns).fill(0);
-  
-  // Track mouse coordinates for neon highlight trail
-  let mouse = { x: -1000, y: -1000 };
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  window.addEventListener('mouseout', () => {
-    mouse.x = -1000;
-    mouse.y = -1000;
-  });
-
-  window.addEventListener('resize', () => {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-    ctx.font = font;
-  });
-
-  function drawBinaryRain() {
-    ctx.fillStyle = 'rgba(2, 4, 10, 0.08)';
-    ctx.fillRect(0, 0, width, height);
-
-    for (let i = 0; i < yPositions.length; i++) {
-      const x = i * 20;
-      const y = yPositions[i];
-      
-      // Random binary bit
-      const text = Math.random() > 0.5 ? "1" : "0";
-      
-      // Calculate distance to mouse
-      const dx = x - mouse.x;
-      const dy = y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < 100) {
-        // Highlight bits near mouse pointer
-        ctx.fillStyle = 'rgba(0, 240, 255, 0.85)';
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = 'var(--accent-cyan)';
-      } else {
-        // Subtle cyber blue bits elsewhere
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.05)';
-        ctx.shadowBlur = 0;
-      }
-
-      ctx.fillText(text, x, y);
-
-      if (y > 100 + Math.random() * 10000) {
-        yPositions[i] = 0;
-      } else {
-        yPositions[i] = y + 16;
-      }
+      showToast("📅 File lịch (.ics) đã được tải xuống");
     }
-  }
 
-  // Animation Loop
-  function animate() {
-    drawBinaryRain();
-    requestAnimationFrame(animate);
-  }
+    function openMap() {
+      playBeep(700, 0.1, 'sine');
+      runButtonSequence('btnMap', 'btnMapContent', '', 'Bản Đồ Chỉ Đường');
+      window.open("https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao", "_blank");
+    }
 
-  // Initialization
-  window.addEventListener('DOMContentLoaded', () => {
-    loadJSONCode();
-    checkSavedRSVP();
-    animate();
-    
-    // Trigger cool decryption effect on load
-    const nameEl = document.getElementById('gradName');
-    const originalName = nameEl.innerText;
-    scrambleText(nameEl, originalName, 1200);
-  });
-</script>
+    // Text decrypt effect on load
+    function scrambleText(element, finalString, duration = 900) {
+      const chars = '01<>[]{}-_#+*';
+      const start = performance.now();
+
+      function update(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+
+        let result = '';
+        for (let i = 0; i < finalString.length; i++) {
+          if (finalString[i] === ' ' || finalString[i] === '\n' || finalString[i] === '—' || finalString[i] === '•') {
+            result += finalString[i];
+          } else if (i < progress * finalString.length) {
+            result += finalString[i];
+          } else {
+            result += chars[Math.floor(Math.random() * chars.length)];
+          }
+        }
+        element.innerHTML = result;
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    // Quiet dot-grid ambient background (replaces the busy binary rain)
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    const accentRgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan-rgb').trim();
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    const spacing = 34;
+    let mouse = { x: -1000, y: -1000 };
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseout', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, width, height);
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          const dx = x - mouse.x;
+          const dy = y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            const t = 1 - dist / 140;
+            ctx.fillStyle = `rgba(${accentRgb}, ${0.35 * t})`;
+            ctx.fillRect(x - 1, y - 1, 2, 2);
+          } else {
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.06)';
+            ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
+          }
+        }
+      }
+      requestAnimationFrame(drawGrid);
+    }
+
+    // Ambient rising particle system — quiet cyan/green sparks drifting upward
+    const pCanvas = document.getElementById('particleCanvas');
+    const pCtx = pCanvas.getContext('2d');
+    let pWidth = pCanvas.width = window.innerWidth;
+    let pHeight = pCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      pWidth = pCanvas.width = window.innerWidth;
+      pHeight = pCanvas.height = window.innerHeight;
+    });
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sparkColors = ['rgba(' + accentRgb + ',', 'rgba(52, 211, 153,'];
+    const sparks = reduceMotion ? [] : Array.from({ length: 34 }, () => ({
+      x: Math.random() * pWidth,
+      y: Math.random() * pHeight,
+      r: Math.random() * 1.6 + 0.4,
+      speed: Math.random() * 0.35 + 0.08,
+      drift: (Math.random() - 0.5) * 0.25,
+      color: sparkColors[Math.floor(Math.random() * sparkColors.length)],
+      alpha: Math.random() * 0.5 + 0.15,
+      twinkle: Math.random() * Math.PI * 2
+    }));
+
+    function drawParticles() {
+      pCtx.clearRect(0, 0, pWidth, pHeight);
+      sparks.forEach(s => {
+        s.y -= s.speed;
+        s.x += s.drift;
+        s.twinkle += 0.02;
+        if (s.y < -10) {
+          s.y = pHeight + 10;
+          s.x = Math.random() * pWidth;
+        }
+        const flicker = (Math.sin(s.twinkle) + 1) / 2;
+        pCtx.beginPath();
+        pCtx.fillStyle = s.color + (s.alpha * (0.5 + flicker * 0.5)) + ')';
+        pCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        pCtx.fill();
+      });
+      requestAnimationFrame(drawParticles);
+    }
+    if (!reduceMotion) drawParticles();
+
+    // Headline glitch burst — fires on hover/tap, throttled
+    const gradNameEl = document.getElementById('gradName');
+    let glitchBusy = false;
+    function triggerHeadlineGlitch() {
+      if (glitchBusy || reduceMotion || !gradNameEl) return;
+      glitchBusy = true;
+      gradNameEl.classList.add('glitch-active');
+      playBeep(1400, 0.04, 'square');
+      setTimeout(() => {
+        gradNameEl.classList.remove('glitch-active');
+        glitchBusy = false;
+      }, 380);
+    }
+    if (gradNameEl) {
+      gradNameEl.addEventListener('mouseenter', triggerHeadlineGlitch);
+      gradNameEl.addEventListener('click', triggerHeadlineGlitch);
+      // one unprompted burst shortly after load so people notice it's interactive
+      setTimeout(triggerHeadlineGlitch, 3200);
+    }
+
+    // Live "visitors watching" counter — gentle randomized ticking, feels alive
+    function startGuestCounter() {
+      const el = document.getElementById('guestCounter');
+      if (!el) return;
+      let count = 128;
+      setInterval(() => {
+        count += Math.floor(Math.random() * 3) - 1;
+        if (count < 90) count = 90;
+        el.textContent = count;
+        el.classList.remove('tick');
+        void el.offsetWidth;
+        el.classList.add('tick');
+      }, 2600);
+    }
+
+    // Loading -> success micro-animation wrapper for action buttons
+    function runButtonSequence(btnId, contentId, iconMarkup, label) {
+      const btn = document.getElementById(btnId);
+      const content = document.getElementById(contentId);
+      if (!btn || !content) return;
+      const original = content.innerHTML;
+      btn.classList.add('is-loading');
+      content.innerHTML = `<span class="btn-spinner"></span>${label}`;
+      setTimeout(() => {
+        btn.classList.remove('is-loading');
+        btn.classList.add('is-success');
+        content.innerHTML = `<span class="btn-check">✓</span>${label}`;
+        setTimeout(() => {
+          btn.classList.remove('is-success');
+          content.innerHTML = original;
+        }, 1100);
+      }, 550);
+    }
+
+    function initQRCode() {
+      const target = document.getElementById('qrCode');
+      if (!target || typeof QRCode === 'undefined') return;
+      const mapsUrl = "https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao";
+      new QRCode(target, {
+        text: mapsUrl,
+        width: 56,
+        height: 56,
+        colorDark: "#04141a",
+        colorLight: "#22d3ee",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadJSONCode();
+      drawGrid();
+      initQRCode();
+      initRipples();
+      initMagnetic();
+      runBootSequence();
+      startGuestCounter();
+
+      const nameEl = document.getElementById('gradName');
+      const originalName = nameEl.innerText;
+      scrambleText(nameEl, originalName, 1200);
+    });
+  </script>
 </body>
+
 </html>
