@@ -405,6 +405,7 @@
     }
 
     @keyframes cornerSashShine {
+
       0%,
       62% {
         transform: translateX(-160%);
@@ -1760,6 +1761,331 @@
         transform: none;
       }
     }
+
+    /* ============ ACHIEVEMENT / GAMIFICATION SYSTEM ============ */
+    .trophy-toggle {
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid var(--hairline);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    .trophy-toggle:hover {
+      color: #fbbf24;
+      border-color: #fbbf24;
+      box-shadow: 0 0 22px rgba(251, 191, 36, 0.35);
+    }
+
+    .trophy-badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 3px;
+      border-radius: 999px;
+      background: #fbbf24;
+      color: #1a1300;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+
+    .achv-panel {
+      position: fixed;
+      top: 68px;
+      right: max(1rem, calc(50% - 240px));
+      width: min(300px, 86vw);
+      background: rgba(6, 10, 20, 0.97);
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      border-radius: 18px;
+      padding: 14px;
+      z-index: 250;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), 0 0 30px rgba(251, 191, 36, 0.08);
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .achv-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .achv-panel-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fbbf24;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .achv-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 6px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      transition: background 0.2s;
+    }
+
+    .achv-item.unlocked {
+      background: rgba(251, 191, 36, 0.06);
+    }
+
+    .achv-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hairline);
+      filter: grayscale(1) opacity(0.4);
+    }
+
+    .achv-item.unlocked .achv-icon {
+      filter: none;
+      background: rgba(251, 191, 36, 0.14);
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+
+    .achv-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .achv-text .t {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .achv-item.unlocked .achv-text .t {
+      color: #ffffff;
+    }
+
+    .achv-text .d {
+      font-size: 0.64rem;
+      color: var(--text-secondary);
+    }
+
+    /* Achievement unlock toast (gold variant) */
+    .toast.achv {
+      border-color: #fbbf24;
+      box-shadow: 0 0 22px rgba(251, 191, 36, 0.35);
+    }
+
+    .toast.achv svg {
+      color: #fbbf24 !important;
+    }
+
+    /* Matrix rain canvas — hidden until hacker mode unlocked */
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 400;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    #matrixCanvas.active {
+      opacity: 0.92;
+    }
+
+    /* Full-screen flash + shake for the hacker-mode easter egg */
+    .screen-flash {
+      position: fixed;
+      inset: 0;
+      background: var(--accent-cyan);
+      z-index: 450;
+      opacity: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .screen-flash.fire {
+      animation: screenFlashAnim 0.5s ease-out;
+    }
+
+    @keyframes screenFlashAnim {
+      0% {
+        opacity: 0.75;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    body.hacker-shake {
+      animation: hackerShake 0.4s steps(3, end) 2;
+    }
+
+    @keyframes hackerShake {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(-6px, 3px);
+      }
+
+      50% {
+        transform: translate(5px, -4px);
+      }
+
+      75% {
+        transform: translate(-4px, 2px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    /* Hacker-mode banner shown briefly across the top */
+    .hacker-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #030711, var(--accent-cyan), #030711);
+      color: #04141a;
+      z-index: 460;
+      transform: translateY(-100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hacker-banner.show {
+      transform: translateY(0);
+    }
+
+    /* Secret message card revealed after the easter egg */
+    .secret-message {
+      position: fixed;
+      inset: 0;
+      z-index: 470;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 4, 10, 0.88);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      padding: 1.5rem;
+    }
+
+    .secret-message.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .secret-card {
+      max-width: 380px;
+      background: rgba(9, 14, 26, 0.97);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 20px;
+      padding: 1.8rem;
+      text-align: center;
+      box-shadow: var(--neon-glow), 0 40px 80px -20px rgba(0, 0, 0, 0.9);
+      transform: scale(0.9);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .secret-message.show .secret-card {
+      transform: scale(1);
+    }
+
+    .secret-card .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+
+    .secret-card p {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+      margin-bottom: 1.1rem;
+    }
+
+    .secret-card button {
+      background: var(--accent-cyan);
+      color: #04141a;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .konami-hint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 0.6rem;
+      opacity: 0.5;
+      letter-spacing: 0.03em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      #matrixCanvas,
+      .screen-flash.fire,
+      body.hacker-shake,
+      .hacker-banner,
+      .secret-message,
+      .secret-message .secret-card,
+      .achv-panel {
+        animation: none;
+        transition: none;
+      }
+    }
   </style>
 </head>
 
@@ -1782,7 +2108,19 @@
 
   <canvas id="gridCanvas" aria-hidden="true"></canvas>
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <canvas id="matrixCanvas" aria-hidden="true"></canvas>
   <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="screen-flash" id="screenFlash" aria-hidden="true"></div>
+  <div class="hacker-banner" id="hackerBanner" aria-hidden="true">⚡ ACCESS GRANTED — HACKER MODE ENGAGED ⚡</div>
+
+  <div class="secret-message" id="secretMessage" role="dialog" aria-modal="true" aria-label="Lời nhắn bí mật">
+    <div class="secret-card">
+      <div class="tag">// decrypted_message.txt</div>
+      <p id="secretMessageText">Bạn vừa mở khóa easter egg bí mật! Cảm ơn bạn đã dành thời gian khám phá thiệp mời
+        này thật kỹ — đúng chất một người làm kỹ thuật 😄. Hẹn gặp bạn tại lễ tốt nghiệp!</p>
+      <button onclick="closeSecretMessage()">Đóng cổng bí mật</button>
+    </div>
+  </div>
 
   <div class="control-panel">
     <div class="mode-switch-container" role="tablist" aria-label="Chuyển đổi giao diện thiệp mời">
@@ -1807,6 +2145,22 @@
           d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z" />
       </svg>
     </button>
+    <button class="trophy-toggle" id="trophyToggle" onclick="toggleAchvPanel()" aria-label="Xem thành tích"
+      title="Thành tích đã mở khóa">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.95V18H8v2h8v-2h-3v-2.11c1.63-.32 2.98-1.45 3.61-2.95C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
+      </svg>
+      <span class="trophy-badge-count" id="achvCount">0</span>
+    </button>
+  </div>
+
+  <div class="achv-panel" id="achvPanel">
+    <div class="achv-panel-title">
+      <span>🏆 Thành tích</span>
+      <span id="achvProgress">0/5</span>
+    </div>
+    <div id="achvList"></div>
   </div>
 
   <div class="app-container" id="appContainer">
@@ -1840,7 +2194,7 @@
                 <span class="sys-item">🔒 SECURE SSL</span>
               </div>
 
-              <span class="eyebrow"><span class="dot"></span>Graduation 2026</span>
+              <span class="eyebrow" id="secretTapZone"><span class="dot"></span>Graduation 2026</span>
               <h1 class="headline" id="gradName" data-text="Trần Bảo Duy">Trần Bảo Duy</h1>
 
               <p class="subhead">
@@ -1942,6 +2296,8 @@
 
             <div class="content" style="padding-top: 0; padding-bottom: 1.2rem;">
               <p class="sign-off">// Với tất cả sự trân trọng, hẹn gặp bạn tại buổi lễ.<br>— Trần Bảo Duy</p>
+              <p class="konami-hint">// gợi ý: có một cổng bí mật ẩn trong hệ thống — chạm đúng nơi liên tiếp, hoặc gõ
+                đúng mã, sẽ mở ra 👀</p>
             </div>
 
             <div class="perforation">
@@ -2069,7 +2425,9 @@
         audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
         showToast("🔈 Đã bật âm thanh");
         playBeep(800, 0.1, 'sine');
+        startAmbientPad();
       } else {
+        stopAmbientPad();
         audioIcon.innerHTML = `<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/>`;
         showToast("🔇 Đã tắt âm thanh");
       }
@@ -2099,14 +2457,262 @@
       }
     }
 
-    function showToast(message) {
+    function showToast(message, isAchv = false) {
       const toast = document.getElementById('toast');
       document.getElementById('toastMessage').innerText = message;
+      toast.classList.toggle('achv', !!isAchv);
       toast.classList.add('show');
-      setTimeout(() => {
+      clearTimeout(toast._hideTimer);
+      toast._hideTimer = setTimeout(() => {
         toast.classList.remove('show');
-      }, 3000);
+      }, 3200);
     }
+
+    /* ============ ACHIEVEMENT SYSTEM ============ */
+    const ACHIEVEMENTS = [
+      { id: 'opened', icon: '🎬', t: 'Đã mở thiệp', d: 'Chào mừng bạn đến với hệ thống' },
+      { id: 'glitch', icon: '⚡', t: 'Chạm vào tên', d: 'Kích hoạt hiệu ứng glitch trên tiêu đề' },
+      { id: 'ide', icon: '👨‍💻', t: 'Developer Mode', d: 'Mở giao diện IDE' },
+      { id: 'action', icon: '🗺️', t: 'Chuẩn bị lên đường', d: 'Thêm lịch hoặc mở bản đồ' },
+      { id: 'rsvp', icon: '✅', t: 'Xác nhận tham dự', d: 'Hoàn tất RSVP qua terminal' },
+      { id: 'hacker', icon: '🕵️', t: 'Tìm ra cổng bí mật', d: 'Nhập đúng mã Konami huyền thoại' },
+    ];
+    const unlockedAchv = new Set();
+
+    function unlockAchievement(id) {
+      if (unlockedAchv.has(id)) return;
+      const a = ACHIEVEMENTS.find(x => x.id === id);
+      if (!a) return;
+      unlockedAchv.add(id);
+      renderAchvPanel();
+      playBeep(1046, 0.09, 'triangle');
+      setTimeout(() => playBeep(1568, 0.12, 'triangle'), 90);
+      showToast(`🏆 Thành tích mới: ${a.t}`, true);
+    }
+
+    function renderAchvPanel() {
+      const list = document.getElementById('achvList');
+      const count = document.getElementById('achvCount');
+      const progress = document.getElementById('achvProgress');
+      if (!list) return;
+      list.innerHTML = ACHIEVEMENTS.map(a => {
+        const on = unlockedAchv.has(a.id);
+        return `<div class="achv-item ${on ? 'unlocked' : ''}">
+          <div class="achv-icon">${on ? a.icon : '🔒'}</div>
+          <div class="achv-text">
+            <span class="t">${on ? a.t : '???'}</span>
+            <span class="d">${on ? a.d : 'Chưa mở khóa'}</span>
+          </div>
+        </div>`;
+      }).join('');
+      count.textContent = unlockedAchv.size;
+      progress.textContent = `${unlockedAchv.size}/${ACHIEVEMENTS.length}`;
+    }
+
+    function toggleAchvPanel() {
+      const panel = document.getElementById('achvPanel');
+      playBeep(900, 0.05, 'triangle');
+      panel.classList.toggle('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('achvPanel');
+      const btn = document.getElementById('trophyToggle');
+      if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+        panel.classList.remove('open');
+      }
+    });
+
+    /* ============ KONAMI CODE EASTER EGG ============ */
+    const KONAMI_SEQUENCE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiBuffer = [];
+    let hackerModeActive = false;
+
+    function handleKonamiKey(e) {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      konamiBuffer.push(key);
+      if (konamiBuffer.length > KONAMI_SEQUENCE.length) konamiBuffer.shift();
+      if (konamiBuffer.join(',') === KONAMI_SEQUENCE.join(',')) {
+        triggerHackerMode();
+        konamiBuffer = [];
+      }
+    }
+
+    function triggerHackerMode() {
+      if (hackerModeActive) return;
+      hackerModeActive = true;
+      unlockAchievement('hacker');
+
+      const flash = document.getElementById('screenFlash');
+      const banner = document.getElementById('hackerBanner');
+      flash.classList.add('fire');
+      setTimeout(() => flash.classList.remove('fire'), 520);
+
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.body.classList.add('hacker-shake');
+        setTimeout(() => document.body.classList.remove('hacker-shake'), 900);
+      }
+
+      banner.classList.add('show');
+      startMatrixRain();
+      playHackerSweep();
+      fireConfetti();
+
+      setTimeout(() => {
+        banner.classList.remove('show');
+      }, 2600);
+
+      setTimeout(() => {
+        document.getElementById('secretMessage').classList.add('show');
+      }, 1400);
+
+      setTimeout(() => {
+        stopMatrixRain();
+        hackerModeActive = false;
+      }, 6000);
+    }
+
+    function closeSecretMessage() {
+      document.getElementById('secretMessage').classList.remove('show');
+      playBeep(700, 0.08, 'sine');
+    }
+
+    function playHackerSweep() {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(1800, now + 0.9);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
+        osc.start(now);
+        osc.stop(now + 1.0);
+      } catch (e) { /* ignore */ }
+    }
+
+    /* ============ MATRIX RAIN ============ */
+    const matrixCanvas = document.getElementById('matrixCanvas');
+    const matrixCtx = matrixCanvas.getContext('2d');
+    let matrixCols = [];
+    let matrixRAF = null;
+
+    function setupMatrixCols() {
+      matrixCanvas.width = window.innerWidth;
+      matrixCanvas.height = window.innerHeight;
+      const fontSize = 16;
+      const numCols = Math.floor(matrixCanvas.width / fontSize);
+      matrixCols = Array.from({ length: numCols }, () => Math.random() * -50);
+    }
+    setupMatrixCols();
+    window.addEventListener('resize', setupMatrixCols);
+
+    function drawMatrixFrame() {
+      const fontSize = 16;
+      matrixCtx.fillStyle = 'rgba(3, 7, 17, 0.14)';
+      matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+      matrixCtx.font = fontSize + 'px "JetBrains Mono", monospace';
+      const chars = '01アイウエオカキクケコTRANDUYIT2026';
+      for (let i = 0; i < matrixCols.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * fontSize;
+        const y = matrixCols[i] * fontSize;
+        matrixCtx.fillStyle = Math.random() > 0.94 ? '#ffffff' : '#22d3ee';
+        matrixCtx.fillText(text, x, y);
+        matrixCols[i] += 0.9;
+        if (y > matrixCanvas.height && Math.random() > 0.975) {
+          matrixCols[i] = 0;
+        }
+      }
+      matrixRAF = requestAnimationFrame(drawMatrixFrame);
+    }
+
+    function startMatrixRain() {
+      setupMatrixCols();
+      matrixCanvas.classList.add('active');
+      if (!matrixRAF) drawMatrixFrame();
+    }
+
+    function stopMatrixRain() {
+      matrixCanvas.classList.remove('active');
+      setTimeout(() => {
+        if (matrixRAF) {
+          cancelAnimationFrame(matrixRAF);
+          matrixRAF = null;
+          matrixCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        }
+      }, 650);
+    }
+
+    /* ============ AMBIENT PAD (plays only while sound is enabled) ============ */
+    let ambientNodes = null;
+    function startAmbientPad() {
+      if (ambientNodes || !soundEnabled) return;
+      try {
+        initAudio();
+        const master = audioCtx.createGain();
+        master.gain.value = 0.012;
+        master.connect(audioCtx.destination);
+        const freqs = [110, 165, 220];
+        const oscs = freqs.map((f, i) => {
+          const osc = audioCtx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.value = f;
+          const lfo = audioCtx.createOscillator();
+          const lfoGain = audioCtx.createGain();
+          lfo.frequency.value = 0.08 + i * 0.03;
+          lfoGain.gain.value = 3;
+          lfo.connect(lfoGain);
+          lfoGain.connect(osc.frequency);
+          osc.connect(master);
+          osc.start();
+          lfo.start();
+          return { osc, lfo };
+        });
+        ambientNodes = { master, oscs };
+      } catch (e) { /* ignore */ }
+    }
+    function stopAmbientPad() {
+      if (!ambientNodes) return;
+      try {
+        ambientNodes.oscs.forEach(({ osc, lfo }) => {
+          osc.stop();
+          lfo.stop();
+        });
+        ambientNodes.master.disconnect();
+      } catch (e) { /* ignore */ }
+      ambientNodes = null;
+    }
+
+    window.addEventListener('keydown', handleKonamiKey);
+
+    /* ============ MOBILE TRIGGER: tap the "Graduation 2026" badge 5x fast ============ */
+    (function initSecretTapZone() {
+      const zone = document.getElementById('secretTapZone');
+      if (!zone) return;
+      let tapCount = 0;
+      let tapTimer = null;
+      zone.addEventListener('click', () => {
+        tapCount++;
+        playBeep(480 + tapCount * 110, 0.045, 'triangle');
+        if (tapCount >= 3 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          zone.style.transition = 'transform 0.15s ease';
+          zone.style.transform = 'scale(1.12)';
+          setTimeout(() => { zone.style.transform = 'scale(1)'; }, 150);
+        }
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => { tapCount = 0; }, 1800);
+        if (tapCount >= 5) {
+          tapCount = 0;
+          triggerHackerMode();
+        }
+      });
+    })();
 
     // 3D Card Tilt Effect + mouse-follow glare
     const cardWrap = document.getElementById('cardWrap');
@@ -2218,6 +2824,7 @@
         btnVisual.setAttribute('aria-selected', 'false');
         btnCode.classList.add('active');
         btnCode.setAttribute('aria-selected', 'true');
+        unlockAchievement('ide');
       } else {
         container.classList.remove('show-code-mode');
         btnVisual.classList.add('active');
@@ -2362,6 +2969,7 @@
             loadJSONCode();
             showToast(`✅ Đã xác nhận: ${guestName}`);
             fireConfetti();
+            unlockAchievement('rsvp');
           } else {
             playBeep(600 + idx * 80, 0.05, 'triangle');
           }
@@ -2466,12 +3074,14 @@
       document.body.removeChild(link);
 
       showToast("📅 File lịch (.ics) đã được tải xuống");
+      unlockAchievement('action');
     }
 
     function openMap() {
       playBeep(700, 0.1, 'sine');
       runButtonSequence('btnMap', 'btnMapContent', '', 'Bản Đồ Chỉ Đường');
       window.open("https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao", "_blank");
+      unlockAchievement('action');
     }
 
     // Text decrypt effect on load
@@ -2601,11 +3211,31 @@
       }, 380);
     }
     if (gradNameEl) {
-      gradNameEl.addEventListener('mouseenter', triggerHeadlineGlitch);
-      gradNameEl.addEventListener('click', triggerHeadlineGlitch);
+      gradNameEl.addEventListener('mouseenter', () => { triggerHeadlineGlitch(); unlockAchievement('glitch'); });
+      gradNameEl.addEventListener('click', () => { triggerHeadlineGlitch(); unlockAchievement('glitch'); });
       // one unprompted burst shortly after load so people notice it's interactive
       setTimeout(triggerHeadlineGlitch, 3200);
     }
+
+    // Parallax depth — ambient background layers drift opposite to the cursor
+    (function initParallax() {
+      if (reduceMotion) return;
+      let px = 0, py = 0, tx = 0, ty = 0;
+      window.addEventListener('mousemove', (e) => {
+        tx = (e.clientX / window.innerWidth - 0.5) * 2;
+        ty = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+      function animateParallax() {
+        px += (tx - px) * 0.05;
+        py += (ty - py) * 0.05;
+        const grid = document.getElementById('gridCanvas');
+        const part = document.getElementById('particleCanvas');
+        if (grid) grid.style.transform = `translate(${px * -6}px, ${py * -6}px)`;
+        if (part) part.style.transform = `translate(${px * -12}px, ${py * -12}px)`;
+        requestAnimationFrame(animateParallax);
+      }
+      animateParallax();
+    })();
 
     // Live "visitors watching" counter — gentle randomized ticking, feels alive
     function startGuestCounter() {
@@ -2663,6 +3293,8 @@
       initMagnetic();
       runBootSequence();
       startGuestCounter();
+      renderAchvPanel();
+      setTimeout(() => unlockAchievement('opened'), 2200);
 
       const nameEl = document.getElementById('gradName');
       const originalName = nameEl.innerText;
