@@ -375,6 +375,94 @@
       border-top: none;
     }
 
+    /* Corner sash: short, visible, never blocks content */
+    .corner-sash {
+      position: absolute;
+      top: 18px;
+      right: -58px;
+      z-index: 11;
+      transform: rotate(32deg);
+      width: 230px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.18), rgba(52, 211, 153, 0.12));
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.26);
+      box-shadow: var(--neon-glow);
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .corner-sash::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.12) 50%, transparent 58%);
+      transform: translateX(-160%);
+      animation: cornerSashShine 6.4s ease-in-out infinite;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    @keyframes cornerSashShine {
+      0%,
+      62% {
+        transform: translateX(-160%);
+      }
+
+      100% {
+        transform: translateX(160%);
+      }
+    }
+
+    .corner-sash .line {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .corner-sash .school {
+      font-size: 0.64rem;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .corner-sash .faculty {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .corner-sash .sep {
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.75);
+      margin: 0 -2px;
+    }
+
+    @media (max-width: 420px) {
+      .corner-sash {
+        top: 16px;
+        right: -70px;
+        width: 210px;
+        padding: 8px 10px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .corner-sash::after {
+        animation: none;
+      }
+    }
+
     .grid-bg {
       position: absolute;
       inset: 0;
@@ -1734,6 +1822,14 @@
             <div class="hud-corner bottom-left"></div>
             <div class="hud-corner bottom-right"></div>
 
+            <div class="corner-sash" aria-hidden="true">
+              <div class="line">
+                <span class="school">HUTECH</span>
+                <span class="sep">•</span>
+                <span class="faculty">KHOA CNTT</span>
+              </div>
+            </div>
+
             <div class="grid-bg"></div>
             <div class="glow"></div>
 
@@ -1771,7 +1867,7 @@
               <div class="tag-row">
                 <span class="tag-pill">Kính mời</span>
                 <span class="tag-pill">Lễ tốt nghiệp</span>
-                <span class="tag-pill">HUTECH</span>
+                <span class="tag-pill">IT_HUTECH</span>
               </div>
 
               <div class="formal-note">
