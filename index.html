@@ -2116,8 +2116,9 @@
   <div class="secret-message" id="secretMessage" role="dialog" aria-modal="true" aria-label="Lời nhắn bí mật">
     <div class="secret-card">
       <div class="tag">// decrypted_message.txt</div>
-      <p id="secretMessageText">Bạn vừa mở khóa easter egg bí mật! Cảm ơn bạn đã dành thời gian khám phá thiệp mời
-        này thật kỹ — đúng chất một người làm kỹ thuật 😄. Hẹn gặp bạn tại lễ tốt nghiệp!</p>
+      <p id="secretMessageText">🎉 Bạn đã mở khóa Easter Egg bí mật! Đúng chất dân IT: luôn tò mò, thích khám phá và
+        không ngại tìm hiểu đến tận cùng. Cảm ơn bạn đã dành thời gian với tấm thiệp này. Hẹn gặp bạn tại lễ tốt
+        nghiệp! 🎓✨</p>
       <button onclick="closeSecretMessage()">Đóng cổng bí mật</button>
     </div>
   </div>
@@ -2198,7 +2199,6 @@
               <h1 class="headline" id="gradName" data-text="Trần Bảo Duy">Trần Bảo Duy</h1>
 
               <p class="subhead">
-                <span>Chính thức hoàn thành chương trình đại học</span>
                 <span class="subhead-code">&lt;Software_Engineer v1.0.0/&gt;</span>
               </p>
 
@@ -2244,7 +2244,7 @@
                     </svg>
                     Thời gian
                   </div>
-                  <div class="value">07:30 • Thứ Năm, 29/10/2026</div>
+                  <div class="value">Tháng 10/2026</div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
@@ -2273,15 +2273,6 @@
 
             <div class="content" style="padding-top: 0;">
               <div class="button-group">
-                <button class="action-btn" id="btnCalendar" onclick="exportCalendar()">
-                  <span class="btn-content" id="btnCalendarContent">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                      <path
-                        d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm-5-8h-2v2h2v-2zm-4 0H8v2h2v-2zm8 0h-2v2h2v-2zm-4 4h-2v2h2v-2zm-4 0H8v2h2v-2z" />
-                    </svg>
-                    Thêm vào Lịch
-                  </span>
-                </button>
                 <button class="action-btn" id="btnMap" onclick="openMap()">
                   <span class="btn-content" id="btnMapContent">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -2700,14 +2691,14 @@
       zone.addEventListener('click', () => {
         tapCount++;
         playBeep(480 + tapCount * 110, 0.045, 'triangle');
-        if (tapCount >= 3 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (tapCount >= 2 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           zone.style.transition = 'transform 0.15s ease';
           zone.style.transform = 'scale(1.12)';
           setTimeout(() => { zone.style.transform = 'scale(1)'; }, 150);
         }
         clearTimeout(tapTimer);
         tapTimer = setTimeout(() => { tapCount = 0; }, 1800);
-        if (tapCount >= 5) {
+        if (tapCount >= 3) {
           tapCount = 0;
           triggerHackerMode();
         }
@@ -2847,25 +2838,12 @@
         "specialization": "Software Engineering",
         "university": "HUTECH University"
       },
-      "schedule": {
-        "date": "2026-10-29",
-        "time": "07:30 (GMT+7)",
-        "timezone": "Asia/Ho_Chi_Minh",
-        "agenda": [
-          { "time": "07:00", "item": "Check-in" },
-          { "time": "07:30", "item": "Opening ceremony" },
-          { "time": "08:15", "item": "Diploma presentation" },
-          { "time": "09:30", "item": "Photo session" },
-          { "time": "10:30", "item": "Reception" }
-        ]
-      },
       "venue": {
         "campus": "Thủ Đức Campus",
         "zone": "Saigon Hi-Tech Park (SHTP)",
         "city": "Ho Chi Minh City, Vietnam"
       },
       "dress_code": "Business casual",
-      "rsvp_deadline": "2026-10-20",
       "contact": "0329810650",
       "ticket": "IT26-0001",
       "rsvp_status": "PENDING"
@@ -3045,38 +3023,6 @@
       }
       requestAnimationFrame(step);
     }
-    function exportCalendar() {
-      playBeep(700, 0.1, 'sine');
-      runButtonSequence('btnCalendar', 'btnCalendarContent', '', 'Thêm vào Lịch');
-
-      const icsContent = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//Graduation Invitation//NONSGML v1.0//EN",
-        "BEGIN:VEVENT",
-        "UID:" + new Date().getTime() + "@duytran.it",
-        "DTSTAMP:20260701T000000Z",
-        "DTSTART;TZID=Asia/Ho_Chi_Minh:20261029T073000",
-        "DTEND;TZID=Asia/Ho_Chi_Minh:20261029T113000",
-        "SUMMARY:Lễ Tốt nghiệp Kỹ sư IT — Trần Bảo Duy",
-        "DESCRIPTION:Trân trọng kính mời bạn đến tham dự Lễ Tốt nghiệp của Trần Bảo Duy tại Trường Đại học HUTECH.",
-        "LOCATION:Cơ sở Thủ Đức — Khu Công nghệ cao TP.HCM, Việt Nam",
-        "END:VEVENT",
-        "END:VCALENDAR"
-      ].join("\r\n");
-
-      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "LeTotNghiep_BaoDuy.ics";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      showToast("📅 File lịch (.ics) đã được tải xuống");
-      unlockAchievement('action');
-    }
-
     function openMap() {
       playBeep(700, 0.1, 'sine');
       runButtonSequence('btnMap', 'btnMapContent', '', 'Bản Đồ Chỉ Đường');
