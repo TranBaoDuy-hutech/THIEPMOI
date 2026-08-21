@@ -104,7 +104,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabase = window.supabase
+    const supabaseClient = window.supabase
       ? window.supabase.createClient(
         'https://yxeatkqsikzitxqqdfvc.supabase.co',
         'sb_publishable_PrBvWZ44-iPDPAp9yu0n2A_JrQSX4to'
@@ -118,7 +118,7 @@
       const loginView = document.getElementById('loginView');
       const adminView = document.getElementById('adminView');
 
-      if (!supabase) {
+      if (!supabaseClient) {
         loginStatus.textContent = 'Không tải được Supabase. Hãy tải lại trang hoặc kiểm tra mạng.';
         return;
       }
@@ -129,7 +129,7 @@
       }
 
       loginStatus.textContent = 'Đang đăng nhập...';
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (!error) {
         loginView.classList.add('hidden');
         adminView.classList.remove('hidden');
@@ -144,7 +144,7 @@
       const body = document.getElementById('guestTableBody');
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('guests')
           .select('*')
           .order('created_at', { ascending: true });
@@ -175,7 +175,7 @@
     }
 
     async function exportGuests() {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('guests')
         .select('name, status, created_at')
         .order('created_at', { ascending: true });
