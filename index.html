@@ -2525,9 +2525,9 @@
           throw new Error('Supabase chưa được cấu hình.');
         }
 
-        const saved = await window.GuestDB.saveGuest(cleanName);
-        if (!saved) {
-          throw new Error('Supabase không nhận dữ liệu. Kiểm tra bảng guests và RLS policy.');
+        const result = await window.GuestDB.saveGuest(cleanName);
+        if (!result.ok) {
+          throw new Error(result.error || 'Supabase không nhận dữ liệu.');
         }
 
         localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
@@ -3081,7 +3081,7 @@
         { text: `$ git commit -m "feat(rsvp): confirm attendance for ${guestName}"`, color: 'var(--text-primary)' },
         { text: `[main ${Math.random().toString(16).substring(2, 8)}] 1 guest added, 0 conflicts`, color: 'var(--text-light)' },
         { text: `$ git tag ticket/IT26-${String(Math.floor(Math.random() * 90) + 10).padStart(4, '0')}`, color: 'var(--text-light)' },
-        { text: `[SUCCESS] Đã xác nhận tham dự — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`, color: 'var(--accent-green)' }
+        { text: `[WAITING] Đang lưu tên vào database...`, color: 'var(--text-light)' }
       ];
 
       steps.forEach((step, idx) => {
@@ -3099,9 +3099,22 @@
             invitationJSON.rsvp_status = "CONFIRMED";
             loadJSONCode();
             if (saved) {
+              const successLine = document.createElement('div');
+              successLine.className = 'terminal-line';
+              successLine.style.color = 'var(--accent-green)';
+              successLine.innerText = `[SUCCESS] Đã lưu database — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`;
+              terminalBody.appendChild(successLine);
+              terminalBody.scrollTop = terminalBody.scrollHeight;
               showToast(`✅ Đã lưu vào database: ${guestName}`);
               fireConfetti();
               unlockAchievement('rsvp');
+            } else {
+              const failureLine = document.createElement('div');
+              failureLine.className = 'terminal-line';
+              failureLine.style.color = '#fca5a5';
+              failureLine.innerText = '[ERROR] Chưa lưu được vào database. Kiểm tra thông báo bên dưới.';
+              terminalBody.appendChild(failureLine);
+              terminalBody.scrollTop = terminalBody.scrollHeight;
             }
           } else {
             playBeep(600 + idx * 80, 0.05, 'triangle');

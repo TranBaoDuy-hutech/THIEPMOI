@@ -27,10 +27,10 @@
     },
 
     async saveGuest(name) {
-      if (!this.client) return false;
+      if (!this.client) return { ok: false, error: 'Supabase chưa được cấu hình.' };
 
       const trimmed = String(name || '').trim();
-      if (!trimmed) return false;
+      if (!trimmed) return { ok: false, error: 'Tên khách đang trống.' };
 
       const { error } = await this.client.from(CONFIG.tableName).insert([
         { name: trimmed, status: 'confirmed' }
@@ -38,10 +38,10 @@
 
       if (error) {
         console.warn('Supabase insert failed:', error);
-        return false;
+        return { ok: false, error: error.message };
       }
 
-      return true;
+      return { ok: true };
     },
 
     async getGuests() {
