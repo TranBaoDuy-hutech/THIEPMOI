@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Danh Sách Khách Dự</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b1220;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .status {
+      margin: 12px 0 20px;
+      color: #93c5fd;
+    }
+    .login-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 360px;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border-bottom: 1px solid #334155;
+      padding: 10px 8px;
+      text-align: left;
+    }
+    th {
+      color: #a5f3fc;
+    }
+    .empty {
+      color: #94a3b8;
+      padding: 12px 0;
+    }
+    button {
+      background: #22c55e;
+      color: #052e16;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginView">
+    <h1>Admin Login</h1>
+    <div class="login-box">
+      <input type="email" id="adminEmail" placeholder="Email admin" autocomplete="email" />
+      <input type="password" id="adminPassword" placeholder="Mật khẩu Supabase" autocomplete="current-password" />
+      <button type="button" onclick="signInAdmin()">Đăng nhập</button>
+      <div class="status" id="loginStatus">Chỉ tài khoản admin mới xem được danh sách.</div>
+    </div>
+  </div>
+
+  <div class="container hidden" id="adminView">
+    <h1>Admin - Danh Sách Khách Dự</h1>
+    <div class="status" id="status">Đang kết nối dữ liệu...</div>
+    <button type="button" onclick="loadGuests()">Tải lại danh sách</button>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Tên khách</th>
+          <th>Trạng thái</th>
+          <th>Thời gian</th>
+        </tr>
+      </thead>
+      <tbody id="guestTableBody"></tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://yxeatkqsikzitxqqdfvc.supabase.co',
+      'sb_publishable_PrBvWZ44-iPDPAp9yu0n2A_JrQSX4to'
+    );
+
+    async function signInAdmin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const loginStatus = document.getElementById('loginStatus');
+      const loginView = document.getElementById('loginView');
+      const adminView = document.getElementById('adminView');
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (!error) {
+        loginView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        loadGuests();
+      } else {
+        loginStatus.textContent = 'Đăng nhập thất bại. Kiểm tra email và mật khẩu.';
+      }
+    }
+
+    async function loadGuests() {
+      const status = document.getElementById('status');
+      const body = document.getElementById('guestTableBody');
+
+      try {
+        const { data, error } = await supabase
+          .from('guests')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        if (!data || !data.length) {
+          body.innerHTML = '<tr><td colspan="4" class="empty">Chưa có khách nào được lưu.</td></tr>';
+          status.textContent = 'Không có dữ liệu';
+          return;
+        }
+
+        body.innerHTML = data.map((guest, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${guest.name}</td>
+            <td>${guest.status || 'confirmed'}</td>
+            <td>${new Date(guest.created_at).toLocaleString('vi-VN')}</td>
+          </tr>
+        `).join('');
+
+        status.textContent = `Đã tải ${data.length} khách`;
+      } catch (err) {
+        console.error(err);
+        status.textContent = 'Lỗi kết nối database. Kiểm tra Supabase URL và key.';
+        body.innerHTML = '<tr><td colspan="4" class="empty">Lỗi tải dữ liệu.</td></tr>';
+      }
+    }
+  </script>
+</body>
+</html>
