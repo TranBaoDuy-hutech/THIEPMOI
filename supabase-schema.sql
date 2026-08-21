@@ -18,3 +18,9 @@ on public.guests
 for select
 to authenticated
 using (true);
+
+create policy "Authenticated admins can delete guests"
+on public.guests
+for delete
+to authenticated
+using (true);

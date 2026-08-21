@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Danh Sách Khách Dự</title>
+  <title>Admin - Danh Sách Khách Dự - v3</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -67,6 +67,12 @@
       cursor: pointer;
       font-weight: 700;
     }
+    .delete-button {
+      background: #ef4444;
+      color: #fff;
+      padding: 6px 9px;
+      font-size: 0.8rem;
+    }
     .hidden {
       display: none;
     }
@@ -85,7 +91,7 @@
   </div>
 
   <div class="container hidden" id="adminView">
-    <h1>Admin - Danh Sách Khách Dự</h1>
+    <h1>Admin - Danh Sách Khách Dự <small style="font-size: 0.45em; color: #93c5fd;">v3</small></h1>
     <div class="status" id="status">Đang kết nối dữ liệu...</div>
     <button type="button" onclick="loadGuests()">Tải lại danh sách</button>
     <button type="button" onclick="exportGuests()">Xuất file</button>
@@ -96,6 +102,7 @@
           <th>Tên khách</th>
           <th>Trạng thái</th>
           <th>Thời gian</th>
+          <th>Thao tác</th>
         </tr>
       </thead>
       <tbody id="guestTableBody"></tbody>
@@ -162,7 +169,7 @@
         if (error) throw error;
 
         if (!data || !data.length) {
-          body.innerHTML = '<tr><td colspan="4" class="empty">Chưa có khách nào được lưu.</td></tr>';
+          body.innerHTML = '<tr><td colspan="5" class="empty">Chưa có khách nào được lưu.</td></tr>';
           status.textContent = `Đã đăng nhập ${user.email}, nhưng database đang rỗng`;
           return;
         }
@@ -173,6 +180,7 @@
             <td>${guest.name}</td>
             <td>${guest.status || 'confirmed'}</td>
             <td>${new Date(guest.created_at).toLocaleString('vi-VN')}</td>
+            <td><button class="delete-button" type="button" onclick="deleteGuest('${guest.id}')">Xóa</button></td>
           </tr>
         `).join('');
 
@@ -180,7 +188,7 @@
       } catch (err) {
         console.error(err);
         status.textContent = `Không đọc được database: ${err.message}`;
-        body.innerHTML = '<tr><td colspan="4" class="empty">Lỗi tải dữ liệu.</td></tr>';
+        body.innerHTML = '<tr><td colspan="5" class="empty">Lỗi tải dữ liệu.</td></tr>';
       }
     }
 
@@ -224,6 +232,23 @@
       anchor.click();
       URL.revokeObjectURL(url);
       document.getElementById('status').textContent = `Đã xuất ${data.length} khách ra file CSV`;
+    }
+
+    async function deleteGuest(id) {
+      if (!window.confirm('Bạn có chắc muốn xóa khách này không?')) return;
+
+      const { error } = await supabaseClient
+        .from('guests')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        document.getElementById('status').textContent = `Xóa thất bại: ${error.message}`;
+        return;
+      }
+
+      document.getElementById('status').textContent = 'Đã xóa khách khỏi database.';
+      loadGuests();
     }
   </script>
 </body>
