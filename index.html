@@ -2479,18 +2479,6 @@
           autocomplete="off" aria-label="Tên khách mời" onkeydown="handleTerminalKey(event)">
         <button class="terminal-btn" onclick="submitRSVP()">Confirm</button>
       </div>
-
-      <div class="guest-manager" id="guestManager">
-        <div class="guest-manager-header">
-          <span class="terminal-prompt">Guest List</span>
-          <span class="guest-count" id="guestCount">0 khách</span>
-        </div>
-        <div class="guest-manager-list" id="guestList"></div>
-        <div class="guest-manager-actions">
-          <button class="guest-action-btn" type="button" onclick="exportRSVPFile()">Xuất file</button>
-          <button class="guest-action-btn secondary" type="button" onclick="clearGuestList()">Xóa danh sách</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -2530,45 +2518,6 @@
       }
     }
 
-    function renderGuestList() {
-      const guestList = document.getElementById('guestList');
-      const guestCount = document.getElementById('guestCount');
-      if (!guestList || !guestCount) return;
-
-      const list = getSavedRSVPList();
-      guestList.innerHTML = '';
-
-      if (!list.length) {
-        const empty = document.createElement('div');
-        empty.className = 'guest-empty';
-        empty.textContent = 'Chưa có khách nào được xác nhận.';
-        guestList.appendChild(empty);
-        guestCount.textContent = '0 khách';
-        return;
-      }
-
-      list.forEach((name, index) => {
-        const item = document.createElement('div');
-        item.className = 'guest-item';
-
-        const info = document.createElement('span');
-        info.textContent = `${index + 1}. ${name}`;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'guest-remove-btn';
-        removeBtn.textContent = '×';
-        removeBtn.title = 'Xóa khách này';
-        removeBtn.addEventListener('click', () => removeGuest(name));
-
-        item.appendChild(info);
-        item.appendChild(removeBtn);
-        guestList.appendChild(item);
-      });
-
-      guestCount.textContent = `${list.length} khách`;
-    }
-
     async function saveRSVPName(name) {
       try {
         const cleanName = name.trim();
@@ -2588,68 +2537,12 @@
           }
         }
 
-        renderGuestList();
       } catch (error) {
         console.warn('Không thể lưu dữ liệu RSVP:', error);
       }
     }
 
-    function removeGuest(name) {
-      const list = getSavedRSVPList().filter(item => item !== name);
-      localStorage.setItem(RSVP_LIST_KEY, JSON.stringify(list));
-      if (sessionRSVP === name) {
-        sessionRSVP = null;
-        localStorage.removeItem(RSVP_STORAGE_KEY);
-      }
-      renderGuestList();
-      showToast(`🗑️ Đã xóa: ${name}`);
-    }
-
-    function clearGuestList() {
-      const list = getSavedRSVPList();
-      if (!list.length) {
-        showToast('⚠️ Danh sách khách đang trống.');
-        return;
-      }
-
-      const confirmed = window.confirm('Bạn có chắc muốn xóa toàn bộ danh sách khách dự?');
-      if (!confirmed) return;
-
-      localStorage.removeItem(RSVP_LIST_KEY);
-      localStorage.removeItem(RSVP_STORAGE_KEY);
-      localStorage.removeItem(RSVP_STATUS_KEY);
-      sessionRSVP = null;
-      renderGuestList();
-      showToast('🧹 Đã xóa toàn bộ danh sách khách.');
-    }
-
-    function exportRSVPFile() {
-      try {
-        const list = getSavedRSVPList();
-        if (!list.length) {
-          showToast('⚠️ Chưa có tên nào được xác nhận để xuất file.');
-          return;
-        }
-
-        const content = list.map((name, idx) => `${idx + 1}. ${name}`).join('\n');
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = 'danh-sach-rsvp.txt';
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-        showToast(`📄 Đã xuất file quản lý: ${list.length} tên`);
-      } catch (error) {
-        console.warn('Không thể xuất file RSVP:', error);
-        showToast('❌ Xuất file thất bại.');
-      }
-    }
-
     sessionRSVP = getSavedRSVPName();
-    renderGuestList();
 
     // Sound system
     let soundEnabled = false;
@@ -3171,7 +3064,7 @@
         return;
       }
 
-      const isConfirmed = window.confirm(`Bạn xác nhận lưu tên "${guestName}" và xuất file quản lý?`);
+      const isConfirmed = window.confirm(`Bạn xác nhận gửi tên "${guestName}" để đăng ký tham dự?`);
       if (!isConfirmed) {
         playBeep(180, 0.2, 'triangle');
         showToast("❌ Bạn chưa xác nhận lưu tên.");
@@ -3203,7 +3096,6 @@
           if (idx === steps.length - 1) {
             playBeep(880, 0.3, 'sine');
             saveRSVPName(guestName);
-            exportRSVPFile();
             invitationJSON.rsvp_status = "CONFIRMED";
             loadJSONCode();
             showToast(`✅ Đã xác nhận và lưu: ${guestName}`);
