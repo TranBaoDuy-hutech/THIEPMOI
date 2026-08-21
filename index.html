@@ -2521,24 +2521,24 @@
     async function saveRSVPName(name) {
       try {
         const cleanName = name.trim();
-        const list = getSavedRSVPList();
-        if (!list.includes(cleanName)) {
-          list.push(cleanName);
-          localStorage.setItem(RSVP_LIST_KEY, JSON.stringify(list));
+        if (!window.GuestDB || !window.GuestDB.isConfigured()) {
+          throw new Error('Supabase chưa được cấu hình.');
         }
+
+        const saved = await window.GuestDB.saveGuest(cleanName);
+        if (!saved) {
+          throw new Error('Supabase không nhận dữ liệu. Kiểm tra bảng guests và RLS policy.');
+        }
+
         localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
         localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED');
         sessionRSVP = cleanName;
-
-        if (window.GuestDB && window.GuestDB.isConfigured()) {
-          const saved = await window.GuestDB.saveGuest(cleanName);
-          if (saved) {
-            console.log('Đã lưu tên khách vào database:', cleanName);
-          }
-        }
-
+        console.log('Đã lưu tên khách vào database:', cleanName);
+        return true;
       } catch (error) {
         console.warn('Không thể lưu dữ liệu RSVP:', error);
+        showToast(`❌ Chưa lưu được: ${error.message}`);
+        return false;
       }
     }
 
@@ -3085,7 +3085,7 @@
       ];
 
       steps.forEach((step, idx) => {
-        setTimeout(() => {
+        setTimeout(async () => {
           const div = document.createElement('div');
           div.className = 'terminal-line';
           div.style.color = step.color;
@@ -3095,12 +3095,14 @@
 
           if (idx === steps.length - 1) {
             playBeep(880, 0.3, 'sine');
-            saveRSVPName(guestName);
+            const saved = await saveRSVPName(guestName);
             invitationJSON.rsvp_status = "CONFIRMED";
             loadJSONCode();
-            showToast(`✅ Đã xác nhận và lưu: ${guestName}`);
-            fireConfetti();
-            unlockAchievement('rsvp');
+            if (saved) {
+              showToast(`✅ Đã lưu vào database: ${guestName}`);
+              fireConfetti();
+              unlockAchievement('rsvp');
+            }
           } else {
             playBeep(600 + idx * 80, 0.05, 'triangle');
           }
