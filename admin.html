@@ -111,6 +111,11 @@
       )
       : null;
 
+    function showAdminView() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('adminView').classList.remove('hidden');
+    }
+
     async function signInAdmin() {
       const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
@@ -131,8 +136,7 @@
       loginStatus.textContent = 'Đang đăng nhập...';
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (!error) {
-        loginView.classList.add('hidden');
-        adminView.classList.remove('hidden');
+        showAdminView();
         loadGuests();
       } else {
         loginStatus.textContent = `Đăng nhập thất bại: ${error.message}`;
@@ -144,6 +148,12 @@
       const body = document.getElementById('guestTableBody');
 
       try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const user = sessionData.session?.user;
+        if (!user) {
+          throw new Error('Phiên đăng nhập không còn hiệu lực. Hãy đăng nhập lại.');
+        }
+
         const { data, error } = await supabaseClient
           .from('guests')
           .select('*')
@@ -153,7 +163,7 @@
 
         if (!data || !data.length) {
           body.innerHTML = '<tr><td colspan="4" class="empty">Chưa có khách nào được lưu.</td></tr>';
-          status.textContent = 'Không có dữ liệu';
+          status.textContent = `Đã đăng nhập ${user.email}, nhưng database đang rỗng`;
           return;
         }
 
@@ -166,13 +176,22 @@
           </tr>
         `).join('');
 
-        status.textContent = `Đã tải ${data.length} khách`;
+        status.textContent = `Đã đăng nhập ${user.email} · Đã tải ${data.length} khách`;
       } catch (err) {
         console.error(err);
-        status.textContent = 'Lỗi kết nối database. Kiểm tra Supabase URL và key.';
+        status.textContent = `Không đọc được database: ${err.message}`;
         body.innerHTML = '<tr><td colspan="4" class="empty">Lỗi tải dữ liệu.</td></tr>';
       }
     }
+
+    (async function restoreAdminSession() {
+      if (!supabaseClient) return;
+      const { data } = await supabaseClient.auth.getSession();
+      if (data.session) {
+        showAdminView();
+        loadGuests();
+      }
+    })();
 
     async function exportGuests() {
       const { data, error } = await supabaseClient
