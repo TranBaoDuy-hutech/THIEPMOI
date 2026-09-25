@@ -222,12 +222,31 @@
       transition: all 0.3s;
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      position: relative;
     }
 
     .audio-toggle:hover {
       color: var(--accent-cyan);
       border-color: var(--accent-cyan);
       box-shadow: var(--neon-glow);
+    }
+
+    @keyframes audioPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(var(--accent-cyan-rgb), 0.55);
+      }
+
+      50% {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(var(--accent-cyan-rgb), 0);
+      }
+    }
+
+    .audio-toggle.pulse-hint {
+      animation: audioPulse 2.2s infinite ease-in-out;
+      border-color: rgba(var(--accent-cyan-rgb), 0.6);
+      color: var(--accent-cyan);
     }
 
     /* App Views */
@@ -241,14 +260,22 @@
     .view-wrapper {
       position: relative;
       width: 100%;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
     }
 
     .app-view {
       width: 100%;
       backface-visibility: hidden;
-      transition: opacity 0.5s ease-in-out;
+      -webkit-backface-visibility: hidden;
+      transition: opacity 0.35s ease-in-out;
+    }
+
+    .visual-view {
+      position: relative;
+      width: 100%;
+      z-index: 2;
+      transform: rotateY(0deg);
     }
 
     .code-view {
@@ -259,6 +286,7 @@
       transform: rotateY(180deg);
       opacity: 0;
       pointer-events: none;
+      z-index: 1;
     }
 
     .app-container.show-code-mode .view-wrapper {
@@ -268,12 +296,18 @@
     .app-container.show-code-mode .visual-view {
       opacity: 0;
       pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
     }
 
     .app-container.show-code-mode .code-view {
       opacity: 1;
       pointer-events: auto;
       position: relative;
+      transform: rotateY(180deg);
+      z-index: 2;
     }
 
     /* VISUAL MODE: Card Styling with a single disciplined signal sweep */
@@ -337,6 +371,157 @@
 
     .card-wrap:hover .card-glare {
       opacity: 1;
+    }
+
+    .card-wrap {
+      z-index: 2;
+    }
+
+    /* Soft pulsing aura glowing behind the card */
+    .card-aura {
+      position: absolute;
+      inset: -50px;
+      z-index: 1;
+      border-radius: 48px;
+      background: radial-gradient(ellipse at center, rgba(var(--accent-cyan-rgb), 0.16), rgba(52, 211, 153, 0.06) 45%, transparent 72%);
+      filter: blur(6px);
+      animation: auraPulse 4.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes auraPulse {
+
+      0%,
+      100% {
+        opacity: 0.55;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.045);
+      }
+    }
+
+    /* Sparkles + graduation cap gently orbiting the card */
+    .card-orbit {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .orbit-particle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 0.95rem;
+      line-height: 1;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 10px rgba(var(--accent-cyan-rgb), 0.85);
+      opacity: 0;
+      will-change: transform, opacity;
+      animation-name: orbitFloat;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes orbitFloat {
+      0% {
+        transform: rotate(0deg) translateX(var(--orbit-r, 230px)) rotate(0deg) scale(0.85);
+        opacity: 0;
+      }
+
+      6% {
+        opacity: 0.85;
+      }
+
+      50% {
+        opacity: 0.45;
+      }
+
+      94% {
+        opacity: 0.85;
+      }
+
+      100% {
+        transform: rotate(360deg) translateX(var(--orbit-r, 230px)) rotate(-360deg) scale(0.85);
+        opacity: 0;
+      }
+    }
+
+    .orbit-particle.p1 {
+      --orbit-r: 250px;
+      animation-duration: 16s;
+      animation-delay: -1s;
+    }
+
+    .orbit-particle.p2 {
+      --orbit-r: 210px;
+      animation-duration: 13s;
+      animation-delay: -6s;
+      animation-direction: reverse;
+      color: var(--accent-green);
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.85);
+      font-size: 0.8rem;
+    }
+
+    .orbit-particle.p3 {
+      --orbit-r: 270px;
+      animation-duration: 20s;
+      animation-delay: -11s;
+      font-size: 0.7rem;
+    }
+
+    .orbit-particle.p4 {
+      --orbit-r: 195px;
+      animation-duration: 11s;
+      animation-delay: -3s;
+      animation-direction: reverse;
+      color: var(--accent-green);
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.85);
+      font-size: 0.65rem;
+    }
+
+    .orbit-particle.p5 {
+      --orbit-r: 235px;
+      animation-duration: 22s;
+      animation-delay: -8s;
+      font-size: 1.15rem;
+      filter: drop-shadow(0 0 8px rgba(var(--accent-cyan-rgb), 0.6));
+    }
+
+    .orbit-particle.p6 {
+      --orbit-r: 155px;
+      animation-duration: 9s;
+      animation-delay: -4.5s;
+      font-size: 0.6rem;
+    }
+
+    @media (max-width: 480px) {
+      .orbit-particle.p1 {
+        --orbit-r: 190px;
+      }
+
+      .orbit-particle.p2 {
+        --orbit-r: 160px;
+      }
+
+      .orbit-particle.p3 {
+        --orbit-r: 205px;
+      }
+
+      .orbit-particle.p4 {
+        --orbit-r: 148px;
+      }
+
+      .orbit-particle.p5 {
+        --orbit-r: 178px;
+      }
+
+      .orbit-particle.p6 {
+        --orbit-r: 120px;
+      }
     }
 
     .hud-corner {
@@ -457,6 +642,23 @@
         right: -70px;
         width: 210px;
         padding: 8px 10px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .corner-sash {
+        top: 14px;
+        right: -78px;
+        width: 190px;
+        padding: 7px 9px;
+      }
+
+      .corner-sash .school {
+        font-size: 0.58rem;
+      }
+
+      .corner-sash .faculty {
+        font-size: 0.54rem;
       }
     }
 
@@ -1766,9 +1968,10 @@
       outline: none;
       color: var(--accent-green);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 16px;
+      /* Prevents auto-zoom on iOS Safari */
       flex: 1;
-      min-width: 120px;
+      min-width: 130px;
     }
 
     .terminal-input:focus-visible {
@@ -1779,23 +1982,53 @@
       background: var(--accent-green);
       border: none;
       color: #052018;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 6px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: bold;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .terminal-btn:hover {
       box-shadow: var(--neon-glow-green);
-      transform: scale(1.05);
+      transform: translateY(-1px);
+    }
+
+    .terminal-btn:active {
+      transform: translateY(0);
+    }
+
+    .terminal-btn.secondary {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-light);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .terminal-btn.secondary:hover {
+      background: rgba(148, 163, 184, 0.25);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(148, 163, 184, 0.2);
+    }
+
+    .location-chip {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .location-chip:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px rgba(var(--accent-cyan-rgb), 0.22);
+      transform: translateY(-1px);
     }
 
     .terminal-line {
-      word-break: break-all;
-      line-height: 1.45;
+      word-break: break-word;
+      line-height: 1.5;
     }
 
     /* Audio notification popup */
@@ -1847,12 +2080,24 @@
       .terminal-wrap,
       .ripple,
       .cursor-glow,
-      .card-glare {
+      .card-glare,
+      .card-aura,
+      .orbit-particle {
         animation: none;
         transition: none;
       }
 
+      .card-aura,
+      .card-orbit {
+        display: none;
+      }
+
       .app-container.show-code-mode .view-wrapper {
+        transform: none;
+      }
+
+      .code-view,
+      .app-container.show-code-mode .code-view {
         transform: none;
       }
     }
@@ -2234,8 +2479,8 @@
         Developer IDE
       </button>
     </div>
-    <button class="audio-toggle" id="audioToggle" onclick="toggleAudio()" aria-label="Bật/Tắt âm thanh"
-      title="Bật/Tắt âm thanh">
+    <button class="audio-toggle pulse-hint" id="audioToggle" onclick="toggleAudio()" aria-label="Bật/Tắt âm thanh"
+      title="Bật/Tắt âm thanh (Hiệu ứng Synth & Gõ phím)">
       <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
         <path
           d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z" />
@@ -2254,7 +2499,11 @@
   <div class="achv-panel" id="achvPanel">
     <div class="achv-panel-title">
       <span>🏆 Thành tích</span>
-      <span id="achvProgress">0/5</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span id="achvProgress">0/6</span>
+        <button onclick="toggleAchvPanel()" aria-label="Đóng bảng thành tích"
+          style="background:none; border:none; color:var(--text-light); cursor:pointer; font-size:0.9rem; padding:0 2px; line-height:1;">✕</button>
+      </div>
     </div>
     <div id="achvList"></div>
   </div>
@@ -2264,6 +2513,15 @@
 
       <!-- VISUAL CARD VIEW -->
       <div class="app-view visual-view" id="visualView">
+        <div class="card-aura" aria-hidden="true"></div>
+        <div class="card-orbit" aria-hidden="true">
+          <span class="orbit-particle p1">✦</span>
+          <span class="orbit-particle p2">✧</span>
+          <span class="orbit-particle p3">✦</span>
+          <span class="orbit-particle p4">✧</span>
+          <span class="orbit-particle p5">🎓</span>
+          <span class="orbit-particle p6">✧</span>
+        </div>
         <div class="card-wrap" id="cardWrap">
           <div class="card">
             <div class="card-glare"></div>
@@ -2286,7 +2544,6 @@
             <div class="content">
               <div class="sys-bar">
                 <span class="sys-item"><span class="sys-dot online"></span>SYS: ONLINE</span>
-                <span class="sys-item live-counter">👁 <span id="guestCounter">128</span></span>
                 <span class="sys-item">🔒 SECURE SSL</span>
               </div>
 
@@ -2339,7 +2596,7 @@
                     </svg>
                     Thời gian
                   </div>
-                  <div class="value">Tháng 10/2026</div>
+                  <div class="value">08:00, Thứ Bảy<br>24/10/2026</div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
@@ -2353,13 +2610,16 @@
                 </div>
               </div>
 
-              <div class="info-chip" style="margin-bottom: 1.2rem;">
+              <div class="info-chip location-chip" onclick="copyLocation()" style="margin-bottom: 1.2rem;"
+                title="Chạm để sao chép địa chỉ">
                 <div class="label">
                   <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                   </svg>
-                  Địa điểm
+                  Địa điểm <span
+                    style="font-size: 0.65rem; color: var(--accent-cyan); margin-left: auto; letter-spacing: 0.04em;">[CHẠM
+                    ĐỂ CHÉP]</span>
                 </div>
                 <div class="value">Cơ sở Thủ Đức: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM
                 </div>
@@ -2375,6 +2635,15 @@
                         d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                     </svg>
                     Bản Đồ Chỉ Đường
+                  </span>
+                </button>
+                <button class="action-btn" id="btnCalendar" onclick="addToCalendar()">
+                  <span class="btn-content" id="btnCalContent">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z" />
+                    </svg>
+                    Lưu Vào Lịch
                   </span>
                 </button>
               </div>
@@ -2393,15 +2662,18 @@
             </div>
 
             <div class="stub">
-              <div class="qr-ring-wrap" style="display:flex; flex-direction:column; align-items:center;">
+              <div class="qr-ring-wrap" onclick="openMap()"
+                style="display:flex; flex-direction:column; align-items:center; cursor: pointer;"
+                title="Chạm để mở Google Maps" role="button" tabindex="0">
                 <div class="qr-pulse-ring"></div>
                 <div class="qr-container" id="qrCode">
                   <div class="scan-line"></div>
                 </div>
-                <span class="qr-caption">Quét để chỉ đường</span>
+                <span class="qr-caption">Quét hoặc chạm để chỉ đường ↗</span>
               </div>
-              <span class="status-line">SYSTEM_ACTIVE</span>
-              <span class="footer-code">TICKET #IT_22_26</span>
+              <span class="status-line" id="ticketStatusDisplay">SYSTEM_ACTIVE</span>
+              <span class="footer-code" id="ticketCodeDisplay" onclick="copyTicketCode()" style="cursor: pointer;"
+                title="Chạm để sao chép mã vé">TICKET #IT_22_26</span>
             </div>
           </div>
         </div>
@@ -2471,13 +2743,43 @@
     <div class="terminal-body" id="terminalBody">
       <div class="terminal-line"><span class="terminal-prompt">visitor@baoduy-grad:~$</span> ./rsvp_sync.sh</div>
       <div class="terminal-line" style="color: var(--text-light);">[INFO] Đang xác nhận danh sách khách mời...</div>
-      <div class="terminal-line" style="color: var(--accent-cyan);">[READY] Vui lòng nhập tên để xác nhận tham dự.
+      <div class="terminal-line" id="terminalStatusPrompt" style="color: var(--accent-cyan);">[READY] Vui lòng nhập tên
+        để xác nhận tham dự.</div>
+
+      <!-- In-Terminal Confirmation Box (replaces window.confirm) -->
+      <div id="terminalConfirmBox"
+        style="display: none; margin: 8px 0; padding: 10px 12px; background: rgba(34, 211, 238, 0.08); border: 1px solid rgba(var(--accent-cyan-rgb), 0.35); border-radius: 8px;">
+        <div class="terminal-line" style="color: var(--accent-cyan); margin-bottom: 8px;">
+          [XÁC NHẬN] Gửi đăng ký tham dự với tên: <strong id="confirmGuestNameText"
+            style="color: #ffffff; text-decoration: underline;"></strong>?
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="terminal-btn" id="btnTerminalYes" onclick="handleConfirmChoice(true)">✓ [Y] Xác nhận
+            gửi</button>
+          <button class="terminal-btn secondary" id="btnTerminalNo" onclick="handleConfirmChoice(false)">✗ [N] Nhập
+            lại</button>
+        </div>
       </div>
+
       <div class="terminal-input-row" id="terminalInputRow">
         <span class="terminal-prompt">Guest Name:</span>
         <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn và nhấn Enter..."
           autocomplete="off" aria-label="Tên khách mời" onkeydown="handleTerminalKey(event)">
-        <button class="terminal-btn" onclick="submitRSVP()">Confirm</button>
+        <button class="terminal-btn" id="btnTerminalSubmit" onclick="submitRSVP()">Confirm</button>
+      </div>
+
+      <!-- Returning Guest Panel -->
+      <div class="terminal-returning-guest" id="terminalReturningGuest"
+        style="display: none; margin-top: 10px; padding: 10px 12px; background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px;">
+        <div class="terminal-line" style="color: var(--accent-green); font-weight: 600;">
+          [STATUS] Bạn đã xác nhận tham dự: <span id="returningGuestName" style="color: #ffffff;"></span>
+        </div>
+        <div class="terminal-line" style="color: var(--text-light); font-size: 0.75rem; margin-top: 4px;">
+          Mã vé của bạn đã được kích hoạt. Bạn có thể cập nhật lại tên nếu cần:
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 8px;">
+          <button class="terminal-btn secondary" onclick="reopenRSVPInput()">✏️ Đổi tên / Đăng ký thêm</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2492,9 +2794,17 @@
   <script>
     const RSVP_STORAGE_KEY = 'thiepmoi_rsvp_name';
     const RSVP_STATUS_KEY = 'thiepmoi_rsvp_status';
-    const RSVP_LIST_KEY = 'thiepmoi_rsvp_list';
 
     let sessionRSVP = null;
+    let dbAvailable = false;
+
+    function isGuestDBReady() {
+      try {
+        return !!(window.GuestDB && typeof window.GuestDB.isConfigured === 'function' && window.GuestDB.isConfigured());
+      } catch (e) {
+        return false;
+      }
+    }
 
     function getSavedRSVPName() {
       try {
@@ -2506,39 +2816,40 @@
       }
     }
 
-    function getSavedRSVPList() {
-      try {
-        const raw = localStorage.getItem(RSVP_LIST_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.map(item => String(item).trim()).filter(Boolean) : [];
-      } catch (error) {
-        console.warn('Không thể đọc danh sách RSVP:', error);
-        return [];
-      }
-    }
-
+    // Saves the RSVP. Tries the Supabase-backed GuestDB first; if that isn't
+    // configured or the request fails, falls back to a local-only save so the
+    // guest still gets a confirmed ticket on their own device instead of a
+    // dead-end error. The UI is told which path was used so it can be honest
+    // about it.
     async function saveRSVPName(name) {
+      const cleanName = name.trim();
+      dbAvailable = isGuestDBReady();
+
+      if (dbAvailable) {
+        try {
+          const result = await window.GuestDB.saveGuest(cleanName);
+          if (!result || !result.ok) {
+            throw new Error((result && result.error) || 'Supabase không nhận dữ liệu.');
+          }
+          localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
+          localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED');
+          sessionRSVP = cleanName;
+          return { ok: true, mode: 'remote' };
+        } catch (error) {
+          console.warn('Không thể lưu vào Supabase, chuyển sang lưu cục bộ:', error);
+          // fall through to local save below
+        }
+      }
+
+      // Local fallback — always succeeds so the RSVP flow never dead-ends.
       try {
-        const cleanName = name.trim();
-        if (!window.GuestDB || !window.GuestDB.isConfigured()) {
-          throw new Error('Supabase chưa được cấu hình.');
-        }
-
-        const result = await window.GuestDB.saveGuest(cleanName);
-        if (!result.ok) {
-          throw new Error(result.error || 'Supabase không nhận dữ liệu.');
-        }
-
         localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
-        localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED');
+        localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED_LOCAL');
         sessionRSVP = cleanName;
-        console.log('Đã lưu tên khách vào database:', cleanName);
-        return true;
+        return { ok: true, mode: 'local' };
       } catch (error) {
-        console.warn('Không thể lưu dữ liệu RSVP:', error);
-        showToast(`❌ Chưa lưu được: ${error.message}`);
-        return false;
+        console.warn('Không thể lưu dữ liệu RSVP cục bộ:', error);
+        return { ok: false, mode: 'none', error: error.message };
       }
     }
 
@@ -2556,6 +2867,8 @@
 
     function toggleAudio() {
       soundEnabled = !soundEnabled;
+      const audioBtn = document.getElementById('audioToggle');
+      if (audioBtn) audioBtn.classList.remove('pulse-hint');
       const audioIcon = document.getElementById('audioIcon');
       if (soundEnabled) {
         initAudio();
@@ -2649,7 +2962,14 @@
     function toggleAchvPanel() {
       const panel = document.getElementById('achvPanel');
       playBeep(900, 0.05, 'triangle');
+      const opening = !panel.classList.contains('open');
       panel.classList.toggle('open');
+      if (opening) {
+        const closeBtn = panel.querySelector('button[aria-label="Đóng bảng thành tích"]');
+        if (closeBtn) closeBtn.focus();
+      } else {
+        document.getElementById('trophyToggle').focus();
+      }
     }
 
     document.addEventListener('click', (e) => {
@@ -2657,6 +2977,19 @@
       const btn = document.getElementById('trophyToggle');
       if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
         panel.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const panel = document.getElementById('achvPanel');
+      if (panel && panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        document.getElementById('trophyToggle').focus();
+      }
+      const secret = document.getElementById('secretMessage');
+      if (secret && secret.classList.contains('show')) {
+        closeSecretMessage();
       }
     });
 
@@ -2984,6 +3317,11 @@
         "specialization": "Software Engineering",
         "university": "HUTECH University"
       },
+      "schedule": {
+        "date": "2026-10-24",
+        "time": "08:00 - 12:00",
+        "timezone": "Asia/Ho_Chi_Minh"
+      },
       "venue": {
         "campus": "Thủ Đức Campus",
         "zone": "Saigon Hi-Tech Park (SHTP)",
@@ -3046,9 +3384,16 @@
     }
 
     // RSVP Terminal Actions
+    let pendingRSVPName = "";
+
     function handleTerminalKey(event) {
       if (event.key === 'Enter') {
-        submitRSVP();
+        const confirmBox = document.getElementById('terminalConfirmBox');
+        if (confirmBox && confirmBox.style.display !== 'none') {
+          handleConfirmChoice(true);
+        } else {
+          submitRSVP();
+        }
       } else {
         playBeep(1000 + Math.random() * 500, 0.03, 'triangle');
       }
@@ -3061,27 +3406,61 @@
       if (!guestName) {
         playBeep(150, 0.3, 'sawtooth');
         showToast("⚠️ Vui lòng nhập tên của bạn!");
+        input.focus();
         return;
       }
 
-      const isConfirmed = window.confirm(`Bạn xác nhận gửi tên "${guestName}" để đăng ký tham dự?`);
-      if (!isConfirmed) {
-        playBeep(180, 0.2, 'triangle');
-        showToast("❌ Bạn chưa xác nhận lưu tên.");
+      pendingRSVPName = guestName;
+      const inputRow = document.getElementById('terminalInputRow');
+      const confirmBox = document.getElementById('terminalConfirmBox');
+      const confirmName = document.getElementById('confirmGuestNameText');
+
+      if (inputRow) inputRow.style.display = "none";
+      if (confirmName) confirmName.textContent = `"${guestName}"`;
+      if (confirmBox) confirmBox.style.display = "block";
+      playBeep(850, 0.06, 'triangle');
+      const yesBtn = document.getElementById('btnTerminalYes');
+      if (yesBtn) yesBtn.focus();
+    }
+
+    function handleConfirmChoice(confirmed) {
+      const inputRow = document.getElementById('terminalInputRow');
+      const confirmBox = document.getElementById('terminalConfirmBox');
+      const input = document.getElementById('guestName');
+      const terminalBody = document.getElementById('terminalBody');
+
+      if (confirmBox) confirmBox.style.display = "none";
+
+      if (!confirmed) {
+        playBeep(240, 0.15, 'triangle');
+        if (inputRow) inputRow.style.display = "flex";
+        if (input) input.focus();
+        const cancelLine = document.createElement('div');
+        cancelLine.className = 'terminal-line';
+        cancelLine.style.color = 'var(--text-light)';
+        cancelLine.innerText = `[CANCELLED] Đã hủy. Vui lòng nhập lại tên của bạn.`;
+        if (inputRow) terminalBody.insertBefore(cancelLine, inputRow);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
         return;
       }
 
-      input.value = "";
+      executeRSVP(pendingRSVPName);
+    }
+
+    function executeRSVP(guestName) {
+      const input = document.getElementById('guestName');
+      if (input) input.value = "";
       const terminalBody = document.getElementById('terminalBody');
       const inputRow = document.getElementById('terminalInputRow');
-      inputRow.style.display = "none";
+      if (inputRow) inputRow.style.display = "none";
 
+      const ticketTag = `IT26-${String(Math.floor(Math.random() * 90) + 10).padStart(4, '0')}`;
       const steps = [
         { text: `$ git add --rsvp "${guestName}"`, color: 'var(--text-primary)' },
         { text: `$ git commit -m "feat(rsvp): confirm attendance for ${guestName}"`, color: 'var(--text-primary)' },
         { text: `[main ${Math.random().toString(16).substring(2, 8)}] 1 guest added, 0 conflicts`, color: 'var(--text-light)' },
-        { text: `$ git tag ticket/IT26-${String(Math.floor(Math.random() * 90) + 10).padStart(4, '0')}`, color: 'var(--text-light)' },
-        { text: `[WAITING] Đang lưu tên vào database...`, color: 'var(--text-light)' }
+        { text: `$ git tag ticket/${ticketTag}`, color: 'var(--text-light)' },
+        { text: `[WAITING] Đang lưu tên vào hệ thống...`, color: 'var(--text-light)' }
       ];
 
       steps.forEach((step, idx) => {
@@ -3095,32 +3474,96 @@
 
           if (idx === steps.length - 1) {
             playBeep(880, 0.3, 'sine');
-            const saved = await saveRSVPName(guestName);
-            invitationJSON.rsvp_status = "CONFIRMED";
+            const saveResult = await saveRSVPName(guestName);
+            invitationJSON.rsvp_status = saveResult.ok ? "CONFIRMED" : "FAILED";
+            invitationJSON.guest = guestName;
             loadJSONCode();
-            if (saved) {
+
+            const ticketDisplay = document.getElementById('ticketStatusDisplay');
+            if (ticketDisplay) {
+              ticketDisplay.textContent = `CONFIRMED: ${guestName}`;
+              ticketDisplay.style.color = 'var(--accent-green)';
+            }
+            const ticketCodeEl = document.getElementById('ticketCodeDisplay');
+            if (ticketCodeEl) {
+              ticketCodeEl.textContent = `TICKET #${ticketTag}`;
+            }
+
+            if (saveResult.ok) {
               const successLine = document.createElement('div');
               successLine.className = 'terminal-line';
               successLine.style.color = 'var(--accent-green)';
-              successLine.innerText = `[SUCCESS] Đã lưu database — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`;
+              successLine.innerText = saveResult.mode === 'remote'
+                ? `[SUCCESS] Đã lưu vào hệ thống — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`
+                : `[SAVED-LOCAL] Đã lưu vé trên thiết bị này cho ${guestName}. (Không kết nối được máy chủ trung tâm, vé vẫn có hiệu lực khi bạn quay lại trang này trên máy này.)`;
               terminalBody.appendChild(successLine);
               terminalBody.scrollTop = terminalBody.scrollHeight;
-              showToast(`✅ Đã lưu vào database: ${guestName}`);
+              showToast(saveResult.mode === 'remote' ? `✅ Đã lưu vào hệ thống: ${guestName}` : `💾 Đã lưu vé cục bộ cho: ${guestName}`);
               fireConfetti();
               unlockAchievement('rsvp');
+
+              const returning = document.getElementById('terminalReturningGuest');
+              const returningName = document.getElementById('returningGuestName');
+              if (returning && returningName) {
+                returningName.textContent = guestName;
+                returning.style.display = 'block';
+              }
             } else {
               const failureLine = document.createElement('div');
               failureLine.className = 'terminal-line';
               failureLine.style.color = '#fca5a5';
-              failureLine.innerText = '[ERROR] Chưa lưu được vào database. Kiểm tra thông báo bên dưới.';
+              failureLine.innerText = '[ERROR] Không thể lưu xác nhận. Vui lòng thử lại hoặc liên hệ trực tiếp qua số điện thoại bên trên.';
               terminalBody.appendChild(failureLine);
               terminalBody.scrollTop = terminalBody.scrollHeight;
+              showToast('❌ Chưa lưu được xác nhận, vui lòng thử lại.');
+              if (inputRow) inputRow.style.display = "flex";
             }
           } else {
             playBeep(600 + idx * 80, 0.05, 'triangle');
           }
         }, idx * 250);
       });
+    }
+
+    function reopenRSVPInput() {
+      const inputRow = document.getElementById('terminalInputRow');
+      const returning = document.getElementById('terminalReturningGuest');
+      const input = document.getElementById('guestName');
+      if (returning) returning.style.display = 'none';
+      if (inputRow) inputRow.style.display = 'flex';
+      if (input) {
+        input.value = sessionRSVP || '';
+        input.focus();
+        input.select();
+      }
+      playBeep(700, 0.05, 'triangle');
+    }
+
+    function initRSVPState() {
+      sessionRSVP = getSavedRSVPName();
+      if (sessionRSVP) {
+        const inputRow = document.getElementById('terminalInputRow');
+        const returning = document.getElementById('terminalReturningGuest');
+        const returningName = document.getElementById('returningGuestName');
+        const ticketStatus = document.getElementById('ticketStatusDisplay');
+        const statusPrompt = document.getElementById('terminalStatusPrompt');
+
+        if (inputRow) inputRow.style.display = 'none';
+        if (returning && returningName) {
+          returningName.textContent = sessionRSVP;
+          returning.style.display = 'block';
+        }
+        if (statusPrompt) {
+          statusPrompt.innerHTML = `[SYNC] Đã đồng bộ vé tham dự cho: <strong>${sessionRSVP}</strong>`;
+        }
+        if (ticketStatus) {
+          ticketStatus.textContent = `CONFIRMED: ${sessionRSVP}`;
+          ticketStatus.style.color = 'var(--accent-green)';
+        }
+        invitationJSON.rsvp_status = "CONFIRMED";
+        invitationJSON.guest = sessionRSVP;
+        loadJSONCode();
+      }
     }
 
     // Ripple click feedback
@@ -3196,6 +3639,47 @@
       runButtonSequence('btnMap', 'btnMapContent', '', 'Bản Đồ Chỉ Đường');
       window.open("https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao", "_blank");
       unlockAchievement('action');
+    }
+
+    function addToCalendar() {
+      playBeep(750, 0.08, 'sine');
+      runButtonSequence('btnCalendar', 'btnCalContent', '', 'Đã Lưu Lịch');
+      const title = encodeURIComponent("Lễ Tốt Nghiệp — Trần Bảo Duy (HUTECH IT 2026)");
+      const details = encodeURIComponent("Lễ tốt nghiệp Kỹ sư CNTT - Trần Bảo Duy tại Đại học Công nghệ TP.HCM (HUTECH).\nĐịa điểm: Khu Công nghệ cao TP.HCM, Phường Tăng Nhơn Phú, TP.HCM\nLiên hệ: 0329810650\nTrân trọng kính mời!");
+      const location = encodeURIComponent("HUTECH Cơ sở Thủ Đức, Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM");
+      // Keep in sync with invitationJSON.schedule and the "Thời gian" info-chip above.
+      const dates = "20261024T080000/20261024T120000";
+      const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+      window.open(calUrl, '_blank');
+      showToast("📅 Đang mở Google Calendar để lưu lịch...");
+      unlockAchievement('action');
+    }
+
+    function copyLocation() {
+      const address = "Cơ sở Thủ Đức: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(() => {
+          playBeep(900, 0.08, 'sine');
+          showToast("📋 Đã sao chép địa chỉ vào bộ nhớ tạm!");
+        }).catch(() => {
+          showToast("📍 Địa chỉ: HUTECH Cơ sở Thủ Đức - Khu CNC TP.HCM");
+        });
+      } else {
+        showToast("📍 Địa chỉ: HUTECH Cơ sở Thủ Đức - Khu CNC TP.HCM");
+      }
+    }
+
+    function copyTicketCode() {
+      const ticketEl = document.getElementById('ticketCodeDisplay');
+      const text = ticketEl ? ticketEl.innerText.trim() : "TICKET #IT_22_26";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          playBeep(920, 0.08, 'sine');
+          showToast(`🎫 Đã sao chép ${text}!`);
+        });
+      } else {
+        showToast(`🎫 Mã vé: ${text}`);
+      }
     }
 
     // Text decrypt effect on load
@@ -3351,21 +3835,6 @@
       animateParallax();
     })();
 
-    // Live "visitors watching" counter — gentle randomized ticking, feels alive
-    function startGuestCounter() {
-      const el = document.getElementById('guestCounter');
-      if (!el) return;
-      let count = 128;
-      setInterval(() => {
-        count += Math.floor(Math.random() * 3) - 1;
-        if (count < 90) count = 90;
-        el.textContent = count;
-        el.classList.remove('tick');
-        void el.offsetWidth;
-        el.classList.add('tick');
-      }, 2600);
-    }
-
     // Loading -> success micro-animation wrapper for action buttons
     function runButtonSequence(btnId, contentId, iconMarkup, label) {
       const btn = document.getElementById(btnId);
@@ -3406,13 +3875,15 @@
       initRipples();
       initMagnetic();
       runBootSequence();
-      startGuestCounter();
       renderAchvPanel();
+      initRSVPState();
       setTimeout(() => unlockAchievement('opened'), 2200);
 
       const nameEl = document.getElementById('gradName');
-      const originalName = nameEl.innerText;
-      scrambleText(nameEl, originalName, 1200);
+      const originalName = nameEl ? nameEl.innerText : '';
+      if (nameEl && originalName) {
+        scrambleText(nameEl, originalName, 1200);
+      }
     });
   </script>
 </body>
