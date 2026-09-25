@@ -150,6 +150,16 @@
       pointer-events: none;
     }
 
+    #fallCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -8;
+      pointer-events: none;
+    }
+
     /* Subtle CRT vignette + scanline sheen over the whole page */
     .crt-overlay {
       position: fixed;
@@ -2448,6 +2458,7 @@
 
   <canvas id="gridCanvas" aria-hidden="true"></canvas>
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <canvas id="fallCanvas" aria-hidden="true"></canvas>
   <canvas id="matrixCanvas" aria-hidden="true"></canvas>
   <div class="crt-overlay" aria-hidden="true"></div>
   <div class="screen-flash" id="screenFlash" aria-hidden="true"></div>
@@ -3795,6 +3806,77 @@
     }
     if (!reduceMotion) drawParticles();
 
+    // ============ CONTINUOUS FALLING EFFECT (graduation confetti) ============
+    // Small squares + sparkle glyphs that drift down continuously behind
+    // everything on the page (z-index -8), so they never sit on top of or
+    // dim the invitation card — they're only ever visible in the empty
+    // space around it.
+    const fallCanvas = document.getElementById('fallCanvas');
+    const fallCtx = fallCanvas.getContext('2d');
+    let fallWidth = fallCanvas.width = window.innerWidth;
+    let fallHeight = fallCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      fallWidth = fallCanvas.width = window.innerWidth;
+      fallHeight = fallCanvas.height = window.innerHeight;
+    });
+
+    const fallGlyphs = ['🎓', '✦', '✧', '❖'];
+    const fallColors = [accentRgb, '52, 211, 153'];
+
+    function makeFaller(initial) {
+      const useGlyph = Math.random() > 0.78;
+      return {
+        x: Math.random() * fallWidth,
+        y: initial ? Math.random() * fallHeight : -20 - Math.random() * 200,
+        size: useGlyph ? (Math.random() * 9 + 13) : (Math.random() * 4 + 2.5),
+        speed: Math.random() * 2.6 + 1.8,
+        drift: (Math.random() - 0.5) * 0.6,
+        sway: Math.random() * Math.PI * 2,
+        swaySpeed: Math.random() * 0.02 + 0.01,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.05,
+        alpha: Math.random() * 0.4 + 0.2,
+        color: fallColors[Math.floor(Math.random() * fallColors.length)],
+        glyph: useGlyph ? fallGlyphs[Math.floor(Math.random() * fallGlyphs.length)] : null
+      };
+    }
+
+    const fallers = reduceMotion ? [] : Array.from({ length: 110 }, () => makeFaller(true));
+
+    function drawFalling() {
+      fallCtx.clearRect(0, 0, fallWidth, fallHeight);
+      fallers.forEach(f => {
+        f.y += f.speed;
+        f.sway += f.swaySpeed;
+        f.x += f.drift + Math.sin(f.sway) * 0.3;
+        f.rotation += f.rotSpeed;
+
+        if (f.y > fallHeight + 30) {
+          Object.assign(f, makeFaller(false));
+        }
+        if (f.x < -30) f.x = fallWidth + 20;
+        if (f.x > fallWidth + 30) f.x = -20;
+
+        fallCtx.save();
+        fallCtx.translate(f.x, f.y);
+        fallCtx.rotate(f.rotation);
+        fallCtx.globalAlpha = f.alpha;
+        if (f.glyph) {
+          fallCtx.font = f.size + 'px sans-serif';
+          fallCtx.textAlign = 'center';
+          fallCtx.textBaseline = 'middle';
+          fallCtx.fillText(f.glyph, 0, 0);
+        } else {
+          fallCtx.fillStyle = 'rgba(' + f.color + ', 1)';
+          fallCtx.fillRect(-f.size / 2, -f.size / 2, f.size, f.size);
+        }
+        fallCtx.restore();
+      });
+      fallCtx.globalAlpha = 1;
+      requestAnimationFrame(drawFalling);
+    }
+    if (!reduceMotion) drawFalling();
+
     // Headline glitch burst — fires on hover/tap, throttled
     const gradNameEl = document.getElementById('gradName');
     let glitchBusy = false;
@@ -3828,8 +3910,10 @@
         py += (ty - py) * 0.05;
         const grid = document.getElementById('gridCanvas');
         const part = document.getElementById('particleCanvas');
+        const fall = document.getElementById('fallCanvas');
         if (grid) grid.style.transform = `translate(${px * -6}px, ${py * -6}px)`;
         if (part) part.style.transform = `translate(${px * -12}px, ${py * -12}px)`;
+        if (fall) fall.style.transform = `translate(${px * -4}px, ${py * -4}px)`;
         requestAnimationFrame(animateParallax);
       }
       animateParallax();
