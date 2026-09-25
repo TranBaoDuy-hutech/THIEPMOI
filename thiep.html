@@ -12,6 +12,7 @@
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="guest-db.js"></script>
   <style>
     :root {
@@ -3490,6 +3491,12 @@
 .ticket-template-name{position:absolute;left:24.4%;top:59.65%;width:28.3%;height:4.35%;display:flex;align-items:center;justify-content:center;padding:0 1.5%;overflow:hidden;background:#fffaf0;border:1.5px solid #c99a27;border-radius:7px;color:#164a78;font-family:Arial,sans-serif;font-size:clamp(10px,1.45vw,22px);font-weight:500;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 @media(max-width:600px){.ticket-template-card{border-radius:10px}.ticket-template-name{border-width:1px;border-radius:4px;font-size:clamp(7px,2.15vw,14px)}}
 </style>
+<style id="ticket-template-edit-style">
+.ticket-template-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+.ticket-template-edit{border:1px solid rgba(200,164,93,.75);background:#003b70;color:#fff;border-radius:999px;padding:10px 18px;font:600 13px/1 Arial,sans-serif;cursor:pointer;box-shadow:0 8px 20px rgba(0,59,112,.22);transition:.2s;white-space:nowrap}
+.ticket-template-edit:hover{transform:translateY(-1px);background:#c8102e}
+@media(max-width:600px){.ticket-template-edit{flex:1 1 160px}}
+</style>
 </head>
 
 <body>
@@ -3946,6 +3953,10 @@
             ${escapeTicketText(ticket.name)}
           </div>
         </article>
+        <div class="ticket-template-actions">
+          <button class="ticket-template-edit" type="button" onclick="reopenRSVPInput('${escapeTicketText(ticket.code)}')">✏️ Đổi tên người tham dự</button>
+          <button class="ticket-template-edit" type="button" onclick="downloadTicketCard(this, '${escapeTicketText(ticket.code)}')">⬇ Tải card về máy</button>
+        </div>
       ` : '';
     }
 
@@ -3972,6 +3983,37 @@
     function setRSVPComplete(isComplete) {
       const terminalBody = document.getElementById('terminalBody');
       if (terminalBody) terminalBody.classList.toggle('rsvp-complete', isComplete);
+    }
+
+    async function downloadTicketCard(button, ticketCode) {
+      const card = button.closest('.ticket-template-card');
+      if (!card || typeof html2canvas === 'undefined') {
+        showToast('⚠️ Chưa tải được công cụ xuất card.');
+        return;
+      }
+
+      button.disabled = true;
+      const originalLabel = button.textContent;
+      button.textContent = 'Đang xuất...';
+      try {
+        const canvas = await html2canvas(card, {
+          backgroundColor: '#ffffff',
+          scale: Math.min(window.devicePixelRatio || 1, 2),
+          useCORS: true,
+          logging: false
+        });
+        const link = document.createElement('a');
+        link.download = `${String(ticketCode || 'ticket').toLowerCase()}-graduation-card.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('✅ Đã tải card vé về máy.');
+      } catch (error) {
+        console.warn('Không thể xuất card vé:', error);
+        showToast('❌ Không thể tải card lúc này.');
+      } finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
+      }
     }
 
     // Saves the RSVP. Tries the Supabase-backed GuestDB first; if that isn't
@@ -4754,6 +4796,7 @@ function updateAudioButton() {
       setRSVPComplete(false);
       if (returning) returning.style.display = 'none';
       if (inputRow) inputRow.style.display = 'flex';
+      if (wishPanel) wishPanel.style.display = 'block';
       if (input) {
         input.value = ticket ? ticket.name : (sessionRSVP || '');
         input.focus();
