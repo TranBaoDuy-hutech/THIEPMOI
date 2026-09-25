@@ -1385,48 +1385,43 @@
 
     .qr-ring-wrap {
       position: relative;
+      flex-shrink: 0;
+      padding: 6px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(34, 211, 238, 0.16), rgba(52, 211, 153, 0.08));
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
     }
 
     .qr-pulse-ring {
       position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      border: 1px solid var(--accent-cyan);
+      inset: 0;
+      border-radius: 16px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.35);
       opacity: 0;
-      animation: qrPulse 2.6s ease-out infinite;
+      animation: qrPulse 3.2s ease-out infinite;
       pointer-events: none;
     }
 
     @keyframes qrPulse {
-      0% {
-        opacity: 0.55;
-        transform: translateX(-50%) scale(1);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateX(-50%) scale(1.4);
-      }
+      0% { opacity: 0.35; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.08); }
     }
 
     .qr-container {
-      width: 112px;
-      height: 112px;
+      width: 104px;
+      height: 104px;
       flex-shrink: 0;
       position: relative;
       overflow: hidden;
-      border-radius: 4px;
+      border-radius: 10px;
       border: 4px solid #fff;
       background: #fff;
-      padding: 0;
+      padding: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 0 1px rgba(var(--accent-cyan-rgb), 0.35), 0 8px 28px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
     }
 
     .qr-container img,
@@ -1459,6 +1454,58 @@
       background: var(--accent-cyan);
       box-shadow: var(--neon-glow), 0 0 8px var(--accent-cyan);
       animation: laserScan 2.4s ease-in-out infinite;
+    }
+
+    .countdown-card {
+      margin: 0 auto 1.25rem;
+      padding: 1rem 1.1rem;
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(34, 211, 238, 0.08), rgba(255, 255, 255, 0.025));
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.2);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .countdown-label {
+      color: var(--accent-cyan);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.45rem;
+    }
+
+    .countdown-unit {
+      min-width: 0;
+      padding: 0.65rem 0.25rem;
+      border-radius: 12px;
+      background: rgba(3, 7, 17, 0.65);
+      border: 1px solid var(--hairline);
+      text-align: center;
+    }
+
+    .countdown-number {
+      display: block;
+      color: var(--text-primary);
+      font-size: 1.15rem;
+      line-height: 1.1;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown-unit small {
+      display: block;
+      margin-top: 0.3rem;
+      color: var(--text-secondary);
+      font-size: 0.5rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .schedule-log {
@@ -1983,6 +2030,983 @@
       transition: all 0.3s;
     }
 
+    .confirmed-tickets {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+      border-radius: 12px;
+      background: rgba(10, 16, 30, 0.72);
+    }
+
+    .terminal-body.rsvp-complete > * {
+      display: none !important;
+    }
+
+    .terminal-body.rsvp-complete > .confirmed-tickets {
+      display: block !important;
+      margin-top: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .terminal-body.rsvp-complete .confirmed-tickets-title {
+      display: none;
+    }
+
+    .confirmed-tickets-title {
+      color: var(--accent-cyan);
+      font-size: 0.72rem;
+      margin-bottom: 10px;
+    }
+
+    .confirmed-tickets-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ticket-card {
+      --ticket-red: #c8102e;
+      --ticket-blue: #003b70;
+      --ticket-gold: #c8a45d;
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 104px;
+      min-height: 220px;
+      overflow: hidden;
+      border: 1px solid rgba(200, 164, 93, .42);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 90% 5%, rgba(200, 164, 93, .16), transparent 28%),
+        linear-gradient(135deg, #fff 0%, #f8fafc 58%, #eef3f8 100%);
+      color: #10233f;
+      box-shadow: 0 22px 55px rgba(0, 31, 66, .25), 0 0 0 1px rgba(255,255,255,.65) inset;
+      transform: translateY(0);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .ticket-card::marker { display: none; }
+
+    .ticket-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 28px 65px rgba(0, 31, 66, .32), 0 10px 30px rgba(200, 164, 93, .12);
+    }
+
+    .ticket-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: linear-gradient(180deg, #c8102e 0%, #9f1028 48%, #003b70 100%);
+      z-index: 4;
+    }
+
+    .ticket-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 104px;
+      width: 0;
+      height: 100%;
+      border-left: 2px dashed rgba(0, 59, 112, .22);
+      z-index: 3;
+    }
+
+    .ticket-card-main {
+      position: relative;
+      z-index: 1;
+      padding: 19px 22px 17px 27px;
+    }
+
+    .ticket-card-main::after {
+      content: 'HUTECH';
+      position: absolute;
+      right: 15px;
+      bottom: 8px;
+      color: rgba(0, 59, 112, .035);
+      font-size: 3.5rem;
+      font-weight: 950;
+      letter-spacing: .08em;
+      pointer-events: none;
+    }
+
+    .ticket-card-brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+
+    .ticket-card-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #003b70;
+      font-size: .76rem;
+      font-weight: 950;
+      letter-spacing: .16em;
+    }
+
+    .ticket-card-brand-mark::before {
+      content: 'H';
+      display: grid;
+      place-items: center;
+      width: 31px;
+      height: 31px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #c8102e, #9f1028);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      box-shadow: 0 6px 15px rgba(200, 16, 46, .25);
+    }
+
+    .ticket-card-type {
+      padding: 5px 8px;
+      border: 1px solid rgba(200, 164, 93, .48);
+      border-radius: 999px;
+      color: #8b6a2e;
+      background: rgba(200, 164, 93, .07);
+      font-size: .5rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-label {
+      color: #c8102e;
+      font-size: .54rem;
+      font-weight: 950;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-name {
+      margin-top: 5px;
+      color: #003b70;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.48rem;
+      font-weight: 850;
+      line-height: 1.12;
+      letter-spacing: -.02em;
+    }
+
+    .ticket-card-subtitle {
+      margin-top: 5px;
+      color: #64748b;
+      font-size: .62rem;
+      font-weight: 600;
+    }
+
+    .ticket-card-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      margin-top: 16px;
+      padding-top: 11px;
+      border-top: 1px solid rgba(0, 59, 112, .1);
+    }
+
+    .ticket-card-detail {
+      min-width: 0;
+    }
+
+    .ticket-card-detail-label {
+      color: #94a3b8;
+      font-size: .47rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-detail-value {
+      margin-top: 3px;
+      color: #203754;
+      font-size: .69rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .ticket-card-action {
+      position: relative;
+      z-index: 2;
+      margin-top: 13px;
+      padding: 6px 11px;
+      border: 1px solid rgba(0, 59, 112, .18);
+      border-radius: 999px;
+      background: #fff;
+      color: #003b70;
+      font: inherit;
+      font-size: .58rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+
+    .ticket-card-action:hover {
+      border-color: #c8102e;
+      background: #c8102e;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .ticket-card-stub {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      padding: 14px 9px;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(200,164,93,.17), transparent 32%),
+        linear-gradient(180deg, #00477f 0%, #003b70 45%, #00294f 100%);
+      color: #fff;
+    }
+
+    .ticket-card-stub::before,
+    .ticket-card-stub::after {
+      content: '';
+      position: absolute;
+      left: -9px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #081522;
+    }
+
+    .ticket-card-stub::before { top: -9px; }
+    .ticket-card-stub::after { bottom: -9px; }
+
+    .ticket-card-stub::marker { display: none; }
+
+    .ticket-card-stub-label {
+      color: rgba(255, 255, 255, .62);
+      font-size: .43rem;
+      font-weight: 900;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .ticket-card-stub-title {
+      color: #fff;
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-align: center;
+    }
+
+    .ticket-card-code {
+      max-width: 78px;
+      padding: 5px 7px;
+      border: 1px solid rgba(200, 164, 93, .45);
+      border-radius: 7px;
+      color: #f9e7bd;
+      background: rgba(0,0,0,.12);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .56rem;
+      font-weight: 850;
+      letter-spacing: .07em;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .ticket-card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 7px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 999px;
+      color: #d7f9df;
+      background: rgba(34, 197, 94, .09);
+      font-size: .44rem;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 420px) {
+      .ticket-card {
+        grid-template-columns: minmax(0, 1fr) 82px;
+        min-height: 205px;
+      }
+
+      .ticket-card-main {
+        padding: 15px 14px 14px 20px;
+      }
+
+      .ticket-card-name {
+        font-size: 1.17rem;
+      }
+
+      .ticket-card-details {
+        gap: 7px;
+        margin-top: 13px;
+      }
+
+      .ticket-card::after {
+        right: 82px;
+      }
+
+      .ticket-card-main::after {
+        font-size: 2.5rem;
+      }
+    }
+
+    .ticket-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 24px 52px rgba(0, 0, 0, 0.34), 0 0 28px rgba(225, 29, 46, 0.12);
+    }
+
+    .ticket-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: linear-gradient(180deg, #e11d2e, #b91c1c);
+    }
+
+    .ticket-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 92px;
+      width: 0;
+      height: 100%;
+      border-left: 2px dashed rgba(15, 23, 42, 0.18);
+    }
+
+    .ticket-card-main {
+      position: relative;
+      z-index: 1;
+      padding: 18px 20px 16px 24px;
+    }
+
+    .ticket-card-brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .ticket-card-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #0b2a5b;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+
+    .ticket-card-brand-mark::before {
+      content: '🎓';
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: #e11d2e;
+      color: #fff;
+      font-size: .9rem;
+      box-shadow: 0 5px 14px rgba(225, 29, 46, .25);
+    }
+
+    .ticket-card-type {
+      color: #64748b;
+      font-size: .55rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-label {
+      color: #e11d2e;
+      font-size: .58rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-name {
+      margin-top: 5px;
+      color: #0b2a5b;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .ticket-card-subtitle {
+      margin-top: 4px;
+      color: #64748b;
+      font-size: .66rem;
+    }
+
+    .ticket-card-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .ticket-card-detail {
+      min-width: 0;
+    }
+
+    .ticket-card-detail-label {
+      color: #94a3b8;
+      font-size: .5rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-detail-value {
+      margin-top: 3px;
+      color: #1e293b;
+      font-size: .72rem;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .ticket-card-action {
+      margin-top: 15px;
+      padding: 6px 10px;
+      border: 1px solid rgba(11, 42, 91, .16);
+      border-radius: 999px;
+      background: rgba(11, 42, 91, .05);
+      color: #0b2a5b;
+      font: inherit;
+      font-size: .6rem;
+      font-weight: 750;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+
+    .ticket-card-action:hover {
+      background: #0b2a5b;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .ticket-card-stub {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 14px 10px;
+      background: linear-gradient(180deg, #0b2a5b, #071b3a);
+      color: #fff;
+    }
+
+    .ticket-card-stub::before,
+    .ticket-card-stub::after {
+      content: '';
+      position: absolute;
+      left: -8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #07111f;
+    }
+
+    .ticket-card-stub::before { top: -8px; }
+    .ticket-card-stub::after { bottom: -8px; }
+
+    .ticket-card-stub-label {
+      color: rgba(255, 255, 255, .6);
+      font-size: .47rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .ticket-card-code {
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .ticket-card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 7px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 999px;
+      color: #86efac;
+      background: rgba(34, 197, 94, .08);
+      font-size: .48rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 420px) {
+      .ticket-card {
+        grid-template-columns: minmax(0, 1fr) 78px;
+        min-height: 178px;
+      }
+
+      .ticket-card-main {
+        padding: 15px 15px 14px 19px;
+      }
+
+      .ticket-card-brand {
+        margin-bottom: 13px;
+      }
+
+      .ticket-card-name {
+        font-size: 1.12rem;
+      }
+
+      .ticket-card-details {
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .ticket-card::after {
+        right: 78px;
+      }
+    }
+
+    /* Final premium HUTECH ticket overrides */
+    .ticket-card {
+      grid-template-columns: minmax(0, 1fr) 104px !important;
+      min-height: 220px !important;
+      border: 1px solid rgba(200,164,93,.42) !important;
+      border-radius: 20px !important;
+      background:
+        radial-gradient(circle at 90% 5%, rgba(200,164,93,.16), transparent 28%),
+        linear-gradient(135deg, #fff 0%, #f8fafc 58%, #eef3f8 100%) !important;
+      color: #10233f !important;
+      box-shadow: 0 22px 55px rgba(0,31,66,.25), 0 0 0 1px rgba(255,255,255,.65) inset !important;
+    }
+
+    .ticket-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: 0 28px 65px rgba(0,31,66,.32), 0 10px 30px rgba(200,164,93,.12) !important;
+    }
+
+    .ticket-card::before {
+      width: 6px !important;
+      background: linear-gradient(180deg, #c8102e 0%, #9f1028 48%, #003b70 100%) !important;
+    }
+
+    .ticket-card::after {
+      right: 104px !important;
+      border-left: 2px dashed rgba(0,59,112,.22) !important;
+    }
+
+    .ticket-card-main {
+      padding: 19px 22px 17px 27px !important;
+    }
+
+    .ticket-card-brand-mark {
+      color: #003b70 !important;
+      font-size: .76rem !important;
+      font-weight: 950 !important;
+      letter-spacing: .16em !important;
+    }
+
+    .ticket-card-brand-mark::before {
+      content: 'H' !important;
+      width: 31px !important;
+      height: 31px !important;
+      border-radius: 8px !important;
+      background: linear-gradient(145deg,#c8102e,#9f1028) !important;
+      font-size: 1rem !important;
+      box-shadow: 0 6px 15px rgba(200,16,46,.25) !important;
+    }
+
+    .ticket-card-type {
+      padding: 5px 8px !important;
+      border: 1px solid rgba(200,164,93,.48) !important;
+      border-radius: 999px !important;
+      color: #8b6a2e !important;
+      background: rgba(200,164,93,.07) !important;
+    }
+
+    .ticket-card-label { color: #c8102e !important; }
+    .ticket-card-name { color: #003b70 !important; font-size: 1.48rem !important; }
+    .ticket-card-subtitle { color: #64748b !important; }
+    .ticket-card-details {
+      margin-top: 16px !important;
+      padding-top: 11px !important;
+      border-top: 1px solid rgba(0,59,112,.1) !important;
+    }
+    .ticket-card-detail-label { color: #94a3b8 !important; }
+    .ticket-card-detail-value { color: #203754 !important; }
+
+    .ticket-card-action {
+      border-color: rgba(0,59,112,.18) !important;
+      background: #fff !important;
+      color: #003b70 !important;
+    }
+    .ticket-card-action:hover {
+      border-color: #c8102e !important;
+      background: #c8102e !important;
+      color: #fff !important;
+    }
+
+    .ticket-card-stub {
+      background:
+        radial-gradient(circle at 50% 15%, rgba(200,164,93,.17), transparent 32%),
+        linear-gradient(180deg,#00477f 0%,#003b70 45%,#00294f 100%) !important;
+    }
+
+    .ticket-card-stub::before,
+    .ticket-card-stub::after {
+      left: -9px !important;
+      width: 18px !important;
+      height: 18px !important;
+      background: #081522 !important;
+    }
+
+    .ticket-card-stub::before { top: -9px !important; }
+    .ticket-card-stub::after { bottom: -9px !important; }
+
+    .ticket-card-stub-label {
+      color: rgba(255,255,255,.62) !important;
+      font-size: .43rem !important;
+      letter-spacing: .15em !important;
+    }
+
+    .ticket-card-stub-title {
+      color: #fff !important;
+      font-size: .62rem !important;
+      font-weight: 900 !important;
+      letter-spacing: .08em !important;
+    }
+
+    .ticket-card-code {
+      max-width: 78px !important;
+      padding: 5px 7px !important;
+      border: 1px solid rgba(200,164,93,.45) !important;
+      border-radius: 7px !important;
+      color: #f9e7bd !important;
+      background: rgba(0,0,0,.12) !important;
+      font-size: .56rem !important;
+    }
+
+    .ticket-card-status {
+      color: #d7f9df !important;
+      background: rgba(34,197,94,.09) !important;
+      font-size: .44rem !important;
+    }
+
+    @media (max-width: 420px) {
+      .ticket-card {
+        grid-template-columns: minmax(0,1fr) 82px !important;
+        min-height: 205px !important;
+      }
+      .ticket-card-main { padding: 15px 14px 14px 20px !important; }
+      .ticket-card-name { font-size: 1.17rem !important; }
+      .ticket-card::after { right: 82px !important; }
+    }
+
+
+    /* Premium graduation-ticket layout — modeled after the supplied reference */
+    .ticket-card {
+      grid-template-columns: 23% minmax(0, 55%) 22% !important;
+      min-height: 330px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(200,164,93,.8) !important;
+      background: linear-gradient(100deg, #06243d 0 23%, #fff8e9 23% 78%, #062a43 78% 100%) !important;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .32), 0 0 0 1px rgba(255,255,255,.5) inset !important;
+    }
+
+    .ticket-card::before {
+      display: none !important;
+    }
+
+    .ticket-card::after {
+      display: none !important;
+    }
+
+    .ticket-card-left,
+    .ticket-card-main,
+    .ticket-card-right {
+      min-width: 0;
+      position: relative;
+    }
+
+    .ticket-card-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 18px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,.12), transparent 28%),
+        linear-gradient(155deg, #0a3557, #041d32);
+      border-right: 1px solid rgba(200,164,93,.7);
+      text-align: center;
+    }
+
+    .ticket-card-left::before,
+    .ticket-card-left::after,
+    .ticket-card-right::before,
+    .ticket-card-right::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #081522;
+    }
+
+    .ticket-card-left::before { top: -9px; right: -9px; }
+    .ticket-card-left::after { bottom: -9px; right: -9px; }
+
+    .ticket-card-left-brand {
+      color: #f6e2ac;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .18em;
+    }
+
+    .ticket-card-left-icon {
+      font-size: 2.2rem;
+      margin: 12px 0 4px;
+    }
+
+    .ticket-card-left-title {
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      line-height: 1.55;
+    }
+
+    .ticket-card-left-script {
+      margin-top: 16px;
+      color: #fff;
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: 1.55rem;
+      line-height: 1.05;
+      transform: rotate(-4deg);
+    }
+
+    .ticket-card-left-foot {
+      color: rgba(255,255,255,.62);
+      font-size: .48rem;
+      letter-spacing: .2em;
+    }
+
+    .ticket-card-main {
+      padding: 25px 25px 20px 28px !important;
+      background:
+        radial-gradient(circle at 88% 8%, rgba(200,164,93,.18), transparent 30%),
+        radial-gradient(circle at 55% 65%, rgba(226,210,169,.18), transparent 38%);
+    }
+
+    .ticket-card-main::after {
+      content: 'HUTECH' !important;
+      right: 18px !important;
+      bottom: 8px !important;
+      color: rgba(0,59,112,.045) !important;
+      font-size: 3.8rem !important;
+    }
+
+    .ticket-card-brand {
+      margin-bottom: 20px !important;
+    }
+
+    .ticket-card-brand-mark {
+      color: #003b70 !important;
+      font-size: .8rem !important;
+      letter-spacing: .14em !important;
+    }
+
+    .ticket-card-brand-mark::before {
+      display: none !important;
+    }
+
+    .ticket-card-type {
+      color: #8b6a2e !important;
+      background: rgba(200,164,93,.1) !important;
+    }
+
+    .ticket-card-label {
+      color: #003b70 !important;
+      font-size: .58rem !important;
+      letter-spacing: .22em !important;
+    }
+
+    .ticket-card-name {
+      margin-top: 8px !important;
+      font-family: 'Segoe Script', 'Brush Script MT', cursive !important;
+      font-size: clamp(1.5rem, 3.8vw, 2.25rem) !important;
+      font-weight: 600 !important;
+      color: #173957 !important;
+      letter-spacing: .01em !important;
+    }
+
+    .ticket-card-subtitle {
+      color: #315b75 !important;
+      font-size: .68rem !important;
+      max-width: 92%;
+    }
+
+    .ticket-card-details {
+      margin-top: 22px !important;
+      padding-top: 16px !important;
+      border-top: 1px solid rgba(0,59,112,.18) !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 15px !important;
+    }
+
+    .ticket-card-detail-label {
+      color: #8b6a2e !important;
+      font-size: .5rem !important;
+    }
+
+    .ticket-card-detail-value {
+      color: #173957 !important;
+      font-size: .72rem !important;
+    }
+
+    .ticket-card-action {
+      margin-top: 15px !important;
+    }
+
+    .ticket-card-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 23px 15px 19px;
+      color: #fff;
+      text-align: center;
+      background:
+        radial-gradient(circle at 80% 5%, rgba(200,164,93,.2), transparent 32%),
+        linear-gradient(155deg, #073b5c, #031d30);
+      border-left: 1px solid rgba(200,164,93,.65);
+    }
+
+    .ticket-card-right::before { top: -9px; left: -9px; }
+    .ticket-card-right::after { bottom: -9px; left: -9px; }
+
+    .ticket-card-right-label {
+      color: #f6e2ac;
+      font-size: .48rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      line-height: 1.5;
+    }
+
+    .ticket-card-countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin: 10px 0 13px;
+    }
+
+    .ticket-card-countdown-box {
+      padding: 6px 2px;
+      border: 1px solid rgba(200,164,93,.48);
+      border-radius: 7px;
+      background: rgba(255,255,255,.05);
+    }
+
+    .ticket-card-countdown-value {
+      color: #fff6d8;
+      font-size: .75rem;
+      font-weight: 900;
+    }
+
+    .ticket-card-countdown-unit {
+      margin-top: 2px;
+      color: rgba(255,255,255,.58);
+      font-size: .36rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-right-message {
+      color: rgba(255,255,255,.86);
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: .78rem;
+      line-height: 1.35;
+    }
+
+    .ticket-card-right-code {
+      padding: 9px 6px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .ticket-card-right-code-label {
+      color: rgba(255,255,255,.55);
+      font-size: .38rem;
+      letter-spacing: .12em;
+    }
+
+    .ticket-card-right-code-value {
+      margin-top: 4px;
+      color: #f6e2ac;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .58rem;
+      font-weight: 800;
+      word-break: break-all;
+    }
+
+    .ticket-card-status {
+      align-self: center;
+    }
+
+    @media (max-width: 620px) {
+      .ticket-card {
+        grid-template-columns: 1fr !important;
+        background: #fff8e9 !important;
+      }
+
+      .ticket-card-left,
+      .ticket-card-main,
+      .ticket-card-right {
+        border: 0 !important;
+      }
+
+      .ticket-card-left {
+        min-height: 130px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+      }
+
+      .ticket-card-left-icon {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .ticket-card-left-script {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .ticket-card-right {
+        min-height: 160px;
+      }
+    }
+
     .guest-action-btn.secondary {
       background: rgba(148, 163, 184, 0.12);
       color: var(--text-primary);
@@ -2458,7 +3482,14 @@
         transition: none;
       }
     }
+  .ticket-card{display:grid!important;grid-template-columns:18% minmax(0,58%) 24%!important;min-height:360px!important;padding:0!important;overflow:hidden!important;border-radius:18px!important;border:1px solid #c8a45d!important;background:#f8f0df!important;box-shadow:0 22px 55px rgba(0,24,40,.3)!important}.ticket-card-left,.ticket-card-main,.ticket-card-right{position:relative!important;min-width:0!important;box-sizing:border-box!important}.ticket-card-left{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:26px 17px 22px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#0a4265,#031d31)!important;border-right:1px solid rgba(200,164,93,.75)!important}.ticket-card-main{display:flex!important;flex-direction:column!important;padding:26px 28px 0!important;color:#123d58!important;background:radial-gradient(circle at 78% 35%,rgba(202,218,218,.7),transparent 24%),linear-gradient(145deg,#fffaf0,#f4ead2)!important}.ticket-card-right{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:25px 15px 19px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#063c5a,#021d30)!important;border-left:1px solid rgba(200,164,93,.7)!important}.ticket-left-brand{color:#f5dda3!important;font-size:.75rem!important;font-weight:900!important;letter-spacing:.18em!important}.ticket-left-cap{margin:22px 0 8px!important;font-size:2.6rem!important}.ticket-left-title{color:#fff!important;font-size:.86rem!important;font-weight:800!important;letter-spacing:.16em!important;line-height:1.55!important}.ticket-left-script{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.55rem!important;line-height:1.02!important;transform:rotate(-5deg)!important}.ticket-left-heart{color:#f5dda3!important;font-size:2rem!important}.ticket-main-head{display:flex!important;justify-content:space-between!important;align-items:flex-start!important}.ticket-main-logo{color:#123b57!important;font-family:Georgia,serif!important;font-size:1.05rem!important;font-weight:800!important}.ticket-main-logo span{font-family:Arial,sans-serif!important;font-size:.48rem!important;margin-left:6px!important;padding-left:8px!important;border-left:1px solid rgba(18,59,87,.45)!important}.ticket-main-motto{color:#123b57!important;font-size:.48rem!important;font-weight:800!important;letter-spacing:.2em!important;text-align:right!important}.ticket-main-hero{flex:1!important;min-height:205px!important;padding-top:34px!important}.ticket-main-kicker{color:#123b57!important;font-size:.82rem!important;letter-spacing:.24em!important}.ticket-main-script{color:#b18427!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:clamp(3rem,6vw,4.9rem)!important;line-height:.9!important;transform:rotate(-4deg)!important}.ticket-main-ticket{margin-top:10px!important;color:#15506c!important;font-size:1.15rem!important;letter-spacing:.45em!important}.ticket-main-copy{margin-top:22px!important;color:#214f66!important;font-size:.75rem!important;line-height:1.55!important}.ticket-main-divider{text-align:center!important;color:#123b57!important;font-size:1.35rem!important}.ticket-main-info{display:grid!important;grid-template-columns:1fr 1fr 1.25fr!important;padding:16px 0 17px!important;border-top:1px solid rgba(18,59,87,.22)!important}.ticket-main-info>div{padding:0 16px!important;border-right:1px solid rgba(18,59,87,.22)!important}.ticket-info-label{color:#183f57!important;font-size:.48rem!important;font-weight:900!important}.ticket-info-value{color:#183f57!important;font-size:1rem!important;font-weight:800!important}.ticket-info-sub{color:#31586b!important;font-size:.5rem!important}.ticket-info-name{color:#173c56!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.15rem!important}.ticket-main-footer{margin:0 -28px!important;padding:10px!important;color:#fff!important;background:#062b45!important;font-size:.48rem!important;letter-spacing:.28em!important;text-align:center!important}.ticket-right-icon{font-size:1.8rem!important;color:#f5dda3!important}.ticket-right-title{color:#fff!important;font-size:.5rem!important;font-weight:800!important;letter-spacing:.13em!important}.ticket-right-countdown{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;margin:10px 0 15px!important}.ticket-right-countdown>div{padding:7px 2px!important;border:1px solid rgba(200,164,93,.55)!important;border-radius:7px!important}.ticket-right-countdown b{display:block!important;color:#f8e6ad!important;font-size:.78rem!important}.ticket-right-countdown span{color:rgba(255,255,255,.58)!important;font-size:.33rem!important}.ticket-right-message{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:.82rem!important;line-height:1.5!important}.ticket-right-qr{margin:12px auto!important}.ticket-qr-placeholder{display:grid!important;place-items:center!important;width:72px!important;height:72px!important;margin:auto!important;color:#173c56!important;background:#fff!important;border:6px solid #fff!important;font-size:.7rem!important;font-weight:900!important}.ticket-right-qr span{display:block!important;margin-top:8px!important;color:#fff!important;font-size:.42rem!important}.ticket-right-bottom{color:rgba(255,255,255,.85)!important;font-size:.48rem!important}@media(max-width:700px){.ticket-card{grid-template-columns:1fr!important}.ticket-card-left{min-height:180px!important;flex-direction:row!important;align-items:center!important}.ticket-card-main{min-height:420px!important}.ticket-card-right{min-height:280px!important}.ticket-main-info{grid-template-columns:1fr 1fr!important}}
   </style>
+<style id="ticket-template-style">
+.ticket-template-card{position:relative;width:100%;max-width:100%;aspect-ratio:1536/1024;overflow:hidden;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.45);background:#eee}
+.ticket-template-image{display:block;width:100%;height:100%;object-fit:cover}
+.ticket-template-name{position:absolute;left:24.4%;top:59.65%;width:28.3%;height:4.35%;display:flex;align-items:center;justify-content:center;padding:0 1.5%;overflow:hidden;background:#fffaf0;border:1.5px solid #c99a27;border-radius:7px;color:#164a78;font-family:Arial,sans-serif;font-size:clamp(10px,1.45vw,22px);font-weight:500;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+@media(max-width:600px){.ticket-template-card{border-radius:10px}.ticket-template-name{border-width:1px;border-radius:4px;font-size:clamp(7px,2.15vw,14px)}}
+</style>
 </head>
 
 <body>
@@ -2478,10 +3509,8 @@
 
   <div class="cursor-glow" id="cursorGlow"></div>
 
-  <!-- Background music. This is a video container because the source is an MP4. -->
-  <video id="bgMusic" src="music/background.mp4" autoplay loop playsinline preload="auto"
-    aria-hidden="true"
-    style="position: fixed; inset: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none;"></video>
+  <!-- Chỉ phát phần âm thanh của file MP4, không hiển thị video. -->
+  <audio id="bgMusic" src="music/background.mp4" autoplay loop preload="auto" aria-hidden="true"></audio>
 
   <canvas id="gridCanvas" aria-hidden="true"></canvas>
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
@@ -2622,6 +3651,16 @@
               <div class="trace">
                 <span class="line"></span><span class="node"></span><span class="line"></span><span
                   class="node"></span><span class="line"></span>
+              </div>
+
+              <div class="countdown-card" aria-label="Đếm ngược tới lễ tốt nghiệp">
+                <div class="countdown-label">// COUNTDOWN_TO_GRADUATION</div>
+                <div class="countdown-grid">
+                  <div class="countdown-unit"><span class="countdown-number" id="countDays">--</span><small>Ngày</small></div>
+                  <div class="countdown-unit"><span class="countdown-number" id="countHours">--</span><small>Giờ</small></div>
+                  <div class="countdown-unit"><span class="countdown-number" id="countMinutes">--</span><small>Phút</small></div>
+                  <div class="countdown-unit"><span class="countdown-number" id="countSeconds">--</span><small>Giây</small></div>
+                </div>
               </div>
 
               <div class="info-row">
@@ -2800,9 +3839,25 @@
 
       <div class="terminal-input-row" id="terminalInputRow">
         <span class="terminal-prompt">Guest Name:</span>
-        <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn và nhấn Enter..."
+        <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn..."
           autocomplete="off" aria-label="Tên khách mời" onkeydown="handleTerminalKey(event)">
         <button class="terminal-btn" id="btnTerminalSubmit" onclick="submitRSVP()">Confirm</button>
+      </div>
+
+      <div id="wishInputPanel" style="margin-top:10px; padding:12px; background:rgba(34,211,238,0.06); border:1px solid rgba(var(--accent-cyan-rgb),0.22); border-radius:10px;">
+        <div class="terminal-line" style="color:var(--accent-cyan); margin-bottom:8px;">[WISH] Gửi một lời chúc đến Bảo Duy <span style="color:var(--text-secondary);">(không bắt buộc)</span></div>
+        <textarea id="guestWish" maxlength="500" rows="3"
+          placeholder="Nhập lời chúc của bạn..."
+          aria-label="Lời chúc"
+          style="width:100%; resize:vertical; min-height:76px; padding:10px 12px; border:1px solid rgba(148,163,184,.18); border-radius:8px; background:rgba(3,7,17,.72); color:var(--text-primary); font:inherit; line-height:1.5;"></textarea>
+        <div style="display:flex; justify-content:flex-end; margin-top:6px;">
+          <span id="wishCounter" style="font-size:.68rem; color:var(--text-secondary);">0/500</span>
+        </div>
+      </div>
+
+      <div id="wishesPanel" style="margin-top:14px; padding:12px; background:rgba(52,211,153,.04); border:1px solid rgba(52,211,153,.16); border-radius:10px;">
+        <div class="terminal-line" style="color:var(--accent-green);">[WISHES] Lời chúc từ khách mời</div>
+        <div id="wishesList" style="margin-top:8px;"></div>
       </div>
 
       <!-- Returning Guest Panel -->
@@ -2818,6 +3873,11 @@
           <button class="terminal-btn secondary" onclick="reopenRSVPInput()">✏️ Đổi tên / Đăng ký thêm</button>
         </div>
       </div>
+
+      <div class="confirmed-tickets" id="confirmedTickets">
+        <div class="confirmed-tickets-title">[TICKETS] Vé đã xác nhận</div>
+        <div class="confirmed-tickets-list" id="confirmedTicketsList"></div>
+      </div>
     </div>
   </div>
 
@@ -2831,6 +3891,7 @@
   <script>
     const RSVP_STORAGE_KEY = 'thiepmoi_rsvp_name';
     const RSVP_STATUS_KEY = 'thiepmoi_rsvp_status';
+    const RSVP_TICKETS_KEY = 'thiepmoi_rsvp_tickets';
 
     let sessionRSVP = null;
     let dbAvailable = false;
@@ -2853,22 +3914,84 @@
       }
     }
 
+    function getSavedTickets() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(RSVP_TICKETS_KEY) || '[]');
+        return Array.isArray(saved) ? saved : [];
+      } catch (error) {
+        console.warn('Không thể đọc danh sách vé:', error);
+        return [];
+      }
+    }
+
+    function escapeTicketText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[character]));
+    }
+
+    function renderConfirmedTickets() {
+      const panel = document.getElementById('confirmedTickets');
+      const list = document.getElementById('confirmedTicketsList');
+      if (!panel || !list) return;
+
+      const tickets = getSavedTickets();
+      const ticket = tickets[tickets.length - 1];
+      panel.style.display = ticket ? 'block' : 'none';
+
+      list.innerHTML = ticket ? `
+        <article class="ticket-template-card">
+          <img class="ticket-template-image" src="assets/Card.png" alt="HUTECH Graduation Ticket">
+          <div class="ticket-template-name" aria-label="Tên người tham dự">
+            ${escapeTicketText(ticket.name)}
+          </div>
+        </article>
+      ` : '';
+    }
+
+    function saveConfirmedTicket(name, code) {
+      try {
+        const tickets = getSavedTickets();
+        const replacementIndex = editingTicketCode
+          ? tickets.findIndex(ticket => ticket.code === editingTicketCode)
+          : -1;
+        const updatedTicket = { name, code, createdAt: new Date().toISOString() };
+        if (replacementIndex >= 0) {
+          tickets[replacementIndex] = { ...tickets[replacementIndex], ...updatedTicket };
+        } else {
+          tickets.push(updatedTicket);
+        }
+        editingTicketCode = null;
+        localStorage.setItem(RSVP_TICKETS_KEY, JSON.stringify([updatedTicket]));
+        renderConfirmedTickets();
+      } catch (error) {
+        console.warn('Không thể lưu card vé:', error);
+      }
+    }
+
+    function setRSVPComplete(isComplete) {
+      const terminalBody = document.getElementById('terminalBody');
+      if (terminalBody) terminalBody.classList.toggle('rsvp-complete', isComplete);
+    }
+
     // Saves the RSVP. Tries the Supabase-backed GuestDB first; if that isn't
     // configured or the request fails, falls back to a local-only save so the
     // guest still gets a confirmed ticket on their own device instead of a
     // dead-end error. The UI is told which path was used so it can be honest
     // about it.
-    async function saveRSVPName(name) {
+    async function saveRSVPName(name, wish = "") {
       const cleanName = name.trim();
+      const cleanWish = String(wish || "").trim();
       dbAvailable = isGuestDBReady();
 
       if (dbAvailable) {
         try {
-          const result = await window.GuestDB.saveGuest(cleanName);
+          const result = await window.GuestDB.saveGuest(cleanName, cleanWish);
           if (!result || !result.ok) {
             throw new Error((result && result.error) || 'Supabase không nhận dữ liệu.');
           }
           localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
+          localStorage.setItem('thiepmoi_rsvp_wish', cleanWish);
           localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED');
           sessionRSVP = cleanName;
           return { ok: true, mode: 'remote' };
@@ -2881,6 +4004,7 @@
       // Local fallback — always succeeds so the RSVP flow never dead-ends.
       try {
         localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
+        localStorage.setItem('thiepmoi_rsvp_wish', cleanWish);
         localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED_LOCAL');
         sessionRSVP = cleanName;
         return { ok: true, mode: 'local' };
@@ -3415,6 +4539,8 @@ function updateAudioButton() {
 
     // RSVP Terminal Actions
     let pendingRSVPName = "";
+    let pendingRSVPWish = "";
+    let editingTicketCode = null;
 
     function handleTerminalKey(event) {
       if (event.key === 'Enter') {
@@ -3431,7 +4557,9 @@ function updateAudioButton() {
 
     function submitRSVP() {
       const input = document.getElementById('guestName');
+      const wishInput = document.getElementById('guestWish');
       const guestName = input.value.trim();
+      const wish = wishInput ? wishInput.value.trim() : "";
 
       if (!guestName) {
         playBeep(150, 0.3, 'sawtooth');
@@ -3440,13 +4568,26 @@ function updateAudioButton() {
         return;
       }
 
+      if (wish.length > 500) {
+        showToast("⚠️ Lời chúc tối đa 500 ký tự!");
+        if (wishInput) wishInput.focus();
+        return;
+      }
+
       pendingRSVPName = guestName;
+      pendingRSVPWish = wish;
       const inputRow = document.getElementById('terminalInputRow');
+      const wishPanel = document.getElementById('wishInputPanel');
       const confirmBox = document.getElementById('terminalConfirmBox');
       const confirmName = document.getElementById('confirmGuestNameText');
 
       if (inputRow) inputRow.style.display = "none";
-      if (confirmName) confirmName.textContent = `"${guestName}"`;
+      if (wishPanel) wishPanel.style.display = "none";
+      if (confirmName) {
+        confirmName.textContent = wish
+          ? `"${guestName}" · lời chúc: "${wish}"`
+          : `"${guestName}" · không có lời chúc`;
+      }
       if (confirmBox) confirmBox.style.display = "block";
       playBeep(850, 0.06, 'triangle');
       const yesBtn = document.getElementById('btnTerminalYes');
@@ -3474,10 +4615,10 @@ function updateAudioButton() {
         return;
       }
 
-      executeRSVP(pendingRSVPName);
+      executeRSVP(pendingRSVPName, pendingRSVPWish);
     }
 
-    function executeRSVP(guestName) {
+    function executeRSVP(guestName, wish = "") {
       const input = document.getElementById('guestName');
       if (input) input.value = "";
       const terminalBody = document.getElementById('terminalBody');
@@ -3504,7 +4645,7 @@ function updateAudioButton() {
 
           if (idx === steps.length - 1) {
             playBeep(880, 0.3, 'sine');
-            const saveResult = await saveRSVPName(guestName);
+            const saveResult = await saveRSVPName(guestName, wish);
             invitationJSON.rsvp_status = saveResult.ok ? "CONFIRMED" : "FAILED";
             invitationJSON.guest = guestName;
             loadJSONCode();
@@ -3520,6 +4661,8 @@ function updateAudioButton() {
             }
 
             if (saveResult.ok) {
+              saveConfirmedTicket(guestName, ticketTag);
+              setRSVPComplete(true);
               const successLine = document.createElement('div');
               successLine.className = 'terminal-line';
               successLine.style.color = 'var(--accent-green)';
@@ -3555,14 +4698,64 @@ function updateAudioButton() {
       });
     }
 
-    function reopenRSVPInput() {
+    function renderWishes(guests) {
+      const list = document.getElementById('wishesList');
+      if (!list) return;
+
+      if (!guests || !guests.length) {
+        list.innerHTML = '<div style="color:var(--text-secondary); font-size:.76rem; padding:8px 0;">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc! ✨</div>';
+        return;
+      }
+
+      list.innerHTML = guests.slice(-12).reverse().map(guest => {
+        const name = String(guest.name || 'Khách mời').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        const wish = String(guest.wish || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        return `<div style="padding:10px 0; border-bottom:1px solid rgba(148,163,184,.09);">
+          <div style="font-size:.76rem; font-weight:700; color:var(--accent-cyan);">♡ ${name}</div>
+          <div style="margin-top:4px; color:var(--text-light); font-size:.78rem; line-height:1.5;">${wish}</div>
+        </div>`;
+      }).join('');
+    }
+
+    async function loadWishes() {
+      const list = document.getElementById('wishesList');
+      if (!list) return;
+      if (!isGuestDBReady()) {
+        list.innerHTML = '<div style="color:var(--text-secondary); font-size:.76rem; padding:8px 0;">Đang chờ kết nối hệ thống lời chúc...</div>';
+        return;
+      }
+      try {
+        const wishes = await window.GuestDB.getGuests();
+        renderWishes(wishes);
+      } catch (error) {
+        console.warn('Không thể tải lời chúc:', error);
+        list.innerHTML = '<div style="color:#fca5a5; font-size:.76rem; padding:8px 0;">Không tải được lời chúc lúc này.</div>';
+      }
+    }
+
+    function initWishCounter() {
+      const input = document.getElementById('guestWish');
+      const counter = document.getElementById('wishCounter');
+      if (!input || !counter) return;
+      const update = () => {
+        counter.textContent = `${input.value.length}/500`;
+      };
+      input.addEventListener('input', update);
+      update();
+    }
+
+    function reopenRSVPInput(ticketCode = '') {
       const inputRow = document.getElementById('terminalInputRow');
+      const wishPanel = document.getElementById('wishInputPanel');
       const returning = document.getElementById('terminalReturningGuest');
       const input = document.getElementById('guestName');
+      const ticket = getSavedTickets().find(savedTicket => savedTicket.code === ticketCode);
+      editingTicketCode = ticket ? ticket.code : null;
+      setRSVPComplete(false);
       if (returning) returning.style.display = 'none';
       if (inputRow) inputRow.style.display = 'flex';
       if (input) {
-        input.value = sessionRSVP || '';
+        input.value = ticket ? ticket.name : (sessionRSVP || '');
         input.focus();
         input.select();
       }
@@ -3570,8 +4763,10 @@ function updateAudioButton() {
     }
 
     function initRSVPState() {
+      renderConfirmedTickets();
       sessionRSVP = getSavedRSVPName();
       if (sessionRSVP) {
+        setRSVPComplete(true);
         const inputRow = document.getElementById('terminalInputRow');
         const returning = document.getElementById('terminalReturningGuest');
         const returningName = document.getElementById('returningGuestName');
@@ -3972,8 +5167,39 @@ function updateAudioButton() {
       });
     }
 
+    function initGraduationCountdown() {
+      const targetDate = new Date('2026-10-24T08:00:00+07:00').getTime();
+      const daysEl = document.getElementById('countDays');
+      const hoursEl = document.getElementById('countHours');
+      const minutesEl = document.getElementById('countMinutes');
+      const secondsEl = document.getElementById('countSeconds');
+      if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+
+      const tick = () => {
+        const diff = Math.max(0, targetDate - Date.now());
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        daysEl.textContent = String(days).padStart(2, '0');
+        hoursEl.textContent = String(hours).padStart(2, '0');
+        minutesEl.textContent = String(minutes).padStart(2, '0');
+        secondsEl.textContent = String(seconds).padStart(2, '0');
+
+        if (diff <= 0) {
+          document.querySelector('.countdown-label').textContent = '// GRADUATION_DAY';
+        }
+      };
+
+      tick();
+      setInterval(tick, 1000);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       loadJSONCode();
+      initGraduationCountdown();
       drawGrid();
       initQRCode();
       initRipples();
@@ -3981,6 +5207,9 @@ function updateAudioButton() {
       runBootSequence();
       renderAchvPanel();
       initRSVPState();
+      initWishCounter();
+      loadWishes();
+      setInterval(loadWishes, 30000);
       setTimeout(() => unlockAchievement('opened'), 2200);
 
       const nameEl = document.getElementById('gradName');

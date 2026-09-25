@@ -26,14 +26,16 @@
       return !!this.client;
     },
 
-    async saveGuest(name) {
+    async saveGuest(name, wish = '') {
       if (!this.client) return { ok: false, error: 'Supabase chưa được cấu hình.' };
 
       const trimmed = String(name || '').trim();
+      const cleanWish = String(wish || '').trim();
       if (!trimmed) return { ok: false, error: 'Tên khách đang trống.' };
+      if (cleanWish.length > 500) return { ok: false, error: 'Lời chúc tối đa 500 ký tự.' };
 
       const { error } = await this.client.from(CONFIG.tableName).insert([
-        { name: trimmed, status: 'confirmed' }
+        { name: trimmed, wish: cleanWish || null, status: 'confirmed' }
       ]);
 
       if (error) {
@@ -50,6 +52,8 @@
       const { data, error } = await this.client
         .from(CONFIG.tableName)
         .select('*')
+        .not('wish', 'is', null)
+        .neq('wish', '')
         .order('created_at', { ascending: true });
 
       if (error) {

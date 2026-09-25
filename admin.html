@@ -232,6 +232,249 @@
       display: none;
     }
 
+    .ticket-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(8px);
+    }
+
+    .ticket-modal.open {
+      display: flex;
+    }
+
+    .ticket-modal-panel {
+      width: min(760px, 100%);
+      max-height: 92vh;
+      overflow: auto;
+      padding: 18px;
+      border-radius: 24px;
+      background: #0b1220;
+      border: 1px solid rgba(200, 164, 93, 0.35);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+    }
+
+    .ticket-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .ticket-modal-title {
+      color: #f8fafc;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .ticket-modal-close {
+      padding: 7px 11px;
+      background: rgba(148, 163, 184, 0.1);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .ticket-card-admin {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 128px;
+      min-height: 260px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 58%, #eef2f7 100%);
+      border: 1px solid #c8a45d;
+      box-shadow: 0 18px 45px rgba(0, 59, 112, 0.22);
+      color: #003b70;
+    }
+
+    .ticket-card-admin::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: linear-gradient(180deg, #c8102e 0%, #c8102e 55%, #003b70 100%);
+    }
+
+    .ticket-card-admin-main {
+      padding: 24px 26px 22px 30px;
+    }
+
+    .ticket-card-admin-brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .ticket-card-admin-wordmark {
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #c8102e;
+    }
+
+    .ticket-card-admin-wordmark span {
+      color: #003b70;
+    }
+
+    .ticket-card-admin-type {
+      padding: 5px 10px;
+      border: 1px solid rgba(200, 164, 93, 0.55);
+      border-radius: 999px;
+      color: #8b6b2d;
+      background: #fffaf0;
+      font-size: 0.67rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-admin-label {
+      color: #8b6b2d;
+      font-size: 0.67rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-admin-name {
+      margin-top: 7px;
+      color: #003b70;
+      font-size: clamp(1.55rem, 4vw, 2.25rem);
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      word-break: break-word;
+    }
+
+    .ticket-card-admin-subtitle {
+      margin-top: 8px;
+      color: #64748b;
+      font-size: 0.78rem;
+    }
+
+    .ticket-card-admin-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .ticket-card-admin-detail-label {
+      color: #94a3b8;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-admin-detail-value {
+      margin-top: 4px;
+      color: #0f172a;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .ticket-card-admin-code {
+      margin-top: 20px;
+      color: #94a3b8;
+      font-size: 0.66rem;
+      letter-spacing: 0.08em;
+    }
+
+    .ticket-card-admin-stub {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 16px;
+      background: linear-gradient(180deg, #003b70, #071b33);
+      color: #fff;
+      text-align: center;
+    }
+
+    .ticket-card-admin-stub::before,
+    .ticket-card-admin-stub::after {
+      content: "";
+      position: absolute;
+      left: -11px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #0b1220;
+    }
+
+    .ticket-card-admin-stub::before {
+      top: 26px;
+    }
+
+    .ticket-card-admin-stub::after {
+      bottom: 26px;
+    }
+
+    .ticket-card-admin-stub-label {
+      color: #c8a45d;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
+
+    .ticket-card-admin-stub-title {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+    }
+
+    .ticket-card-admin-ticket-code {
+      color: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      word-break: break-all;
+    }
+
+    .ticket-card-admin-status {
+      color: #c8a45d;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .preview-button {
+      padding: 6px 10px;
+      background: rgba(200, 164, 93, 0.12);
+      color: #e8c778;
+      border: 1px solid rgba(200, 164, 93, 0.35);
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 560px) {
+      .container {
+        padding: 20px;
+      }
+      .btn-danger-outline {
+        margin-left: 0;
+      }
+      .ticket-card-admin {
+        grid-template-columns: 1fr;
+      }
+      .ticket-card-admin-stub {
+        min-height: 130px;
+      }
+      .ticket-card-admin-details {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 560px) {
       .container {
         padding: 20px;
@@ -240,7 +483,116 @@
         margin-left: 0;
       }
     }
+
+    /* Keep admin preview visually identical to the public graduation card */
+    .ticket-card-admin {
+      display: grid !important;
+      grid-template-columns: 23% minmax(0, 55%) 22% !important;
+      min-height: 330px !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(200,164,93,.8) !important;
+      background: #fff8e9 !important;
+    }
+
+    .ticket-card-admin-left,
+    .ticket-card-admin-main,
+    .ticket-card-admin-right {
+      min-width: 0;
+      position: relative;
+    }
+
+    .ticket-card-admin-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 18px;
+      color: #fff;
+      text-align: center;
+      background: linear-gradient(155deg, #0a3557, #041d32);
+      border-right: 1px solid rgba(200,164,93,.7);
+    }
+
+    .ticket-card-admin-left-brand {
+      color: #f6e2ac;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .18em;
+    }
+
+    .ticket-card-admin-left-icon { font-size: 2.2rem; margin: 12px 0 4px; }
+    .ticket-card-admin-left-title { font-size: .85rem; font-weight: 800; letter-spacing: .14em; line-height: 1.55; }
+    .ticket-card-admin-left-script { margin-top: 16px; color: #fff; font-family: 'Segoe Script','Brush Script MT',cursive; font-size: 1.55rem; line-height: 1.05; transform: rotate(-4deg); }
+    .ticket-card-admin-left-foot { color: rgba(255,255,255,.62); font-size: .48rem; letter-spacing: .2em; }
+
+    .ticket-card-admin-main {
+      padding: 25px 25px 20px 28px !important;
+      color: #173957;
+      background:
+        radial-gradient(circle at 88% 8%, rgba(200,164,93,.18), transparent 30%),
+        radial-gradient(circle at 55% 65%, rgba(226,210,169,.18), transparent 38%);
+    }
+
+    .ticket-card-admin-brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .ticket-card-admin-wordmark { color: #003b70; font-size: .8rem; font-weight: 900; letter-spacing: .14em; }
+    .ticket-card-admin-type { color: #8b6a2e !important; border-color: rgba(200,164,93,.48) !important; background: rgba(200,164,93,.1) !important; }
+    .ticket-card-admin-label { color: #003b70; font-size: .58rem; font-weight: 900; letter-spacing: .22em; }
+    .ticket-card-admin-name { margin-top: 8px; color: #173957; font-family: 'Segoe Script','Brush Script MT',cursive; font-size: clamp(1.5rem,3.8vw,2.25rem); font-weight: 600; }
+    .ticket-card-admin-name-small { display: inline-block; margin-top: 5px; color: #173957; font-family: 'Segoe Script','Brush Script MT',cursive; font-size: 1.15rem; font-weight: 600; }
+    .ticket-card-admin-subtitle { margin-top: 7px; color: #315b75; font-size: .68rem; }
+    .ticket-card-admin-details { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 22px; padding-top: 16px; border-top: 1px solid rgba(0,59,112,.18); }
+    .ticket-card-admin-detail-label { color: #8b6a2e; font-size: .5rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .ticket-card-admin-detail-value { margin-top: 4px; color: #173957; font-size: .72rem; font-weight: 800; line-height: 1.35; }
+
+    .ticket-card-admin-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 23px 15px 19px;
+      color: #fff;
+      text-align: center;
+      background: linear-gradient(155deg, #073b5c, #031d30);
+      border-left: 1px solid rgba(200,164,93,.65);
+    }
+
+    .ticket-card-admin-right-label { color: #f6e2ac; font-size: .48rem; font-weight: 900; letter-spacing: .13em; line-height: 1.5; }
+    .ticket-card-admin-countdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin: 10px 0 13px; }
+    .ticket-card-admin-countdown > div { padding: 6px 2px; border: 1px solid rgba(200,164,93,.48); border-radius: 7px; background: rgba(255,255,255,.05); }
+    .ticket-card-admin-countdown b { display: block; color: #fff6d8; font-size: .75rem; }
+    .ticket-card-admin-countdown small { color: rgba(255,255,255,.58); font-size: .36rem; text-transform: uppercase; }
+    .ticket-card-admin-right-message { color: rgba(255,255,255,.86); font-family: 'Segoe Script','Brush Script MT',cursive; font-size: .78rem; line-height: 1.35; }
+    .ticket-card-admin-right-code { padding: 9px 6px; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; background: rgba(255,255,255,.06); }
+    .ticket-card-admin-right-code small { display:block; color: rgba(255,255,255,.55); font-size:.38rem; letter-spacing:.12em; }
+    .ticket-card-admin-right-code strong { display:block; margin-top:4px; color:#f6e2ac; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.58rem; word-break:break-all; }
+    .ticket-card-admin-status { color:#d7f9df; font-size:.5rem; font-weight:800; letter-spacing:.08em; }
+
+    @media (max-width: 620px) {
+      .ticket-card-admin { grid-template-columns: 1fr !important; }
+      .ticket-card-admin-left,
+      .ticket-card-admin-main,
+      .ticket-card-admin-right { border: 0 !important; }
+      .ticket-card-admin-left { min-height: 130px; flex-direction: row; align-items:center; padding:16px 20px; }
+      .ticket-card-admin-left-icon { margin:0; font-size:1.5rem; }
+      .ticket-card-admin-left-script { margin:0; font-size:1.15rem; }
+      .ticket-card-admin-right { min-height:160px; }
+    }
+
+  .ticket-card-admin{display:grid!important;grid-template-columns:18% minmax(0,58%) 24%!important;min-height:360px!important;padding:0!important;overflow:hidden!important;border-radius:18px!important;border:1px solid #c8a45d!important;background:#f8f0df!important;box-shadow:0 22px 55px rgba(0,24,40,.3)!important}.ticket-card-admin-left,.ticket-card-admin-main,.ticket-card-admin-right{position:relative!important;min-width:0!important;box-sizing:border-box!important}.ticket-card-admin-left{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:26px 17px 22px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#0a4265,#031d31)!important;border-right:1px solid rgba(200,164,93,.75)!important}.ticket-card-admin-left-brand{color:#f5dda3!important;font-size:.75rem!important;font-weight:900!important;letter-spacing:.18em!important}.ticket-card-admin-left-icon{margin:22px 0 8px!important;font-size:2.6rem!important}.ticket-card-admin-left-title{font-size:.86rem!important;font-weight:800!important;letter-spacing:.16em!important;line-height:1.55!important}.ticket-card-admin-left-script{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.55rem!important;line-height:1.02!important;transform:rotate(-5deg)!important}.ticket-card-admin-left-foot{color:#f5dda3!important;font-size:.48rem!important;letter-spacing:.2em!important}.ticket-card-admin-main{display:flex!important;flex-direction:column!important;padding:26px 28px 0!important;color:#123d58!important;background:radial-gradient(circle at 78% 35%,rgba(202,218,218,.7),transparent 24%),linear-gradient(145deg,#fffaf0,#f4ead2)!important}.ticket-card-admin-brand{display:flex!important;justify-content:space-between!important;gap:10px!important}.ticket-card-admin-wordmark{color:#123b57!important;font-family:Georgia,serif!important;font-size:1.05rem!important;font-weight:800!important}.ticket-card-admin-type{color:#8b6a2e!important;font-size:.48rem!important;letter-spacing:.1em!important}.ticket-card-admin-label{margin-top:38px!important;color:#123b57!important;font-size:.82rem!important;letter-spacing:.24em!important}.ticket-card-admin-name{margin-top:2px!important;color:#b18427!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:clamp(3rem,6vw,4.9rem)!important;line-height:.9!important;transform:rotate(-4deg)!important}.ticket-card-admin-subtitle{margin-top:24px!important;color:#214f66!important;font-size:.75rem!important;line-height:1.55!important}.ticket-card-admin-details{display:grid!important;grid-template-columns:1fr 1fr!important;gap:0!important;margin-top:auto!important;padding:16px 0!important;border-top:1px solid rgba(18,59,87,.22)!important}.ticket-card-admin-details>div{padding:0 12px!important;border-right:1px solid rgba(18,59,87,.22)!important}.ticket-card-admin-details>div:first-child{padding-left:0!important}.ticket-card-admin-details>div:last-child{border-right:0!important}.ticket-card-admin-detail-label{color:#183f57!important;font-size:.48rem!important;font-weight:900!important}.ticket-card-admin-detail-value{color:#183f57!important;font-size:.72rem!important;font-weight:700!important}.ticket-card-admin-name-small{color:#173c56!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.15rem!important}.ticket-card-admin-right{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:25px 15px 19px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#063c5a,#021d30)!important;border-left:1px solid rgba(200,164,93,.7)!important}.ticket-card-admin-right-label{color:#f5dda3!important;font-size:.5rem!important;font-weight:800!important;letter-spacing:.13em!important}.ticket-card-admin-countdown{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;margin:10px 0 15px!important}.ticket-card-admin-countdown>div{padding:7px 2px!important;border:1px solid rgba(200,164,93,.55)!important;border-radius:7px!important}.ticket-card-admin-countdown b{display:block!important;color:#f8e6ad!important;font-size:.78rem!important}.ticket-card-admin-countdown small{color:rgba(255,255,255,.58)!important;font-size:.33rem!important}.ticket-card-admin-right-message{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:.82rem!important;line-height:1.5!important}.ticket-card-admin-right-code{padding:8px!important;border:1px solid rgba(255,255,255,.2)!important}.ticket-card-admin-right-code small{font-size:.4rem!important}.ticket-card-admin-right-code strong{display:block!important;color:#f5dda3!important;font-size:.7rem!important}.ticket-card-admin-status{color:#d7f9df!important;font-size:.5rem!important;font-weight:800!important}@media(max-width:700px){.ticket-card-admin{grid-template-columns:1fr!important}.ticket-card-admin-left{min-height:180px!important;flex-direction:row!important;align-items:center!important}.ticket-card-admin-main{min-height:420px!important}.ticket-card-admin-right{min-height:280px!important}}
   </style>
+<style id="ticket-template-admin-style">
+.ticket-template-card-admin{position:relative;width:100%;max-width:1100px;margin:0 auto;aspect-ratio:1536/1024;overflow:hidden;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.45);background:#eee}
+.ticket-template-image-admin{display:block;width:100%;height:100%;object-fit:cover}
+.ticket-template-name-admin{position:absolute;left:24.4%;top:59.65%;width:28.3%;height:4.35%;display:flex;align-items:center;justify-content:center;padding:0 1.5%;overflow:hidden;background:#fffaf0;border:1.5px solid #c99a27;border-radius:7px;color:#164a78;font-family:Arial,sans-serif;font-size:clamp(10px,1.45vw,22px);font-weight:500;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+@media(max-width:600px){.ticket-template-card-admin{border-radius:10px}.ticket-template-name-admin{border-width:1px;border-radius:4px;font-size:clamp(7px,2.15vw,14px)}}
+</style>
 </head>
 <body>
   <div class="container" id="loginView">
@@ -271,6 +623,7 @@
           <tr>
             <th>#</th>
             <th>Tên khách</th>
+            <th>Lời chúc</th>
             <th>Trạng thái</th>
             <th>Thời gian</th>
             <th>Thao tác</th>
@@ -278,6 +631,16 @@
         </thead>
         <tbody id="guestTableBody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="ticket-modal" id="ticketModal" onclick="if (event.target === this) closeTicketPreview()">
+    <div class="ticket-modal-panel" role="dialog" aria-modal="true" aria-labelledby="ticketModalTitle">
+      <div class="ticket-modal-head">
+        <div class="ticket-modal-title" id="ticketModalTitle">Preview card vé</div>
+        <button type="button" class="ticket-modal-close" onclick="closeTicketPreview()">✕ Đóng</button>
+      </div>
+      <div id="ticketPreview"></div>
     </div>
   </div>
 
@@ -293,6 +656,12 @@
     function showAdminView() {
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('adminView').classList.remove('hidden');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
     }
 
     async function signInAdmin() {
@@ -340,20 +709,25 @@
         if (error) throw error;
 
         if (!data || !data.length) {
-          body.innerHTML = '<tr><td colspan="5" class="empty">Chưa có khách nào được lưu.</td></tr>';
+          body.innerHTML = '<tr><td colspan="6" class="empty">Chưa có khách nào được lưu.</td></tr>';
           status.textContent = `Đã đăng nhập ${user.email}, nhưng database đang rỗng`;
           deleteAllBtn.disabled = true;
           return;
         }
 
         deleteAllBtn.disabled = false;
+        window.adminGuestData = data;
         body.innerHTML = data.map((guest, index) => `
           <tr>
             <td>${index + 1}</td>
-            <td>${guest.name}</td>
-            <td><span class="status-pill">${guest.status || 'confirmed'}</span></td>
+            <td>${escapeHtml(guest.name)}</td>
+            <td style="max-width:320px; white-space:pre-wrap; line-height:1.45;">${escapeHtml(guest.wish || '—')}</td>
+            <td><span class="status-pill">${escapeHtml(guest.status || 'confirmed')}</span></td>
             <td>${new Date(guest.created_at).toLocaleString('vi-VN')}</td>
-            <td><button class="delete-button" type="button" onclick="deleteGuest('${guest.id}')">Xóa</button></td>
+            <td>
+              <button class="preview-button" type="button" onclick="openTicketPreviewByIndex(${index})">🎟️ Card</button>
+              <button class="delete-button" type="button" onclick="deleteGuest('${guest.id}')">Xóa</button>
+            </td>
           </tr>
         `).join('');
 
@@ -361,9 +735,39 @@
       } catch (err) {
         console.error(err);
         status.textContent = `Không đọc được database: ${err.message}`;
-        body.innerHTML = '<tr><td colspan="5" class="empty">Lỗi tải dữ liệu.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" class="empty">Lỗi tải dữ liệu.</td></tr>';
       }
     }
+
+    function openTicketPreviewByIndex(index) {
+      const guest = window.adminGuestData?.[index];
+      if (!guest) return;
+      openTicketPreview(guest);
+    }
+
+    function openTicketPreview(guest) {
+      const modal = document.getElementById('ticketModal');
+      const preview = document.getElementById('ticketPreview');
+      const name = escapeHtml(guest?.name || 'Khách mời');
+
+      preview.innerHTML =
+        '<article class="ticket-template-card-admin">' +
+          '<img class="ticket-template-image-admin" src="assets/Card.png" alt="HUTECH Graduation Ticket">' +
+          '<div class="ticket-template-name-admin">' + name + '</div>' +
+        '</article>';
+
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeTicketPreview() {
+      document.getElementById('ticketModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') closeTicketPreview();
+    });
 
     (async function restoreAdminSession() {
       if (!supabaseClient) return;
@@ -377,7 +781,7 @@
     async function exportGuests() {
       const { data, error } = await supabaseClient
         .from('guests')
-        .select('name, status, created_at')
+        .select('name, wish, status, created_at')
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -390,10 +794,11 @@
         return;
       }
 
-      const header = 'STT,Tên khách,Trạng thái,Thời gian';
+      const header = 'STT,Tên khách,Lời chúc,Trạng thái,Thời gian';
       const rows = data.map((guest, index) => [
         index + 1,
         guest.name,
+        guest.wish || '',
         guest.status || 'confirmed',
         new Date(guest.created_at).toLocaleString('vi-VN')
       ].map(value => `"${String(value).replace(/"/g, '""')}"`).join(','));
