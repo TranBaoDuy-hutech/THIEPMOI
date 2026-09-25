@@ -1,0 +1,4015 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thiệp Mời Tốt Nghiệp — Trần Bảo Duy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="guest-db.js"></script>
+  <style>
+    :root {
+      --bg-void: #030711;
+      --bg-card: rgba(9, 14, 26, 0.92);
+      --accent-cyan: #22d3ee;
+      --accent-cyan-dim: #0e7490;
+      --accent-cyan-rgb: 34, 211, 238;
+      --accent-green: #34d399;
+      --text-primary: #f1f5f9;
+      --text-secondary: #5b6b85;
+      --text-light: #94a3b8;
+      --neon-glow: 0 0 22px rgba(var(--accent-cyan-rgb), 0.35);
+      --neon-glow-green: 0 0 18px rgba(52, 211, 153, 0.28);
+      --hairline: rgba(148, 163, 184, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Boot sequence overlay */
+    .boot-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-void);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .boot-overlay.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .boot-console {
+      width: min(300px, 82vw);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .boot-line {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      margin-bottom: 7px;
+      opacity: 0;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .boot-progress {
+      height: 4px;
+      background: rgba(var(--accent-cyan-rgb), 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .boot-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      transition: width 0.18s ease;
+    }
+
+    .boot-status {
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    /* Cursor ambient glow */
+    .cursor-glow {
+      position: fixed;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--accent-cyan-rgb), 0.1), transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      filter: blur(2px);
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 2px;
+    }
+
+    /* Background grid, no rain — a still, disciplined signal instead of noise */
+    #gridCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -10;
+      pointer-events: none;
+    }
+
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -9;
+      pointer-events: none;
+    }
+
+    #fallCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -8;
+      pointer-events: none;
+    }
+
+    /* Subtle CRT vignette + scanline sheen over the whole page */
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.35) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 3px);
+      mix-blend-mode: overlay;
+      opacity: 0.6;
+    }
+
+    /* Control Panel */
+    .control-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 1.5rem;
+      z-index: 10;
+    }
+
+    .mode-switch-container {
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid var(--hairline);
+      padding: 4px;
+      border-radius: 30px;
+      display: flex;
+      gap: 4px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-cyan);
+      color: #04141a;
+      font-weight: 700;
+      box-shadow: var(--neon-glow);
+    }
+
+    .audio-toggle {
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid var(--hairline);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    .audio-toggle:hover {
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: var(--neon-glow);
+      transform: translateY(-1px);
+    }
+
+    .audio-toggle.is-on {
+      color: var(--accent-cyan);
+      border-color: rgba(var(--accent-cyan-rgb), 0.75);
+      box-shadow: var(--neon-glow);
+    }
+
+    .audio-toggle.is-off {
+      color: var(--text-muted);
+      border-color: var(--hairline);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .audio-toggle:active {
+      transform: scale(0.94);
+    }
+
+    @keyframes audioPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(var(--accent-cyan-rgb), 0.55);
+      }
+
+      50% {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(var(--accent-cyan-rgb), 0);
+      }
+    }
+
+    .audio-toggle.pulse-hint {
+      animation: audioPulse 2.2s infinite ease-in-out;
+      border-color: rgba(var(--accent-cyan-rgb), 0.6);
+      color: var(--accent-cyan);
+    }
+
+    /* App Views */
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      perspective: 1200px;
+      z-index: 5;
+    }
+
+    .view-wrapper {
+      position: relative;
+      width: 100%;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .app-view {
+      width: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transition: opacity 0.35s ease-in-out;
+    }
+
+    .visual-view {
+      position: relative;
+      width: 100%;
+      z-index: 2;
+      transform: rotateY(0deg);
+    }
+
+    .code-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transform: rotateY(180deg);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .app-container.show-code-mode .view-wrapper {
+      transform: rotateY(180deg);
+    }
+
+    .app-container.show-code-mode .visual-view {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .app-container.show-code-mode .code-view {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+      transform: rotateY(180deg);
+      z-index: 2;
+    }
+
+    /* VISUAL MODE: Card Styling with a single disciplined signal sweep */
+    .card-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: 28px;
+      box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.95), 0 0 30px rgba(var(--accent-cyan-rgb), 0.05);
+      transition: transform 0.1s ease-out;
+      padding: 1.5px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .card-wrap::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg,
+          transparent 0deg,
+          var(--accent-cyan) 40deg,
+          transparent 90deg,
+          transparent 360deg);
+      animation: rotateBorder 6s linear infinite;
+      z-index: 1;
+      opacity: 0.75;
+    }
+
+    @keyframes rotateBorder {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 27px;
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(24px);
+      width: 100%;
+      z-index: 2;
+    }
+
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgba(var(--accent-cyan-rgb), 0.18), transparent 45%);
+      transition: opacity 0.35s ease;
+    }
+
+    .card-wrap:hover .card-glare {
+      opacity: 1;
+    }
+
+    .card-wrap {
+      z-index: 2;
+    }
+
+    /* Soft pulsing aura glowing behind the card */
+    .card-aura {
+      position: absolute;
+      inset: -50px;
+      z-index: 1;
+      border-radius: 48px;
+      background: radial-gradient(ellipse at center, rgba(var(--accent-cyan-rgb), 0.16), rgba(52, 211, 153, 0.06) 45%, transparent 72%);
+      filter: blur(6px);
+      animation: auraPulse 4.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes auraPulse {
+
+      0%,
+      100% {
+        opacity: 0.55;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.045);
+      }
+    }
+
+    /* Sparkles + graduation cap gently orbiting the card */
+    .card-orbit {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .orbit-particle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 0.95rem;
+      line-height: 1;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 10px rgba(var(--accent-cyan-rgb), 0.85);
+      opacity: 0;
+      will-change: transform, opacity;
+      animation-name: orbitFloat;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes orbitFloat {
+      0% {
+        transform: rotate(0deg) translateX(var(--orbit-r, 230px)) rotate(0deg) scale(0.85);
+        opacity: 0;
+      }
+
+      6% {
+        opacity: 0.85;
+      }
+
+      50% {
+        opacity: 0.45;
+      }
+
+      94% {
+        opacity: 0.85;
+      }
+
+      100% {
+        transform: rotate(360deg) translateX(var(--orbit-r, 230px)) rotate(-360deg) scale(0.85);
+        opacity: 0;
+      }
+    }
+
+    .orbit-particle.p1 {
+      --orbit-r: 250px;
+      animation-duration: 16s;
+      animation-delay: -1s;
+    }
+
+    .orbit-particle.p2 {
+      --orbit-r: 210px;
+      animation-duration: 13s;
+      animation-delay: -6s;
+      animation-direction: reverse;
+      color: var(--accent-green);
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.85);
+      font-size: 0.8rem;
+    }
+
+    .orbit-particle.p3 {
+      --orbit-r: 270px;
+      animation-duration: 20s;
+      animation-delay: -11s;
+      font-size: 0.7rem;
+    }
+
+    .orbit-particle.p4 {
+      --orbit-r: 195px;
+      animation-duration: 11s;
+      animation-delay: -3s;
+      animation-direction: reverse;
+      color: var(--accent-green);
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.85);
+      font-size: 0.65rem;
+    }
+
+    .orbit-particle.p5 {
+      --orbit-r: 235px;
+      animation-duration: 22s;
+      animation-delay: -8s;
+      font-size: 1.15rem;
+      filter: drop-shadow(0 0 8px rgba(var(--accent-cyan-rgb), 0.6));
+    }
+
+    .orbit-particle.p6 {
+      --orbit-r: 155px;
+      animation-duration: 9s;
+      animation-delay: -4.5s;
+      font-size: 0.6rem;
+    }
+
+    @media (max-width: 480px) {
+      .orbit-particle.p1 {
+        --orbit-r: 190px;
+      }
+
+      .orbit-particle.p2 {
+        --orbit-r: 160px;
+      }
+
+      .orbit-particle.p3 {
+        --orbit-r: 205px;
+      }
+
+      .orbit-particle.p4 {
+        --orbit-r: 148px;
+      }
+
+      .orbit-particle.p5 {
+        --orbit-r: 178px;
+      }
+
+      .orbit-particle.p6 {
+        --orbit-r: 120px;
+      }
+    }
+
+    .hud-corner {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--accent-cyan);
+      opacity: 0.5;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .hud-corner.top-left {
+      top: 14px;
+      left: 14px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .hud-corner.top-right {
+      top: 14px;
+      right: 14px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .hud-corner.bottom-left {
+      bottom: 14px;
+      left: 14px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .hud-corner.bottom-right {
+      bottom: 14px;
+      right: 14px;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* Corner sash: short, visible, never blocks content */
+    .corner-sash {
+      position: absolute;
+      top: 18px;
+      right: -58px;
+      z-index: 11;
+      transform: rotate(32deg);
+      width: 230px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.18), rgba(52, 211, 153, 0.12));
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.26);
+      box-shadow: var(--neon-glow);
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .corner-sash::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.12) 50%, transparent 58%);
+      transform: translateX(-160%);
+      animation: cornerSashShine 6.4s ease-in-out infinite;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    @keyframes cornerSashShine {
+
+      0%,
+      62% {
+        transform: translateX(-160%);
+      }
+
+      100% {
+        transform: translateX(160%);
+      }
+    }
+
+    .corner-sash .line {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .corner-sash .school {
+      font-size: 0.64rem;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .corner-sash .faculty {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .corner-sash .sep {
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.75);
+      margin: 0 -2px;
+    }
+
+    @media (max-width: 420px) {
+      .corner-sash {
+        top: 16px;
+        right: -70px;
+        width: 210px;
+        padding: 8px 10px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .corner-sash {
+        top: 14px;
+        right: -78px;
+        width: 190px;
+        padding: 7px 9px;
+      }
+
+      .corner-sash .school {
+        font-size: 0.58rem;
+      }
+
+      .corner-sash .faculty {
+        font-size: 0.54rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .corner-sash::after {
+        animation: none;
+      }
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgba(var(--accent-cyan-rgb), 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--accent-cyan-rgb), 0.035) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.85;
+    }
+
+    .glow {
+      position: absolute;
+      z-index: -1;
+      top: -90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 350px;
+      height: 220px;
+      background: radial-gradient(ellipse at center, rgba(var(--accent-cyan-rgb), 0.22), transparent 70%);
+      pointer-events: none;
+    }
+
+    .content {
+      padding: 2.6rem 2.2rem 0;
+    }
+
+    .sys-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sys-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sys-dot.online {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
+
+    .sys-item.live-counter {
+      font-variant-numeric: tabular-nums;
+      color: var(--accent-cyan);
+    }
+
+    .sys-item.live-counter .tick {
+      display: inline-block;
+      animation: tickPop 0.35s ease;
+    }
+
+    @keyframes tickPop {
+      0% {
+        transform: translateY(-4px);
+        opacity: 0.3;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      animation: glitchFlicker 9s infinite;
+    }
+
+    @keyframes glitchFlicker {
+
+      0%,
+      96%,
+      100% {
+        text-shadow: none;
+        transform: translate(0, 0);
+      }
+
+      97% {
+        text-shadow: -2px 0 var(--accent-cyan), 2px 0 var(--accent-green);
+        transform: translate(-1px, 0);
+      }
+
+      98% {
+        text-shadow: 2px 0 var(--accent-cyan), -2px 0 var(--accent-green);
+        transform: translate(1px, 0);
+      }
+
+      99% {
+        text-shadow: none;
+        transform: translate(0, 0);
+      }
+    }
+
+    .eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+      }
+
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(52, 211, 153, 0);
+      }
+
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+      }
+    }
+
+    .headline {
+      margin: 1rem 0 0.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.15rem, 8.5vw, 2.9rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 25%, #bff6fc 55%, var(--accent-cyan) 85%);
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 6s ease-in-out infinite;
+      cursor: default;
+      position: relative;
+    }
+
+    /* RGB-split glitch triggered on hover/tap */
+    .headline.glitch-active {
+      animation: gradientShift 6s ease-in-out infinite, headlineShake 0.35s steps(2, end);
+    }
+
+    .headline.glitch-active::before,
+    .headline.glitch-active::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      -webkit-background-clip: initial;
+      background-clip: initial;
+      background: none;
+      overflow: hidden;
+    }
+
+    .headline.glitch-active::before {
+      color: var(--accent-cyan);
+      opacity: 0.75;
+      animation: glitchSliceA 0.35s steps(2, end);
+    }
+
+    .headline.glitch-active::after {
+      color: var(--accent-green);
+      opacity: 0.75;
+      animation: glitchSliceB 0.35s steps(2, end);
+    }
+
+    @keyframes headlineShake {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      20% {
+        transform: translate(-2px, 1px);
+      }
+
+      40% {
+        transform: translate(2px, -1px);
+      }
+
+      60% {
+        transform: translate(-1px, 0);
+      }
+
+      80% {
+        transform: translate(1px, 1px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes glitchSliceA {
+      0% {
+        clip-path: inset(0 0 85% 0);
+        transform: translate(-3px, -1px);
+      }
+
+      25% {
+        clip-path: inset(20% 0 60% 0);
+        transform: translate(3px, 1px);
+      }
+
+      50% {
+        clip-path: inset(55% 0 20% 0);
+        transform: translate(-2px, 0);
+      }
+
+      75% {
+        clip-path: inset(10% 0 70% 0);
+        transform: translate(2px, -1px);
+      }
+
+      100% {
+        clip-path: inset(0 0 100% 0);
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes glitchSliceB {
+      0% {
+        clip-path: inset(70% 0 5% 0);
+        transform: translate(3px, 1px);
+      }
+
+      25% {
+        clip-path: inset(35% 0 40% 0);
+        transform: translate(-3px, -1px);
+      }
+
+      50% {
+        clip-path: inset(5% 0 75% 0);
+        transform: translate(2px, 0);
+      }
+
+      75% {
+        clip-path: inset(60% 0 15% 0);
+        transform: translate(-2px, 1px);
+      }
+
+      100% {
+        clip-path: inset(100% 0 0 0);
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes gradientShift {
+
+      0%,
+      100% {
+        background-position: 0% center;
+      }
+
+      50% {
+        background-position: 100% center;
+      }
+    }
+
+    .subhead {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 1.05rem;
+      color: var(--text-light);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .subhead-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: rgba(var(--accent-cyan-rgb), 0.1);
+      color: var(--accent-cyan);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+    }
+
+    .school-line {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .school-line strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .photo-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 0.4rem 0 1.2rem;
+    }
+
+    .photo-frame {
+      width: min(220px, 72vw);
+      aspect-ratio: 1 / 1;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35), var(--neon-glow);
+      background: rgba(255, 255, 255, 0.04);
+      position: relative;
+    }
+
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
+      transform: translateX(-150%);
+      animation: photoShine 5.5s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    @keyframes photoShine {
+
+      0%,
+      55% {
+        transform: translateX(-150%);
+      }
+
+      100% {
+        transform: translateX(150%);
+      }
+    }
+
+    .photo-frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.2s ease;
+    }
+
+    .photo-frame:hover img {
+      animation: photoGlitch 0.7s steps(6, end);
+    }
+
+    @keyframes photoGlitch {
+      0% {
+        clip-path: inset(0 0 0 0);
+        transform: translate(0, 0);
+        filter: hue-rotate(0deg);
+      }
+
+      15% {
+        clip-path: inset(10% 0 60% 0);
+        transform: translate(-4px, 0);
+        filter: hue-rotate(20deg);
+      }
+
+      30% {
+        clip-path: inset(50% 0 10% 0);
+        transform: translate(4px, 0);
+        filter: hue-rotate(-15deg);
+      }
+
+      45% {
+        clip-path: inset(20% 0 40% 0);
+        transform: translate(-2px, 0);
+        filter: hue-rotate(10deg);
+      }
+
+      60% {
+        clip-path: inset(0 0 75% 0);
+        transform: translate(3px, 0);
+        filter: hue-rotate(-10deg);
+      }
+
+      80% {
+        clip-path: inset(65% 0 5% 0);
+        transform: translate(-1px, 0);
+        filter: hue-rotate(5deg);
+      }
+
+      100% {
+        clip-path: inset(0 0 0 0);
+        transform: translate(0, 0);
+        filter: hue-rotate(0deg);
+      }
+    }
+
+    .photo-frame:hover {
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35), 0 0 26px rgba(var(--accent-cyan-rgb), 0.45);
+    }
+
+    .avatar-fallback {
+      display: none;
+      position: absolute;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.4rem;
+      background:
+        linear-gradient(rgba(var(--accent-cyan-rgb), 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--accent-cyan-rgb), 0.05) 1px, transparent 1px),
+        radial-gradient(ellipse at center, rgba(var(--accent-cyan-rgb), 0.12), transparent 75%);
+      background-size: 18px 18px, 18px 18px, 100% 100%;
+    }
+
+    .avatar-fallback .monogram {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 3.2rem;
+      letter-spacing: -0.02em;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 24px rgba(var(--accent-cyan-rgb), 0.4);
+    }
+
+    .avatar-fallback .caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .phone-link {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      justify-content: center;
+      margin: 0 0 1rem;
+    }
+
+    .tag-pill {
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      background: rgba(var(--accent-cyan-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+    }
+
+    .formal-note {
+      padding: 1rem 1.05rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline);
+      margin-bottom: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+
+    .formal-note p {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--text-light);
+    }
+
+    .trace {
+      display: flex;
+      align-items: center;
+      margin: 0 0 1.5rem;
+    }
+
+    .trace .line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(var(--accent-cyan-rgb), 0.18) 20%, rgba(var(--accent-cyan-rgb), 0.18) 80%, transparent);
+    }
+
+    .trace .node {
+      width: 6px;
+      height: 6px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      margin: 0 8px;
+      box-shadow: var(--neon-glow);
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 400px) {
+      .info-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .info-chip {
+      background: rgba(13, 21, 38, 0.55);
+      border: 1px solid var(--hairline);
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      transition: all 0.3s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-chip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(var(--accent-cyan-rgb), 0.05), transparent);
+      pointer-events: none;
+    }
+
+    .info-chip:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(13, 21, 38, 0.85);
+      box-shadow: var(--neon-glow);
+      transform: translateY(-2px);
+    }
+
+    .info-chip .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .info-chip .value {
+      font-size: 0.88rem;
+      color: #ffffff;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    /* Utility Buttons */
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .action-btn {
+      background: rgba(9, 14, 26, 0.85);
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.22);
+      color: #ffffff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      box-shadow: var(--neon-glow);
+      transform: translateY(-3px);
+    }
+
+    .action-btn.is-loading {
+      pointer-events: none;
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .action-btn.is-success {
+      pointer-events: none;
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+      box-shadow: var(--neon-glow-green);
+    }
+
+    .btn-spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(var(--accent-cyan-rgb), 0.25);
+      border-top-color: var(--accent-cyan);
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .btn-check {
+      display: inline-flex;
+      animation: fadeInUp 0.3s ease both;
+    }
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .perforation {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+
+    .perforation .notch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg-void);
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .perforation .notch.left {
+      margin-left: -10px;
+    }
+
+    .perforation .notch.right {
+      margin-right: -10px;
+    }
+
+    .perforation .dashes {
+      flex: 1;
+      height: 0;
+      border-top: 1.5px dashed rgba(var(--accent-cyan-rgb), 0.2);
+    }
+
+    .stub {
+      padding: 1.2rem 2.2rem 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .qr-ring-wrap {
+      position: relative;
+    }
+
+    .qr-pulse-ring {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid var(--accent-cyan);
+      opacity: 0;
+      animation: qrPulse 2.6s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes qrPulse {
+      0% {
+        opacity: 0.55;
+        transform: translateX(-50%) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(1.4);
+      }
+    }
+
+    .qr-container {
+      width: 112px;
+      height: 112px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      border: 4px solid #fff;
+      background: #fff;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(var(--accent-cyan-rgb), 0.35), 0 8px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .qr-container img,
+    .qr-container canvas,
+    .qr-container table {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0;
+    }
+
+    .qr-container .scan-line {
+      display: none;
+    }
+
+    .qr-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-cyan);
+      box-shadow: var(--neon-glow), 0 0 8px var(--accent-cyan);
+      animation: laserScan 2.4s ease-in-out infinite;
+    }
+
+    .schedule-log {
+      padding: 1rem 1.05rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline);
+      margin-bottom: 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .schedule-log .log-title {
+      font-size: 0.62rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .schedule-log .log-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
+
+    .log-line {
+      display: flex;
+      gap: 0.7rem;
+      font-size: 0.78rem;
+      line-height: 1.9;
+      color: var(--text-light);
+    }
+
+    .log-line .ts {
+      color: var(--accent-cyan);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .log-line .arrow {
+      color: var(--accent-green);
+    }
+
+    .sign-off {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      margin-bottom: 1.4rem;
+      line-height: 1.6;
+    }
+
+    /* Entrance choreography */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-wrap {
+      animation: cardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: scale(0.97) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .content>* {
+      animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .content>*:nth-child(1) {
+      animation-delay: 0.08s;
+    }
+
+    .content>*:nth-child(2) {
+      animation-delay: 0.14s;
+    }
+
+    .content>*:nth-child(3) {
+      animation-delay: 0.20s;
+    }
+
+    .content>*:nth-child(4) {
+      animation-delay: 0.26s;
+    }
+
+    .content>*:nth-child(5) {
+      animation-delay: 0.32s;
+    }
+
+    .content>*:nth-child(6) {
+      animation-delay: 0.38s;
+    }
+
+    .content>*:nth-child(7) {
+      animation-delay: 0.44s;
+    }
+
+    .content>*:nth-child(8) {
+      animation-delay: 0.50s;
+    }
+
+    .content>*:nth-child(9) {
+      animation-delay: 0.56s;
+    }
+
+    .content>*:nth-child(10) {
+      animation-delay: 0.62s;
+    }
+
+    .content>*:nth-child(11) {
+      animation-delay: 0.68s;
+    }
+
+    .content>*:nth-child(12) {
+      animation-delay: 0.74s;
+    }
+
+    .content>*:nth-child(13) {
+      animation-delay: 0.80s;
+    }
+
+    .terminal-wrap {
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+    }
+
+    /* Ripple feedback on buttons */
+    .action-btn,
+    .terminal-btn,
+    .mode-btn,
+    .audio-toggle,
+    .ide-run-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(0);
+      animation: rippleAnim 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(3.2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes laserScan {
+
+      0%,
+      100% {
+        top: 0%;
+      }
+
+      50% {
+        top: 94%;
+      }
+    }
+
+    .status-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent-green);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+    }
+
+    .status-line::after {
+      content: "";
+      width: 6px;
+      height: 12px;
+      background: var(--accent-green);
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      50% {
+        opacity: 1;
+      }
+
+      51%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .footer-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      letter-spacing: 0.04em;
+    }
+
+    /* CODE MODE: VS Code Mockup */
+    .ide-card {
+      background: #050910;
+      border-radius: 24px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.16);
+      overflow: hidden;
+      box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.95), var(--neon-glow);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .ide-header {
+      background: #0a0f1d;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .ide-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ide-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .ide-dot.red {
+      background: #ff5f56;
+    }
+
+    .ide-dot.yellow {
+      background: #ffbd2e;
+    }
+
+    .ide-dot.green {
+      background: #27c93f;
+    }
+
+    .ide-title {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .ide-run-btn {
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .ide-run-btn:hover {
+      background: var(--accent-green);
+      color: #050811;
+      box-shadow: var(--neon-glow-green);
+      transform: translateY(-1px);
+    }
+
+    .ide-main {
+      display: flex;
+      height: 390px;
+    }
+
+    .ide-sidebar {
+      width: 48px;
+      background: #03060c;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 14px;
+      gap: 18px;
+      color: #475569;
+    }
+
+    .ide-sidebar-icon {
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .ide-sidebar-icon.active {
+      color: var(--accent-cyan);
+      filter: drop-shadow(0 0 5px var(--accent-cyan));
+    }
+
+    .ide-editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #060a12;
+    }
+
+    .ide-tabs {
+      background: #03060c;
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .ide-tab {
+      padding: 10px 18px;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      background: #03060c;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .ide-tab.active {
+      background: #060a12;
+      color: #ffffff;
+      border-top: 2.5px solid var(--accent-cyan);
+    }
+
+    .ide-editor {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .code-keyword {
+      color: #f472b6;
+    }
+
+    .code-string {
+      color: #34d399;
+    }
+
+    .code-number {
+      color: #fb923c;
+    }
+
+    .code-property {
+      color: #60a5fa;
+    }
+
+    .code-comment {
+      color: #64748b;
+      font-style: italic;
+    }
+
+    /* RSVP TERMINAL */
+    .terminal-wrap {
+      margin-top: 1.5rem;
+      background: rgba(5, 9, 18, 0.95);
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+      border-radius: 20px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(15px);
+    }
+
+    .terminal-header {
+      background: rgba(10, 16, 30, 0.95);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .terminal-body {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .terminal-prompt {
+      color: var(--accent-cyan);
+    }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      border-bottom: 1px dashed rgba(var(--accent-cyan-rgb), 0.2);
+      padding-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .guest-manager {
+      margin-top: 12px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+      border-radius: 12px;
+      background: rgba(10, 16, 30, 0.7);
+      padding: 12px;
+    }
+
+    .guest-manager-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .guest-count {
+      color: var(--text-light);
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .guest-manager-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .guest-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.12);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-primary);
+      font-size: 0.75rem;
+    }
+
+    .guest-empty {
+      color: var(--text-light);
+      font-size: 0.74rem;
+      padding: 8px 4px;
+      opacity: 0.9;
+    }
+
+    .guest-remove-btn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .guest-manager-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .guest-action-btn {
+      background: var(--accent-cyan);
+      border: none;
+      color: #04141a;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .guest-action-btn.secondary {
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--text-primary);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .guest-action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--neon-glow);
+    }
+
+    .terminal-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--accent-green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      /* Prevents auto-zoom on iOS Safari */
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .terminal-input:focus-visible {
+      outline: none;
+    }
+
+    .terminal-btn {
+      background: var(--accent-green);
+      border: none;
+      color: #052018;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .terminal-btn:hover {
+      box-shadow: var(--neon-glow-green);
+      transform: translateY(-1px);
+    }
+
+    .terminal-btn:active {
+      transform: translateY(0);
+    }
+
+    .terminal-btn.secondary {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-light);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .terminal-btn.secondary:hover {
+      background: rgba(148, 163, 184, 0.25);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(148, 163, 184, 0.2);
+    }
+
+    .location-chip {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .location-chip:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px rgba(var(--accent-cyan-rgb), 0.22);
+      transform: translateY(-1px);
+    }
+
+    .terminal-line {
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    /* Audio notification popup */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #050910;
+      border: 1px solid var(--accent-cyan);
+      padding: 12px 20px;
+      border-radius: 12px;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      z-index: 100;
+      box-shadow: var(--neon-glow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(150px);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .view-wrapper,
+      .card-wrap::before,
+      .scan-line,
+      .eyebrow,
+      .eyebrow .dot,
+      .status-line::after,
+      .headline,
+      .photo-frame::after,
+      .qr-pulse-ring,
+      .card-wrap,
+      .content>*,
+      .terminal-wrap,
+      .ripple,
+      .cursor-glow,
+      .card-glare,
+      .card-aura,
+      .orbit-particle {
+        animation: none;
+        transition: none;
+      }
+
+      .card-aura,
+      .card-orbit {
+        display: none;
+      }
+
+      .app-container.show-code-mode .view-wrapper {
+        transform: none;
+      }
+
+      .code-view,
+      .app-container.show-code-mode .code-view {
+        transform: none;
+      }
+    }
+
+    /* ============ ACHIEVEMENT / GAMIFICATION SYSTEM ============ */
+    .trophy-toggle {
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid var(--hairline);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    .trophy-toggle:hover {
+      color: #fbbf24;
+      border-color: #fbbf24;
+      box-shadow: 0 0 22px rgba(251, 191, 36, 0.35);
+    }
+
+    .trophy-badge-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 3px;
+      border-radius: 999px;
+      background: #fbbf24;
+      color: #1a1300;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+
+    .achv-panel {
+      position: fixed;
+      top: 68px;
+      right: max(1rem, calc(50% - 240px));
+      width: min(300px, 86vw);
+      background: rgba(6, 10, 20, 0.97);
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      border-radius: 18px;
+      padding: 14px;
+      z-index: 250;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), 0 0 30px rgba(251, 191, 36, 0.08);
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .achv-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .achv-panel-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fbbf24;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .achv-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 6px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+      transition: background 0.2s;
+    }
+
+    .achv-item.unlocked {
+      background: rgba(251, 191, 36, 0.06);
+    }
+
+    .achv-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hairline);
+      filter: grayscale(1) opacity(0.4);
+    }
+
+    .achv-item.unlocked .achv-icon {
+      filter: none;
+      background: rgba(251, 191, 36, 0.14);
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+
+    .achv-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .achv-text .t {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .achv-item.unlocked .achv-text .t {
+      color: #ffffff;
+    }
+
+    .achv-text .d {
+      font-size: 0.64rem;
+      color: var(--text-secondary);
+    }
+
+    /* Achievement unlock toast (gold variant) */
+    .toast.achv {
+      border-color: #fbbf24;
+      box-shadow: 0 0 22px rgba(251, 191, 36, 0.35);
+    }
+
+    .toast.achv svg {
+      color: #fbbf24 !important;
+    }
+
+    /* Matrix rain canvas — hidden until hacker mode unlocked */
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 400;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    #matrixCanvas.active {
+      opacity: 0.92;
+    }
+
+    /* Full-screen flash + shake for the hacker-mode easter egg */
+    .screen-flash {
+      position: fixed;
+      inset: 0;
+      background: var(--accent-cyan);
+      z-index: 450;
+      opacity: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .screen-flash.fire {
+      animation: screenFlashAnim 0.5s ease-out;
+    }
+
+    @keyframes screenFlashAnim {
+      0% {
+        opacity: 0.75;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    body.hacker-shake {
+      animation: hackerShake 0.4s steps(3, end) 2;
+    }
+
+    @keyframes hackerShake {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(-6px, 3px);
+      }
+
+      50% {
+        transform: translate(5px, -4px);
+      }
+
+      75% {
+        transform: translate(-4px, 2px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    /* Hacker-mode banner shown briefly across the top */
+    .hacker-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #030711, var(--accent-cyan), #030711);
+      color: #04141a;
+      z-index: 460;
+      transform: translateY(-100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hacker-banner.show {
+      transform: translateY(0);
+    }
+
+    /* Secret message card revealed after the easter egg */
+    .secret-message {
+      position: fixed;
+      inset: 0;
+      z-index: 470;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 4, 10, 0.88);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      padding: 1.5rem;
+    }
+
+    .secret-message.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .secret-card {
+      max-width: 380px;
+      background: rgba(9, 14, 26, 0.97);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 20px;
+      padding: 1.8rem;
+      text-align: center;
+      box-shadow: var(--neon-glow), 0 40px 80px -20px rgba(0, 0, 0, 0.9);
+      transform: scale(0.9);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .secret-message.show .secret-card {
+      transform: scale(1);
+    }
+
+    .secret-card .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+
+    .secret-card p {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+      margin-bottom: 1.1rem;
+    }
+
+    .secret-card button {
+      background: var(--accent-cyan);
+      color: #04141a;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .konami-hint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.56rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 0.6rem;
+      opacity: 0.5;
+      letter-spacing: 0.03em;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      #matrixCanvas,
+      .screen-flash.fire,
+      body.hacker-shake,
+      .hacker-banner,
+      .secret-message,
+      .secret-message .secret-card,
+      .achv-panel {
+        animation: none;
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="boot-overlay" id="bootOverlay" aria-hidden="true">
+    <div class="boot-console">
+      <div class="boot-line" style="animation-delay:0.1s">[BOOT] Initializing invitation.exe</div>
+      <div class="boot-line" style="animation-delay:0.35s">[ OK ] Loading graduate profile</div>
+      <div class="boot-line" style="animation-delay:0.6s">[ OK ] Establishing secure connection</div>
+      <div class="boot-line" style="animation-delay:0.85s">[ OK ] Rendering interface</div>
+      <div class="boot-progress">
+        <div class="boot-progress-bar" id="bootBar"></div>
+      </div>
+      <div class="boot-status" id="bootStatus">0%</div>
+    </div>
+  </div>
+
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- Background music. This is a video container because the source is an MP4. -->
+  <video id="bgMusic" src="music/background.mp4" autoplay loop playsinline preload="auto"
+    aria-hidden="true"
+    style="position: fixed; inset: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none;"></video>
+
+  <canvas id="gridCanvas" aria-hidden="true"></canvas>
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <canvas id="fallCanvas" aria-hidden="true"></canvas>
+  <canvas id="matrixCanvas" aria-hidden="true"></canvas>
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="screen-flash" id="screenFlash" aria-hidden="true"></div>
+  <div class="hacker-banner" id="hackerBanner" aria-hidden="true">⚡ ACCESS GRANTED — HACKER MODE ENGAGED ⚡</div>
+
+  <div class="secret-message" id="secretMessage" role="dialog" aria-modal="true" aria-label="Lời nhắn bí mật">
+    <div class="secret-card">
+      <div class="tag">// decrypted_message.txt</div>
+      <p id="secretMessageText">🎉 Bạn đã mở khóa Easter Egg bí mật! Đúng chất dân IT: luôn tò mò, thích khám phá và
+        không ngại tìm hiểu đến tận cùng. Cảm ơn bạn đã dành thời gian với tấm thiệp này. Hẹn gặp bạn tại lễ tốt
+        nghiệp! 🎓✨</p>
+      <button onclick="closeSecretMessage()">Đóng cổng bí mật</button>
+    </div>
+  </div>
+
+  <div class="control-panel">
+    <div class="mode-switch-container" role="tablist" aria-label="Chuyển đổi giao diện thiệp mời">
+      <button class="mode-btn active" id="btnVisualMode" onclick="toggleMode('visual')" role="tab" aria-selected="true">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+        </svg>
+        Visual Card
+      </button>
+      <button class="mode-btn" id="btnCodeMode" onclick="toggleMode('code')" role="tab" aria-selected="false">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+        </svg>
+        Developer IDE
+      </button>
+    </div>
+    <button class="audio-toggle pulse-hint is-on" id="audioToggle" onclick="toggleAudio()"
+      aria-label="Tắt nhạc nền" aria-pressed="true" title="Tắt nhạc nền">
+      <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-4.02 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+      </svg>
+    </button>
+    <button class="trophy-toggle" id="trophyToggle" onclick="toggleAchvPanel()" aria-label="Xem thành tích"
+      title="Thành tích đã mở khóa">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.95V18H8v2h8v-2h-3v-2.11c1.63-.32 2.98-1.45 3.61-2.95C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
+      </svg>
+      <span class="trophy-badge-count" id="achvCount">0</span>
+    </button>
+  </div>
+
+  <div class="achv-panel" id="achvPanel">
+    <div class="achv-panel-title">
+      <span>🏆 Thành tích</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span id="achvProgress">0/6</span>
+        <button onclick="toggleAchvPanel()" aria-label="Đóng bảng thành tích"
+          style="background:none; border:none; color:var(--text-light); cursor:pointer; font-size:0.9rem; padding:0 2px; line-height:1;">✕</button>
+      </div>
+    </div>
+    <div id="achvList"></div>
+  </div>
+
+  <div class="app-container" id="appContainer">
+    <div class="view-wrapper">
+
+      <!-- VISUAL CARD VIEW -->
+      <div class="app-view visual-view" id="visualView">
+        <div class="card-aura" aria-hidden="true"></div>
+        <div class="card-orbit" aria-hidden="true">
+          <span class="orbit-particle p1">✦</span>
+          <span class="orbit-particle p2">✧</span>
+          <span class="orbit-particle p3">✦</span>
+          <span class="orbit-particle p4">✧</span>
+          <span class="orbit-particle p5">🎓</span>
+          <span class="orbit-particle p6">✧</span>
+        </div>
+        <div class="card-wrap" id="cardWrap">
+          <div class="card">
+            <div class="card-glare"></div>
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+
+            <div class="corner-sash" aria-hidden="true">
+              <div class="line">
+                <span class="school">HUTECH</span>
+                <span class="sep">•</span>
+                <span class="faculty">KHOA CNTT</span>
+              </div>
+            </div>
+
+            <div class="grid-bg"></div>
+            <div class="glow"></div>
+
+            <div class="content">
+              <div class="sys-bar">
+                <span class="sys-item"><span class="sys-dot online"></span>SYS: ONLINE</span>
+                <span class="sys-item">🔒 SECURE SSL</span>
+              </div>
+
+              <span class="eyebrow" id="secretTapZone"><span class="dot"></span>Graduation 2026</span>
+              <h1 class="headline" id="gradName" data-text="Trần Bảo Duy">Trần Bảo Duy</h1>
+
+              <p class="subhead">
+                <span class="subhead-code">&lt;Software_Engineer v1.0.0/&gt;</span>
+              </p>
+
+              <p class="school-line">
+                Kỹ sư <strong>Công nghệ Thông tin</strong><br>
+                Trường Đại học Công nghệ TP.HCM — <strong>HUTECH</strong>
+              </p>
+
+              <div class="photo-wrap">
+                <div class="photo-frame">
+                  <img src="images/BDUY.png" alt="Ảnh chân dung Trần Bảo Duy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="avatar-fallback">
+                    <span class="monogram">BD</span>
+                    <span class="caption">IT Engineer · Class of 2026</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tag-row">
+                <span class="tag-pill">Kính mời</span>
+                <span class="tag-pill">Lễ tốt nghiệp</span>
+                <span class="tag-pill">IT_HUTECH</span>
+              </div>
+
+              <div class="formal-note">
+                <h2 class="section-title">Graduation 2026</h2>
+                <p>Thay mặt gia đình, tôi xin trân trọng kính mời quý vị, gia đình và bạn bè đến tham dự buổi lễ đánh
+                  dấu một cột mốc quan trọng trong hành trình học tập và trưởng thành của Bảo Duy.</p>
+              </div>
+
+              <div class="trace">
+                <span class="line"></span><span class="node"></span><span class="line"></span><span
+                  class="node"></span><span class="line"></span>
+              </div>
+
+              <div class="info-row">
+                <div class="info-chip">
+                  <div class="label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                    </svg>
+                    Thời gian
+                  </div>
+                  <div class="value">08:00, Thứ Bảy<br>24/10/2026</div>
+                </div>
+                <div class="info-chip">
+                  <div class="label">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M6.62 10.79a15.91 15.91 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.2 2.2Z" />
+                    </svg>
+                    Liên hệ
+                  </div>
+                  <div class="value"><a class="phone-link" href="tel:0329810650">0329810650</a></div>
+                </div>
+              </div>
+
+              <div class="info-chip location-chip" onclick="copyLocation()" style="margin-bottom: 1.2rem;"
+                title="Chạm để sao chép địa chỉ">
+                <div class="label">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                  </svg>
+                  Địa điểm <span
+                    style="font-size: 0.65rem; color: var(--accent-cyan); margin-left: auto; letter-spacing: 0.04em;">[CHẠM
+                    ĐỂ CHÉP]</span>
+                </div>
+                <div class="value">Cơ sở Thủ Đức: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM
+                </div>
+              </div>
+            </div>
+
+            <div class="content" style="padding-top: 0;">
+              <div class="button-group">
+                <button class="action-btn" id="btnMap" onclick="openMap()">
+                  <span class="btn-content" id="btnMapContent">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                    Bản Đồ Chỉ Đường
+                  </span>
+                </button>
+                <button class="action-btn" id="btnCalendar" onclick="addToCalendar()">
+                  <span class="btn-content" id="btnCalContent">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z" />
+                    </svg>
+                    Lưu Vào Lịch
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div class="content" style="padding-top: 0; padding-bottom: 1.2rem;">
+              <p class="sign-off">// Với tất cả sự trân trọng, hẹn gặp bạn tại buổi lễ.<br>— Trần Bảo Duy</p>
+              <p class="konami-hint">// gợi ý: có một cổng bí mật ẩn trong hệ thống — chạm đúng nơi liên tiếp, hoặc gõ
+                đúng mã, sẽ mở ra 👀</p>
+            </div>
+
+            <div class="perforation">
+              <span class="notch left"></span>
+              <span class="dashes"></span>
+              <span class="notch right"></span>
+            </div>
+
+            <div class="stub">
+              <div class="qr-ring-wrap" onclick="openMap()"
+                style="display:flex; flex-direction:column; align-items:center; cursor: pointer;"
+                title="Chạm để mở Google Maps" role="button" tabindex="0">
+                <div class="qr-pulse-ring"></div>
+                <div class="qr-container" id="qrCode">
+                  <div class="scan-line"></div>
+                </div>
+                <span class="qr-caption">Quét hoặc chạm để chỉ đường ↗</span>
+              </div>
+              <span class="status-line" id="ticketStatusDisplay">SYSTEM_ACTIVE</span>
+              <span class="footer-code" id="ticketCodeDisplay" onclick="copyTicketCode()" style="cursor: pointer;"
+                title="Chạm để sao chép mã vé">TICKET #IT_22_26</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEVELOPER IDE VIEW -->
+      <div class="app-view code-view" id="codeView">
+        <div class="ide-card">
+          <div class="ide-header">
+            <div class="ide-dots">
+              <span class="ide-dot red"></span>
+              <span class="ide-dot yellow"></span>
+              <span class="ide-dot green"></span>
+            </div>
+            <div class="ide-title">graduation_invite.json — Visual Studio Code</div>
+            <button class="ide-run-btn" onclick="compileCode()">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Run Code
+            </button>
+          </div>
+
+          <div class="ide-main">
+            <div class="ide-sidebar">
+              <span class="ide-sidebar-icon active">📁</span>
+              <span class="ide-sidebar-icon">🔍</span>
+              <span class="ide-sidebar-icon">🌿</span>
+              <span class="ide-sidebar-icon">⚙️</span>
+            </div>
+
+            <div class="ide-editor-container">
+              <div class="ide-tabs">
+                <div class="ide-tab active">
+                  <span>📄 graduation_invite.json</span>
+                </div>
+              </div>
+              <div class="ide-editor">
+                <pre style="color: #cbd5e1; margin: 0;"><code id="jsonCode"></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- INTERACTIVE TERMINAL RSVP -->
+  <div class="terminal-wrap">
+    <div class="terminal-header">
+      <div class="ide-dots">
+        <span class="ide-dot red"></span>
+        <span class="ide-dot yellow"></span>
+        <span class="ide-dot green"></span>
+      </div>
+      <div class="terminal-title">
+        <svg class="icon" style="color: var(--accent-cyan); width: 14px; height: 14px;" viewBox="0 0 24 24"
+          aria-hidden="true">
+          <path
+            d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 12H4v-2h11v2zm5-4H4V8h16v4z" />
+        </svg>
+        bash — rsvp_sync.sh
+      </div>
+      <div style="font-size: 0.65rem; color: var(--text-secondary);">tty1</div>
+    </div>
+    <div class="terminal-body" id="terminalBody">
+      <div class="terminal-line"><span class="terminal-prompt">visitor@baoduy-grad:~$</span> ./rsvp_sync.sh</div>
+      <div class="terminal-line" style="color: var(--text-light);">[INFO] Đang xác nhận danh sách khách mời...</div>
+      <div class="terminal-line" id="terminalStatusPrompt" style="color: var(--accent-cyan);">[READY] Vui lòng nhập tên
+        để xác nhận tham dự.</div>
+
+      <!-- In-Terminal Confirmation Box (replaces window.confirm) -->
+      <div id="terminalConfirmBox"
+        style="display: none; margin: 8px 0; padding: 10px 12px; background: rgba(34, 211, 238, 0.08); border: 1px solid rgba(var(--accent-cyan-rgb), 0.35); border-radius: 8px;">
+        <div class="terminal-line" style="color: var(--accent-cyan); margin-bottom: 8px;">
+          [XÁC NHẬN] Gửi đăng ký tham dự với tên: <strong id="confirmGuestNameText"
+            style="color: #ffffff; text-decoration: underline;"></strong>?
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="terminal-btn" id="btnTerminalYes" onclick="handleConfirmChoice(true)">✓ [Y] Xác nhận
+            gửi</button>
+          <button class="terminal-btn secondary" id="btnTerminalNo" onclick="handleConfirmChoice(false)">✗ [N] Nhập
+            lại</button>
+        </div>
+      </div>
+
+      <div class="terminal-input-row" id="terminalInputRow">
+        <span class="terminal-prompt">Guest Name:</span>
+        <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn và nhấn Enter..."
+          autocomplete="off" aria-label="Tên khách mời" onkeydown="handleTerminalKey(event)">
+        <button class="terminal-btn" id="btnTerminalSubmit" onclick="submitRSVP()">Confirm</button>
+      </div>
+
+      <!-- Returning Guest Panel -->
+      <div class="terminal-returning-guest" id="terminalReturningGuest"
+        style="display: none; margin-top: 10px; padding: 10px 12px; background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px;">
+        <div class="terminal-line" style="color: var(--accent-green); font-weight: 600;">
+          [STATUS] Bạn đã xác nhận tham dự: <span id="returningGuestName" style="color: #ffffff;"></span>
+        </div>
+        <div class="terminal-line" style="color: var(--text-light); font-size: 0.75rem; margin-top: 4px;">
+          Mã vé của bạn đã được kích hoạt. Bạn có thể cập nhật lại tên nếu cần:
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 8px;">
+          <button class="terminal-btn secondary" onclick="reopenRSVPInput()">✏️ Đổi tên / Đăng ký thêm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg class="icon" style="color: var(--accent-cyan)" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+    </svg>
+    <span id="toastMessage">Thông báo từ hệ thống</span>
+  </div>
+
+  <script>
+    const RSVP_STORAGE_KEY = 'thiepmoi_rsvp_name';
+    const RSVP_STATUS_KEY = 'thiepmoi_rsvp_status';
+
+    let sessionRSVP = null;
+    let dbAvailable = false;
+
+    function isGuestDBReady() {
+      try {
+        return !!(window.GuestDB && typeof window.GuestDB.isConfigured === 'function' && window.GuestDB.isConfigured());
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function getSavedRSVPName() {
+      try {
+        const saved = localStorage.getItem(RSVP_STORAGE_KEY);
+        return saved ? saved.trim() : null;
+      } catch (error) {
+        console.warn('Không thể đọc dữ liệu RSVP:', error);
+        return null;
+      }
+    }
+
+    // Saves the RSVP. Tries the Supabase-backed GuestDB first; if that isn't
+    // configured or the request fails, falls back to a local-only save so the
+    // guest still gets a confirmed ticket on their own device instead of a
+    // dead-end error. The UI is told which path was used so it can be honest
+    // about it.
+    async function saveRSVPName(name) {
+      const cleanName = name.trim();
+      dbAvailable = isGuestDBReady();
+
+      if (dbAvailable) {
+        try {
+          const result = await window.GuestDB.saveGuest(cleanName);
+          if (!result || !result.ok) {
+            throw new Error((result && result.error) || 'Supabase không nhận dữ liệu.');
+          }
+          localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
+          localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED');
+          sessionRSVP = cleanName;
+          return { ok: true, mode: 'remote' };
+        } catch (error) {
+          console.warn('Không thể lưu vào Supabase, chuyển sang lưu cục bộ:', error);
+          // fall through to local save below
+        }
+      }
+
+      // Local fallback — always succeeds so the RSVP flow never dead-ends.
+      try {
+        localStorage.setItem(RSVP_STORAGE_KEY, cleanName);
+        localStorage.setItem(RSVP_STATUS_KEY, 'CONFIRMED_LOCAL');
+        sessionRSVP = cleanName;
+        return { ok: true, mode: 'local' };
+      } catch (error) {
+        console.warn('Không thể lưu dữ liệu RSVP cục bộ:', error);
+        return { ok: false, mode: 'none', error: error.message };
+      }
+    }
+
+    sessionRSVP = getSavedRSVPName();
+
+    // Sound system
+    let soundEnabled = true;  // 默认开启，首次用户交互后自动播放
+    let audioCtx = null;
+    let musicStarted = false;
+
+    function startBackgroundMusic() {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic || musicStarted) return;
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      bgMusic.muted = false;
+      bgMusic.play().then(() => {
+        musicStarted = true;
+        startAmbientPad();
+        const audioBtn = document.getElementById('audioToggle');
+        if (audioBtn) audioBtn.classList.remove('pulse-hint');
+      }).catch(() => {});
+    }
+
+    // 首次任意点击/触摸即自动播放音乐（绕过浏览器自动播放限制）
+    function onFirstInteraction() {
+      if (!musicStarted) startBackgroundMusic();
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('touchstart', onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+    }
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+    }
+
+function updateAudioButton() {
+      const audioBtn = document.getElementById('audioToggle');
+      const audioIcon = document.getElementById('audioIcon');
+      if (!audioBtn || !audioIcon) return;
+      audioBtn.classList.toggle('is-on', soundEnabled);
+      audioBtn.classList.toggle('is-off', !soundEnabled);
+      audioBtn.classList.remove('pulse-hint');
+      audioBtn.setAttribute('aria-pressed', String(soundEnabled));
+      audioBtn.setAttribute('aria-label', soundEnabled ? 'Tắt nhạc nền' : 'Bật nhạc nền');
+      audioBtn.setAttribute('title', soundEnabled ? 'Tắt nhạc nền' : 'Bật nhạc nền');
+      audioIcon.innerHTML = soundEnabled
+        ? '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>'
+        : '<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.37l-1.38-1.38c-.15.15-.3.37-.53.37z"/>';
+    }
+
+    function toggleAudio() {
+      soundEnabled = !soundEnabled;
+      const audioBtn = document.getElementById('audioToggle');
+      if (audioBtn) audioBtn.classList.remove('pulse-hint');
+      const audioIcon = document.getElementById('audioIcon');
+      const bgMusic = document.getElementById('bgMusic');
+      if (soundEnabled) {
+        initAudio();
+        if (bgMusic) {
+          bgMusic.muted = false;
+          bgMusic.play().catch(() => {});
+        }
+        audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
+        showToast("🔊 Đã bật nhạc nền");
+        playBeep(800, 0.1, 'sine');
+        startAmbientPad();
+      } else {
+        stopAmbientPad();
+        if (bgMusic) bgMusic.muted = true;
+        audioIcon.innerHTML = `<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/>`;
+        showToast("🔇 Đã tắt nhạc nền");
+      }
+    }
+
+    function playBeep(freq = 600, duration = 0.08, type = 'sine') {
+      return;
+    }
+
+    function showToast(message, isAchv = false) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').innerText = message;
+      toast.classList.toggle('achv', !!isAchv);
+      toast.classList.add('show');
+      clearTimeout(toast._hideTimer);
+      toast._hideTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3200);
+    }
+
+    /* ============ ACHIEVEMENT SYSTEM ============ */
+    const ACHIEVEMENTS = [
+      { id: 'opened', icon: '🎬', t: 'Đã mở thiệp', d: 'Chào mừng bạn đến với hệ thống' },
+      { id: 'glitch', icon: '⚡', t: 'Chạm vào tên', d: 'Kích hoạt hiệu ứng glitch trên tiêu đề' },
+      { id: 'ide', icon: '👨‍💻', t: 'Developer Mode', d: 'Mở giao diện IDE' },
+      { id: 'action', icon: '🗺️', t: 'Chuẩn bị lên đường', d: 'Thêm lịch hoặc mở bản đồ' },
+      { id: 'rsvp', icon: '✅', t: 'Xác nhận tham dự', d: 'Hoàn tất RSVP qua terminal' },
+      { id: 'hacker', icon: '🕵️', t: 'Tìm ra cổng bí mật', d: 'Nhập đúng mã Konami huyền thoại' },
+    ];
+    const unlockedAchv = new Set();
+
+    function unlockAchievement(id) {
+      if (unlockedAchv.has(id)) return;
+      const a = ACHIEVEMENTS.find(x => x.id === id);
+      if (!a) return;
+      unlockedAchv.add(id);
+      renderAchvPanel();
+      playBeep(1046, 0.09, 'triangle');
+      setTimeout(() => playBeep(1568, 0.12, 'triangle'), 90);
+      showToast(`🏆 Thành tích mới: ${a.t}`, true);
+    }
+
+    function renderAchvPanel() {
+      const list = document.getElementById('achvList');
+      const count = document.getElementById('achvCount');
+      const progress = document.getElementById('achvProgress');
+      if (!list) return;
+      list.innerHTML = ACHIEVEMENTS.map(a => {
+        const on = unlockedAchv.has(a.id);
+        return `<div class="achv-item ${on ? 'unlocked' : ''}">
+          <div class="achv-icon">${on ? a.icon : '🔒'}</div>
+          <div class="achv-text">
+            <span class="t">${on ? a.t : '???'}</span>
+            <span class="d">${on ? a.d : 'Chưa mở khóa'}</span>
+          </div>
+        </div>`;
+      }).join('');
+      count.textContent = unlockedAchv.size;
+      progress.textContent = `${unlockedAchv.size}/${ACHIEVEMENTS.length}`;
+    }
+
+    function toggleAchvPanel() {
+      const panel = document.getElementById('achvPanel');
+      playBeep(900, 0.05, 'triangle');
+      const opening = !panel.classList.contains('open');
+      panel.classList.toggle('open');
+      if (opening) {
+        const closeBtn = panel.querySelector('button[aria-label="Đóng bảng thành tích"]');
+        if (closeBtn) closeBtn.focus();
+      } else {
+        document.getElementById('trophyToggle').focus();
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('achvPanel');
+      const btn = document.getElementById('trophyToggle');
+      if (panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+        panel.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const panel = document.getElementById('achvPanel');
+      if (panel && panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        document.getElementById('trophyToggle').focus();
+      }
+      const secret = document.getElementById('secretMessage');
+      if (secret && secret.classList.contains('show')) {
+        closeSecretMessage();
+      }
+    });
+
+    /* ============ KONAMI CODE EASTER EGG ============ */
+    const KONAMI_SEQUENCE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiBuffer = [];
+    let hackerModeActive = false;
+
+    function handleKonamiKey(e) {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      konamiBuffer.push(key);
+      if (konamiBuffer.length > KONAMI_SEQUENCE.length) konamiBuffer.shift();
+      if (konamiBuffer.join(',') === KONAMI_SEQUENCE.join(',')) {
+        triggerHackerMode();
+        konamiBuffer = [];
+      }
+    }
+
+    function triggerHackerMode() {
+      if (hackerModeActive) return;
+      hackerModeActive = true;
+      unlockAchievement('hacker');
+
+      const flash = document.getElementById('screenFlash');
+      const banner = document.getElementById('hackerBanner');
+      flash.classList.add('fire');
+      setTimeout(() => flash.classList.remove('fire'), 520);
+
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.body.classList.add('hacker-shake');
+        setTimeout(() => document.body.classList.remove('hacker-shake'), 900);
+      }
+
+      banner.classList.add('show');
+      startMatrixRain();
+      playHackerSweep();
+      fireConfetti();
+
+      setTimeout(() => {
+        banner.classList.remove('show');
+      }, 2600);
+
+      setTimeout(() => {
+        document.getElementById('secretMessage').classList.add('show');
+      }, 1400);
+
+      setTimeout(() => {
+        stopMatrixRain();
+        hackerModeActive = false;
+      }, 6000);
+    }
+
+    function closeSecretMessage() {
+      document.getElementById('secretMessage').classList.remove('show');
+      playBeep(700, 0.08, 'sine');
+    }
+
+    function playHackerSweep() {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(1800, now + 0.9);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
+        osc.start(now);
+        osc.stop(now + 1.0);
+      } catch (e) { /* ignore */ }
+    }
+
+    /* ============ MATRIX RAIN ============ */
+    const matrixCanvas = document.getElementById('matrixCanvas');
+    const matrixCtx = matrixCanvas.getContext('2d');
+    let matrixCols = [];
+    let matrixRAF = null;
+
+    function setupMatrixCols() {
+      matrixCanvas.width = window.innerWidth;
+      matrixCanvas.height = window.innerHeight;
+      const fontSize = 16;
+      const numCols = Math.floor(matrixCanvas.width / fontSize);
+      matrixCols = Array.from({ length: numCols }, () => Math.random() * -50);
+    }
+    setupMatrixCols();
+    window.addEventListener('resize', setupMatrixCols);
+
+    function drawMatrixFrame() {
+      const fontSize = 16;
+      matrixCtx.fillStyle = 'rgba(3, 7, 17, 0.14)';
+      matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+      matrixCtx.font = fontSize + 'px "JetBrains Mono", monospace';
+      const chars = '01アイウエオカキクケコTRANDUYIT2026';
+      for (let i = 0; i < matrixCols.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * fontSize;
+        const y = matrixCols[i] * fontSize;
+        matrixCtx.fillStyle = Math.random() > 0.94 ? '#ffffff' : '#22d3ee';
+        matrixCtx.fillText(text, x, y);
+        matrixCols[i] += 0.9;
+        if (y > matrixCanvas.height && Math.random() > 0.975) {
+          matrixCols[i] = 0;
+        }
+      }
+      matrixRAF = requestAnimationFrame(drawMatrixFrame);
+    }
+
+    function startMatrixRain() {
+      setupMatrixCols();
+      matrixCanvas.classList.add('active');
+      if (!matrixRAF) drawMatrixFrame();
+    }
+
+    function stopMatrixRain() {
+      matrixCanvas.classList.remove('active');
+      setTimeout(() => {
+        if (matrixRAF) {
+          cancelAnimationFrame(matrixRAF);
+          matrixRAF = null;
+          matrixCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        }
+      }, 650);
+    }
+
+    /* ============ AMBIENT PAD (plays only while sound is enabled) ============ */
+    function startAmbientPad() {
+      return;
+    }
+    function stopAmbientPad() {
+      return;
+    }
+
+    window.addEventListener('keydown', handleKonamiKey);
+
+    /* ============ MOBILE TRIGGER: tap the "Graduation 2026" badge 5x fast ============ */
+    (function initSecretTapZone() {
+      const zone = document.getElementById('secretTapZone');
+      if (!zone) return;
+      let tapCount = 0;
+      let tapTimer = null;
+      zone.addEventListener('click', () => {
+        tapCount++;
+        playBeep(480 + tapCount * 110, 0.045, 'triangle');
+        if (tapCount >= 2 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          zone.style.transition = 'transform 0.15s ease';
+          zone.style.transform = 'scale(1.12)';
+          setTimeout(() => { zone.style.transform = 'scale(1)'; }, 150);
+        }
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => { tapCount = 0; }, 1800);
+        if (tapCount >= 3) {
+          tapCount = 0;
+          triggerHackerMode();
+        }
+      });
+    })();
+
+    // 3D Card Tilt Effect + mouse-follow glare
+    const cardWrap = document.getElementById('cardWrap');
+    if (cardWrap) {
+      cardWrap.addEventListener('mousemove', (e) => {
+        const rect = cardWrap.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const xc = rect.width / 2;
+        const yc = rect.height / 2;
+        const angleX = (yc - y) / 22;
+        const angleY = (x - xc) / 22;
+        cardWrap.style.transform = `perspective(1200px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale3d(1.015, 1.015, 1.015)`;
+        cardWrap.style.setProperty('--mx', (x / rect.width * 100) + '%');
+        cardWrap.style.setProperty('--my', (y / rect.height * 100) + '%');
+      });
+
+      cardWrap.addEventListener('mouseleave', () => {
+        cardWrap.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      });
+    }
+
+    // Ambient cursor glow that trails the pointer
+    const cursorGlow = document.getElementById('cursorGlow');
+    let glowTargetX = -1000, glowTargetY = -1000, glowX = -1000, glowY = -1000;
+    let glowActive = false;
+    window.addEventListener('mousemove', (e) => {
+      glowTargetX = e.clientX;
+      glowTargetY = e.clientY;
+      if (!glowActive && cursorGlow) {
+        glowActive = true;
+        cursorGlow.style.opacity = '1';
+      }
+    });
+    window.addEventListener('mouseout', () => {
+      if (cursorGlow) cursorGlow.style.opacity = '0';
+      glowActive = false;
+    });
+    function animateGlow() {
+      if (cursorGlow) {
+        glowX += (glowTargetX - glowX) * 0.12;
+        glowY += (glowTargetY - glowY) * 0.12;
+        cursorGlow.style.left = glowX + 'px';
+        cursorGlow.style.top = glowY + 'px';
+      }
+      requestAnimationFrame(animateGlow);
+    }
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      animateGlow();
+    }
+
+    // Magnetic pull for the primary action buttons
+    function attachMagnetic(el, strength = 12) {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const dx = e.clientX - rect.left - rect.width / 2;
+        const dy = e.clientY - rect.top - rect.height / 2;
+        el.style.transition = 'transform 0.06s linear';
+        el.style.transform = `translate(${dx / strength}px, ${dy / strength}px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        el.style.transform = 'translate(0, 0)';
+      });
+    }
+
+    function initMagnetic() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.querySelectorAll('.action-btn').forEach((el) => attachMagnetic(el, 10));
+    }
+
+    // Boot sequence on first load
+    function runBootSequence() {
+      const overlay = document.getElementById('bootOverlay');
+      if (!overlay) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        overlay.remove();
+        return;
+      }
+      const bar = document.getElementById('bootBar');
+      const status = document.getElementById('bootStatus');
+      let pct = 0;
+      const timer = setInterval(() => {
+        pct += Math.random() * 16 + 9;
+        if (pct >= 100) pct = 100;
+        bar.style.width = pct + '%';
+        status.textContent = Math.floor(pct) + '%';
+        if (pct >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            overlay.classList.add('hide');
+            setTimeout(() => overlay.remove(), 700);
+          }, 250);
+        }
+      }, 170);
+    }
+
+    // View Switcher
+    function toggleMode(mode) {
+      const container = document.getElementById('appContainer');
+      const btnVisual = document.getElementById('btnVisualMode');
+      const btnCode = document.getElementById('btnCodeMode');
+
+      playBeep(900, 0.05, 'triangle');
+
+      if (mode === 'code') {
+        container.classList.add('show-code-mode');
+        btnVisual.classList.remove('active');
+        btnVisual.setAttribute('aria-selected', 'false');
+        btnCode.classList.add('active');
+        btnCode.setAttribute('aria-selected', 'true');
+        unlockAchievement('ide');
+      } else {
+        container.classList.remove('show-code-mode');
+        btnVisual.classList.add('active');
+        btnVisual.setAttribute('aria-selected', 'true');
+        btnCode.classList.remove('active');
+        btnCode.setAttribute('aria-selected', 'false');
+      }
+    }
+
+    const invitationJSON = {
+      "version": "1.0.0",
+      "build": {
+        "commit": "a3f9c1e",
+        "compiledAt": "2026-07-01T00:00:00+07:00"
+      },
+      "event": "Graduation Ceremony 2026",
+      "graduate": {
+        "name": "Trần Bảo Duy",
+        "major": "Information Technology",
+        "specialization": "Software Engineering",
+        "university": "HUTECH University"
+      },
+      "schedule": {
+        "date": "2026-10-24",
+        "time": "08:00 - 12:00",
+        "timezone": "Asia/Ho_Chi_Minh"
+      },
+      "venue": {
+        "campus": "Thủ Đức Campus",
+        "zone": "Saigon Hi-Tech Park (SHTP)",
+        "city": "Ho Chi Minh City, Vietnam"
+      },
+      "dress_code": "Business casual",
+      "contact": "0329810650",
+      "ticket": "IT26-0001",
+      "rsvp_status": "PENDING"
+    };
+
+    function loadJSONCode() {
+      const codeElement = document.getElementById('jsonCode');
+      const jsonString = JSON.stringify(invitationJSON, null, 2);
+
+      const highlighted = jsonString
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+          let cls = 'code-number';
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? 'code-property' : 'code-string';
+          } else if (/true|false|null/.test(match)) {
+            cls = 'code-keyword';
+          }
+          return '<span class="' + cls + '">' + match + '</span>';
+        });
+
+      codeElement.innerHTML = highlighted;
+    }
+
+    function compileCode() {
+      playBeep(1100, 0.1, 'sawtooth');
+      showToast("⚙️ Đang thực thi khối lệnh...");
+
+      const terminalBody = document.getElementById('terminalBody');
+      const inputRow = document.getElementById('terminalInputRow');
+
+      const lines = [
+        `<div class="terminal-line" style="color: var(--accent-green);">$ python invite.py --verify-attendance</div>`,
+        `<div class="terminal-line">[INFO] Parsing graduation_invite.json...</div>`,
+        `<div class="terminal-line">[SUCCESS] Dữ liệu hợp lệ. Sẵn sàng gửi lời mời.</div>`
+      ];
+
+      lines.forEach((lineHtml, idx) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.innerHTML = lineHtml;
+          terminalBody.insertBefore(div, inputRow);
+          terminalBody.scrollTop = terminalBody.scrollHeight;
+          playBeep(400 + idx * 100, 0.04, 'sine');
+        }, idx * 300);
+      });
+
+      setTimeout(() => {
+        toggleMode('visual');
+        showToast("✨ Biên dịch hoàn tất!");
+      }, 1400);
+    }
+
+    // RSVP Terminal Actions
+    let pendingRSVPName = "";
+
+    function handleTerminalKey(event) {
+      if (event.key === 'Enter') {
+        const confirmBox = document.getElementById('terminalConfirmBox');
+        if (confirmBox && confirmBox.style.display !== 'none') {
+          handleConfirmChoice(true);
+        } else {
+          submitRSVP();
+        }
+      } else {
+        playBeep(1000 + Math.random() * 500, 0.03, 'triangle');
+      }
+    }
+
+    function submitRSVP() {
+      const input = document.getElementById('guestName');
+      const guestName = input.value.trim();
+
+      if (!guestName) {
+        playBeep(150, 0.3, 'sawtooth');
+        showToast("⚠️ Vui lòng nhập tên của bạn!");
+        input.focus();
+        return;
+      }
+
+      pendingRSVPName = guestName;
+      const inputRow = document.getElementById('terminalInputRow');
+      const confirmBox = document.getElementById('terminalConfirmBox');
+      const confirmName = document.getElementById('confirmGuestNameText');
+
+      if (inputRow) inputRow.style.display = "none";
+      if (confirmName) confirmName.textContent = `"${guestName}"`;
+      if (confirmBox) confirmBox.style.display = "block";
+      playBeep(850, 0.06, 'triangle');
+      const yesBtn = document.getElementById('btnTerminalYes');
+      if (yesBtn) yesBtn.focus();
+    }
+
+    function handleConfirmChoice(confirmed) {
+      const inputRow = document.getElementById('terminalInputRow');
+      const confirmBox = document.getElementById('terminalConfirmBox');
+      const input = document.getElementById('guestName');
+      const terminalBody = document.getElementById('terminalBody');
+
+      if (confirmBox) confirmBox.style.display = "none";
+
+      if (!confirmed) {
+        playBeep(240, 0.15, 'triangle');
+        if (inputRow) inputRow.style.display = "flex";
+        if (input) input.focus();
+        const cancelLine = document.createElement('div');
+        cancelLine.className = 'terminal-line';
+        cancelLine.style.color = 'var(--text-light)';
+        cancelLine.innerText = `[CANCELLED] Đã hủy. Vui lòng nhập lại tên của bạn.`;
+        if (inputRow) terminalBody.insertBefore(cancelLine, inputRow);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+        return;
+      }
+
+      executeRSVP(pendingRSVPName);
+    }
+
+    function executeRSVP(guestName) {
+      const input = document.getElementById('guestName');
+      if (input) input.value = "";
+      const terminalBody = document.getElementById('terminalBody');
+      const inputRow = document.getElementById('terminalInputRow');
+      if (inputRow) inputRow.style.display = "none";
+
+      const ticketTag = `IT26-${String(Math.floor(Math.random() * 90) + 10).padStart(4, '0')}`;
+      const steps = [
+        { text: `$ git add --rsvp "${guestName}"`, color: 'var(--text-primary)' },
+        { text: `$ git commit -m "feat(rsvp): confirm attendance for ${guestName}"`, color: 'var(--text-primary)' },
+        { text: `[main ${Math.random().toString(16).substring(2, 8)}] 1 guest added, 0 conflicts`, color: 'var(--text-light)' },
+        { text: `$ git tag ticket/${ticketTag}`, color: 'var(--text-light)' },
+        { text: `[WAITING] Đang lưu tên vào hệ thống...`, color: 'var(--text-light)' }
+      ];
+
+      steps.forEach((step, idx) => {
+        setTimeout(async () => {
+          const div = document.createElement('div');
+          div.className = 'terminal-line';
+          div.style.color = step.color;
+          div.innerText = step.text;
+          terminalBody.appendChild(div);
+          terminalBody.scrollTop = terminalBody.scrollHeight;
+
+          if (idx === steps.length - 1) {
+            playBeep(880, 0.3, 'sine');
+            const saveResult = await saveRSVPName(guestName);
+            invitationJSON.rsvp_status = saveResult.ok ? "CONFIRMED" : "FAILED";
+            invitationJSON.guest = guestName;
+            loadJSONCode();
+
+            const ticketDisplay = document.getElementById('ticketStatusDisplay');
+            if (ticketDisplay) {
+              ticketDisplay.textContent = `CONFIRMED: ${guestName}`;
+              ticketDisplay.style.color = 'var(--accent-green)';
+            }
+            const ticketCodeEl = document.getElementById('ticketCodeDisplay');
+            if (ticketCodeEl) {
+              ticketCodeEl.textContent = `TICKET #${ticketTag}`;
+            }
+
+            if (saveResult.ok) {
+              const successLine = document.createElement('div');
+              successLine.className = 'terminal-line';
+              successLine.style.color = 'var(--accent-green)';
+              successLine.innerText = saveResult.mode === 'remote'
+                ? `[SUCCESS] Đã lưu vào hệ thống — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`
+                : `[SAVED-LOCAL] Đã lưu vé trên thiết bị này cho ${guestName}. (Không kết nối được máy chủ trung tâm, vé vẫn có hiệu lực khi bạn quay lại trang này trên máy này.)`;
+              terminalBody.appendChild(successLine);
+              terminalBody.scrollTop = terminalBody.scrollHeight;
+              showToast(saveResult.mode === 'remote' ? `✅ Đã lưu vào hệ thống: ${guestName}` : `💾 Đã lưu vé cục bộ cho: ${guestName}`);
+              fireConfetti();
+              unlockAchievement('rsvp');
+
+              const returning = document.getElementById('terminalReturningGuest');
+              const returningName = document.getElementById('returningGuestName');
+              if (returning && returningName) {
+                returningName.textContent = guestName;
+                returning.style.display = 'block';
+              }
+            } else {
+              const failureLine = document.createElement('div');
+              failureLine.className = 'terminal-line';
+              failureLine.style.color = '#fca5a5';
+              failureLine.innerText = '[ERROR] Không thể lưu xác nhận. Vui lòng thử lại hoặc liên hệ trực tiếp qua số điện thoại bên trên.';
+              terminalBody.appendChild(failureLine);
+              terminalBody.scrollTop = terminalBody.scrollHeight;
+              showToast('❌ Chưa lưu được xác nhận, vui lòng thử lại.');
+              if (inputRow) inputRow.style.display = "flex";
+            }
+          } else {
+            playBeep(600 + idx * 80, 0.05, 'triangle');
+          }
+        }, idx * 250);
+      });
+    }
+
+    function reopenRSVPInput() {
+      const inputRow = document.getElementById('terminalInputRow');
+      const returning = document.getElementById('terminalReturningGuest');
+      const input = document.getElementById('guestName');
+      if (returning) returning.style.display = 'none';
+      if (inputRow) inputRow.style.display = 'flex';
+      if (input) {
+        input.value = sessionRSVP || '';
+        input.focus();
+        input.select();
+      }
+      playBeep(700, 0.05, 'triangle');
+    }
+
+    function initRSVPState() {
+      sessionRSVP = getSavedRSVPName();
+      if (sessionRSVP) {
+        const inputRow = document.getElementById('terminalInputRow');
+        const returning = document.getElementById('terminalReturningGuest');
+        const returningName = document.getElementById('returningGuestName');
+        const ticketStatus = document.getElementById('ticketStatusDisplay');
+        const statusPrompt = document.getElementById('terminalStatusPrompt');
+
+        if (inputRow) inputRow.style.display = 'none';
+        if (returning && returningName) {
+          returningName.textContent = sessionRSVP;
+          returning.style.display = 'block';
+        }
+        if (statusPrompt) {
+          statusPrompt.innerHTML = `[SYNC] Đã đồng bộ vé tham dự cho: <strong>${sessionRSVP}</strong>`;
+        }
+        if (ticketStatus) {
+          ticketStatus.textContent = `CONFIRMED: ${sessionRSVP}`;
+          ticketStatus.style.color = 'var(--accent-green)';
+        }
+        invitationJSON.rsvp_status = "CONFIRMED";
+        invitationJSON.guest = sessionRSVP;
+        loadJSONCode();
+      }
+    }
+
+    // Ripple click feedback
+    function attachRipple(el) {
+      el.addEventListener('click', (e) => {
+        const rect = el.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        const size = Math.max(rect.width, rect.height) * 1.4;
+        ripple.className = 'ripple';
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        el.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 650);
+      });
+    }
+
+    function initRipples() {
+      document.querySelectorAll('.action-btn, .terminal-btn, .mode-btn, .audio-toggle, .ide-run-btn')
+        .forEach(attachRipple);
+    }
+
+    // Confetti burst on RSVP success
+    function fireConfetti() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.inset = '0';
+      canvas.style.zIndex = '200';
+      canvas.style.pointerEvents = 'none';
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      document.body.appendChild(canvas);
+      const cctx = canvas.getContext('2d');
+      const colors = ['#22d3ee', '#34d399', '#ffffff'];
+      const originX = window.innerWidth / 2;
+      const originY = window.innerHeight * 0.45;
+
+      const particles = Array.from({ length: 70 }, () => ({
+        x: originX + (Math.random() - 0.5) * 60,
+        y: originY,
+        vx: (Math.random() - 0.5) * 9,
+        vy: Math.random() * -7 - 2,
+        size: Math.random() * 4 + 2,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        life: 1
+      }));
+
+      let frame = 0;
+      function step() {
+        frame++;
+        cctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.vy += 0.16;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.012;
+          cctx.globalAlpha = Math.max(p.life, 0);
+          cctx.fillStyle = p.color;
+          cctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        cctx.globalAlpha = 1;
+        if (frame < 90) {
+          requestAnimationFrame(step);
+        } else {
+          canvas.remove();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+    function openMap() {
+      playBeep(700, 0.1, 'sine');
+      runButtonSequence('btnMap', 'btnMapContent', '', 'Bản Đồ Chỉ Đường');
+      window.open("https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao", "_blank");
+      unlockAchievement('action');
+    }
+
+    function addToCalendar() {
+      playBeep(750, 0.08, 'sine');
+      runButtonSequence('btnCalendar', 'btnCalContent', '', 'Đã Lưu Lịch');
+      const title = encodeURIComponent("Lễ Tốt Nghiệp — Trần Bảo Duy (HUTECH IT 2026)");
+      const details = encodeURIComponent("Lễ tốt nghiệp Kỹ sư CNTT - Trần Bảo Duy tại Đại học Công nghệ TP.HCM (HUTECH).\nĐịa điểm: Khu Công nghệ cao TP.HCM, Phường Tăng Nhơn Phú, TP.HCM\nLiên hệ: 0329810650\nTrân trọng kính mời!");
+      const location = encodeURIComponent("HUTECH Cơ sở Thủ Đức, Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM");
+      // Keep in sync with invitationJSON.schedule and the "Thời gian" info-chip above.
+      const dates = "20261024T080000/20261024T120000";
+      const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+      window.open(calUrl, '_blank');
+      showToast("📅 Đang mở Google Calendar để lưu lịch...");
+      unlockAchievement('action');
+    }
+
+    function copyLocation() {
+      const address = "Cơ sở Thủ Đức: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(() => {
+          playBeep(900, 0.08, 'sine');
+          showToast("📋 Đã sao chép địa chỉ vào bộ nhớ tạm!");
+        }).catch(() => {
+          showToast("📍 Địa chỉ: HUTECH Cơ sở Thủ Đức - Khu CNC TP.HCM");
+        });
+      } else {
+        showToast("📍 Địa chỉ: HUTECH Cơ sở Thủ Đức - Khu CNC TP.HCM");
+      }
+    }
+
+    function copyTicketCode() {
+      const ticketEl = document.getElementById('ticketCodeDisplay');
+      const text = ticketEl ? ticketEl.innerText.trim() : "TICKET #IT_22_26";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          playBeep(920, 0.08, 'sine');
+          showToast(`🎫 Đã sao chép ${text}!`);
+        });
+      } else {
+        showToast(`🎫 Mã vé: ${text}`);
+      }
+    }
+
+    // Text decrypt effect on load
+    function scrambleText(element, finalString, duration = 900) {
+      const chars = '01<>[]{}-_#+*';
+      const start = performance.now();
+
+      function update(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+
+        let result = '';
+        for (let i = 0; i < finalString.length; i++) {
+          if (finalString[i] === ' ' || finalString[i] === '\n' || finalString[i] === '—' || finalString[i] === '•') {
+            result += finalString[i];
+          } else if (i < progress * finalString.length) {
+            result += finalString[i];
+          } else {
+            result += chars[Math.floor(Math.random() * chars.length)];
+          }
+        }
+        element.innerHTML = result;
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    // Quiet dot-grid ambient background (replaces the busy binary rain)
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    const accentRgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan-rgb').trim();
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    const spacing = 34;
+    let mouse = { x: -1000, y: -1000 };
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseout', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, width, height);
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          const dx = x - mouse.x;
+          const dy = y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 140) {
+            const t = 1 - dist / 140;
+            ctx.fillStyle = `rgba(${accentRgb}, ${0.35 * t})`;
+            ctx.fillRect(x - 1, y - 1, 2, 2);
+          } else {
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.06)';
+            ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
+          }
+        }
+      }
+      requestAnimationFrame(drawGrid);
+    }
+
+    // Ambient rising particle system — quiet cyan/green sparks drifting upward
+    const pCanvas = document.getElementById('particleCanvas');
+    const pCtx = pCanvas.getContext('2d');
+    let pWidth = pCanvas.width = window.innerWidth;
+    let pHeight = pCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      pWidth = pCanvas.width = window.innerWidth;
+      pHeight = pCanvas.height = window.innerHeight;
+    });
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sparkColors = ['rgba(' + accentRgb + ',', 'rgba(52, 211, 153,'];
+    const sparks = reduceMotion ? [] : Array.from({ length: 34 }, () => ({
+      x: Math.random() * pWidth,
+      y: Math.random() * pHeight,
+      r: Math.random() * 1.6 + 0.4,
+      speed: Math.random() * 0.35 + 0.08,
+      drift: (Math.random() - 0.5) * 0.25,
+      color: sparkColors[Math.floor(Math.random() * sparkColors.length)],
+      alpha: Math.random() * 0.5 + 0.15,
+      twinkle: Math.random() * Math.PI * 2
+    }));
+
+    function drawParticles() {
+      pCtx.clearRect(0, 0, pWidth, pHeight);
+      sparks.forEach(s => {
+        s.y -= s.speed;
+        s.x += s.drift;
+        s.twinkle += 0.02;
+        if (s.y < -10) {
+          s.y = pHeight + 10;
+          s.x = Math.random() * pWidth;
+        }
+        const flicker = (Math.sin(s.twinkle) + 1) / 2;
+        pCtx.beginPath();
+        pCtx.fillStyle = s.color + (s.alpha * (0.5 + flicker * 0.5)) + ')';
+        pCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        pCtx.fill();
+      });
+      requestAnimationFrame(drawParticles);
+    }
+    if (!reduceMotion) drawParticles();
+
+    // ============ CONTINUOUS FALLING EFFECT (graduation confetti) ============
+    // Small squares + sparkle glyphs that drift down continuously behind
+    // everything on the page (z-index -8), so they never sit on top of or
+    // dim the invitation card — they're only ever visible in the empty
+    // space around it.
+    const fallCanvas = document.getElementById('fallCanvas');
+    const fallCtx = fallCanvas.getContext('2d');
+    let fallWidth = fallCanvas.width = window.innerWidth;
+    let fallHeight = fallCanvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+      fallWidth = fallCanvas.width = window.innerWidth;
+      fallHeight = fallCanvas.height = window.innerHeight;
+    });
+
+    const fallGlyphs = ['🎓', '✦', '✧', '❖'];
+    const fallColors = [accentRgb, '52, 211, 153'];
+
+    function makeFaller(initial) {
+      const useGlyph = Math.random() > 0.78;
+      return {
+        x: Math.random() * fallWidth,
+        y: initial ? Math.random() * fallHeight : -20 - Math.random() * 200,
+        size: useGlyph ? (Math.random() * 9 + 13) : (Math.random() * 4 + 2.5),
+        speed: Math.random() * 2.6 + 1.8,
+        drift: (Math.random() - 0.5) * 0.6,
+        sway: Math.random() * Math.PI * 2,
+        swaySpeed: Math.random() * 0.02 + 0.01,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.05,
+        alpha: Math.random() * 0.4 + 0.2,
+        color: fallColors[Math.floor(Math.random() * fallColors.length)],
+        glyph: useGlyph ? fallGlyphs[Math.floor(Math.random() * fallGlyphs.length)] : null
+      };
+    }
+
+    const fallers = reduceMotion ? [] : Array.from({ length: 110 }, () => makeFaller(true));
+
+    function drawFalling() {
+      fallCtx.clearRect(0, 0, fallWidth, fallHeight);
+      fallers.forEach(f => {
+        f.y += f.speed;
+        f.sway += f.swaySpeed;
+        f.x += f.drift + Math.sin(f.sway) * 0.3;
+        f.rotation += f.rotSpeed;
+
+        if (f.y > fallHeight + 30) {
+          Object.assign(f, makeFaller(false));
+        }
+        if (f.x < -30) f.x = fallWidth + 20;
+        if (f.x > fallWidth + 30) f.x = -20;
+
+        fallCtx.save();
+        fallCtx.translate(f.x, f.y);
+        fallCtx.rotate(f.rotation);
+        fallCtx.globalAlpha = f.alpha;
+        if (f.glyph) {
+          fallCtx.font = f.size + 'px sans-serif';
+          fallCtx.textAlign = 'center';
+          fallCtx.textBaseline = 'middle';
+          fallCtx.fillText(f.glyph, 0, 0);
+        } else {
+          fallCtx.fillStyle = 'rgba(' + f.color + ', 1)';
+          fallCtx.fillRect(-f.size / 2, -f.size / 2, f.size, f.size);
+        }
+        fallCtx.restore();
+      });
+      fallCtx.globalAlpha = 1;
+      requestAnimationFrame(drawFalling);
+    }
+    if (!reduceMotion) drawFalling();
+
+    // Headline glitch burst — fires on hover/tap, throttled
+    const gradNameEl = document.getElementById('gradName');
+    let glitchBusy = false;
+    function triggerHeadlineGlitch() {
+      if (glitchBusy || reduceMotion || !gradNameEl) return;
+      glitchBusy = true;
+      gradNameEl.classList.add('glitch-active');
+      playBeep(1400, 0.04, 'square');
+      setTimeout(() => {
+        gradNameEl.classList.remove('glitch-active');
+        glitchBusy = false;
+      }, 380);
+    }
+    if (gradNameEl) {
+      gradNameEl.addEventListener('mouseenter', () => { triggerHeadlineGlitch(); unlockAchievement('glitch'); });
+      gradNameEl.addEventListener('click', () => { triggerHeadlineGlitch(); unlockAchievement('glitch'); });
+      // one unprompted burst shortly after load so people notice it's interactive
+      setTimeout(triggerHeadlineGlitch, 3200);
+    }
+
+    // Parallax depth — ambient background layers drift opposite to the cursor
+    (function initParallax() {
+      if (reduceMotion) return;
+      let px = 0, py = 0, tx = 0, ty = 0;
+      window.addEventListener('mousemove', (e) => {
+        tx = (e.clientX / window.innerWidth - 0.5) * 2;
+        ty = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+      function animateParallax() {
+        px += (tx - px) * 0.05;
+        py += (ty - py) * 0.05;
+        const grid = document.getElementById('gridCanvas');
+        const part = document.getElementById('particleCanvas');
+        const fall = document.getElementById('fallCanvas');
+        if (grid) grid.style.transform = `translate(${px * -6}px, ${py * -6}px)`;
+        if (part) part.style.transform = `translate(${px * -12}px, ${py * -12}px)`;
+        if (fall) fall.style.transform = `translate(${px * -4}px, ${py * -4}px)`;
+        requestAnimationFrame(animateParallax);
+      }
+      animateParallax();
+    })();
+
+    // Loading -> success micro-animation wrapper for action buttons
+    function runButtonSequence(btnId, contentId, iconMarkup, label) {
+      const btn = document.getElementById(btnId);
+      const content = document.getElementById(contentId);
+      if (!btn || !content) return;
+      const original = content.innerHTML;
+      btn.classList.add('is-loading');
+      content.innerHTML = `<span class="btn-spinner"></span>${label}`;
+      setTimeout(() => {
+        btn.classList.remove('is-loading');
+        btn.classList.add('is-success');
+        content.innerHTML = `<span class="btn-check">✓</span>${label}`;
+        setTimeout(() => {
+          btn.classList.remove('is-success');
+          content.innerHTML = original;
+        }, 1100);
+      }, 550);
+    }
+
+    function initQRCode() {
+      const target = document.getElementById('qrCode');
+      if (!target || typeof QRCode === 'undefined') return;
+      const mapsUrl = "https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao";
+      target.innerHTML = '';
+      new QRCode(target, {
+        text: mapsUrl,
+        width: 104,
+        height: 104,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadJSONCode();
+      drawGrid();
+      initQRCode();
+      initRipples();
+      initMagnetic();
+      runBootSequence();
+      renderAchvPanel();
+      initRSVPState();
+      setTimeout(() => unlockAchievement('opened'), 2200);
+
+      const nameEl = document.getElementById('gradName');
+      const originalName = nameEl ? nameEl.innerText : '';
+      if (nameEl && originalName) {
+        scrambleText(nameEl, originalName, 1200);
+      }
+
+      // 自动播放背景音乐（浏览器可能需要一次用户交互才能解锁）
+      const bgMusic = document.getElementById('bgMusic');
+      if (bgMusic) {
+        const tryPlay = () => {
+          initAudio();
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          bgMusic.muted = false;
+          bgMusic.play().then(() => {
+            musicStarted = true;
+            startAmbientPad();
+            const audioBtn = document.getElementById('audioToggle');
+            if (audioBtn) audioBtn.classList.remove('pulse-hint');
+          }).catch(() => {});
+        };
+        // Thử phát ngay, nếu失败 thì chờ tương tác
+        tryPlay();
+        document.addEventListener('pointerdown', tryPlay, { once: true, capture: true });
+        document.addEventListener('keydown', tryPlay, { once: true });
+      }
+    });
+  </script>
+</body>
+
+</html>
