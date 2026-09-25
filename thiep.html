@@ -3683,7 +3683,7 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
                     </svg>
                     Thời gian
                   </div>
-                  <div class="value">08:00, Thứ Bảy<br>24/10/2026</div>
+                  <div class="value"> Ngày 29/10/2026</div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
@@ -4518,7 +4518,7 @@ function updateAudioButton() {
         "university": "HUTECH University"
       },
       "schedule": {
-        "date": "2026-10-24",
+        "date": "2026-10-29",
         "time": "08:00 - 12:00",
         "timezone": "Asia/Ho_Chi_Minh"
       },
@@ -4913,14 +4913,32 @@ function updateAudioButton() {
       unlockAchievement('action');
     }
 
+    function getEventSchedule() {
+      const schedule = invitationJSON && invitationJSON.schedule ? invitationJSON.schedule : {};
+      const dateStr = schedule.date || '2026-10-29';
+      const timeText = schedule.time || '08:00 - 12:00';
+      const timeMatches = timeText.match(/\d{1,2}:\d{2}/g) || ['08:00', '12:00'];
+      return {
+        date: dateStr,
+        startTime: timeMatches[0] || '08:00',
+        endTime: timeMatches[1] || '12:00'
+      };
+    }
+
     function addToCalendar() {
       playBeep(750, 0.08, 'sine');
       runButtonSequence('btnCalendar', 'btnCalContent', '', 'Đã Lưu Lịch');
       const title = encodeURIComponent("Lễ Tốt Nghiệp — Trần Bảo Duy (HUTECH IT 2026)");
       const details = encodeURIComponent("Lễ tốt nghiệp Kỹ sư CNTT - Trần Bảo Duy tại Đại học Công nghệ TP.HCM (HUTECH).\nĐịa điểm: Khu Công nghệ cao TP.HCM, Phường Tăng Nhơn Phú, TP.HCM\nLiên hệ: 0329810650\nTrân trọng kính mời!");
       const location = encodeURIComponent("HUTECH Cơ sở Thủ Đức, Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM");
-      // Keep in sync with invitationJSON.schedule and the "Thời gian" info-chip above.
-      const dates = "20261024T080000/20261024T120000";
+      const { date, startTime, endTime } = getEventSchedule();
+      const formatCalendarStamp = (value) => {
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${value.getFullYear()}${pad(value.getMonth() + 1)}${pad(value.getDate())}T${pad(value.getHours())}${pad(value.getMinutes())}00`;
+      };
+      const startDate = new Date(`${date}T${startTime}:00+07:00`);
+      const endDate = new Date(`${date}T${endTime}:00+07:00`);
+      const dates = `${formatCalendarStamp(startDate)}/${formatCalendarStamp(endDate)}`;
       const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
       window.open(calUrl, '_blank');
       showToast("📅 Đang mở Google Calendar để lưu lịch...");
@@ -5214,8 +5232,14 @@ function updateAudioButton() {
       });
     }
 
+    function getEventTargetTimestamp() {
+      const { date, startTime } = getEventSchedule();
+      const [hour, minute] = startTime.split(':').map(Number);
+      return new Date(`${date}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00+07:00`).getTime();
+    }
+
     function initGraduationCountdown() {
-      const targetDate = new Date('2026-10-24T08:00:00+07:00').getTime();
+      const targetDate = getEventTargetTimestamp();
       const daysEl = document.getElementById('countDays');
       const hoursEl = document.getElementById('countHours');
       const minutesEl = document.getElementById('countMinutes');
