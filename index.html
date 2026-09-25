@@ -239,6 +239,23 @@
       color: var(--accent-cyan);
       border-color: var(--accent-cyan);
       box-shadow: var(--neon-glow);
+      transform: translateY(-1px);
+    }
+
+    .audio-toggle.is-on {
+      color: var(--accent-cyan);
+      border-color: rgba(var(--accent-cyan-rgb), 0.75);
+      box-shadow: var(--neon-glow);
+    }
+
+    .audio-toggle.is-off {
+      color: var(--text-muted);
+      border-color: var(--hairline);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .audio-toggle:active {
+      transform: scale(0.94);
     }
 
     @keyframes audioPulse {
@@ -2456,9 +2473,10 @@
 
   <div class="cursor-glow" id="cursorGlow"></div>
 
-  <!-- Background music: video with muted autoplay + loop, controlled by the audio toggle -->
-  <video id="bgMusic" src="music/background.mp4" playsinline loop preload="auto"
-    style="position: fixed; inset: 0; width: 0; height: 0; opacity: 0; pointer-events: none;"></video>
+  <!-- Background music. This is a video container because the source is an MP4. -->
+  <video id="bgMusic" src="music/background.mp4" autoplay loop playsinline preload="auto"
+    aria-hidden="true"
+    style="position: fixed; inset: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none;"></video>
 
   <canvas id="gridCanvas" aria-hidden="true"></canvas>
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
@@ -2494,11 +2512,10 @@
         Developer IDE
       </button>
     </div>
-    <button class="audio-toggle pulse-hint" id="audioToggle" onclick="toggleAudio()" aria-label="Bật/Tắt nhạc nền"
-      title="Bật/Tắt nhạc nền (video.mp4)">
+    <button class="audio-toggle pulse-hint is-on" id="audioToggle" onclick="toggleAudio()"
+      aria-label="Tắt nhạc nền" aria-pressed="true" title="Tắt nhạc nền">
       <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z" />
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-4.02 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
       </svg>
     </button>
     <button class="trophy-toggle" id="trophyToggle" onclick="toggleAchvPanel()" aria-label="Xem thành tích"
@@ -2878,14 +2895,15 @@
     function startBackgroundMusic() {
       const bgMusic = document.getElementById('bgMusic');
       if (!bgMusic || musicStarted) return;
-      musicStarted = true;
       initAudio();
       if (audioCtx.state === 'suspended') audioCtx.resume();
       bgMusic.muted = false;
-      bgMusic.play().catch(() => {});
-      startAmbientPad();
-      const audioBtn = document.getElementById('audioToggle');
-      if (audioBtn) audioBtn.classList.remove('pulse-hint');
+      bgMusic.play().then(() => {
+        musicStarted = true;
+        startAmbientPad();
+        const audioBtn = document.getElementById('audioToggle');
+        if (audioBtn) audioBtn.classList.remove('pulse-hint');
+      }).catch(() => {});
     }
 
     // 首次任意点击/触摸即自动播放音乐（绕过浏览器自动播放限制）
@@ -2898,11 +2916,27 @@
 
     function initAudio() {
       if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
       }
     }
 
-function toggleAudio() {
+function updateAudioButton() {
+      const audioBtn = document.getElementById('audioToggle');
+      const audioIcon = document.getElementById('audioIcon');
+      if (!audioBtn || !audioIcon) return;
+      audioBtn.classList.toggle('is-on', soundEnabled);
+      audioBtn.classList.toggle('is-off', !soundEnabled);
+      audioBtn.classList.remove('pulse-hint');
+      audioBtn.setAttribute('aria-pressed', String(soundEnabled));
+      audioBtn.setAttribute('aria-label', soundEnabled ? 'Tắt nhạc nền' : 'Bật nhạc nền');
+      audioBtn.setAttribute('title', soundEnabled ? 'Tắt nhạc nền' : 'Bật nhạc nền');
+      audioIcon.innerHTML = soundEnabled
+        ? '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>'
+        : '<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.37l-1.38-1.38c-.15.15-.3.37-.53.37z"/>';
+    }
+
+    function toggleAudio() {
       soundEnabled = !soundEnabled;
       const audioBtn = document.getElementById('audioToggle');
       if (audioBtn) audioBtn.classList.remove('pulse-hint');
@@ -2927,27 +2961,7 @@ function toggleAudio() {
     }
 
     function playBeep(freq = 600, duration = 0.08, type = 'sine') {
-      if (!soundEnabled) return;
-      try {
-        initAudio();
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {
-        console.log("Audio play blocked/failed:", e);
-      }
+      return;
     }
 
     function showToast(message, isAchv = false) {
@@ -3163,43 +3177,11 @@ function toggleAudio() {
     }
 
     /* ============ AMBIENT PAD (plays only while sound is enabled) ============ */
-    let ambientNodes = null;
     function startAmbientPad() {
-      if (ambientNodes || !soundEnabled) return;
-      try {
-        initAudio();
-        const master = audioCtx.createGain();
-        master.gain.value = 0.012;
-        master.connect(audioCtx.destination);
-        const freqs = [110, 165, 220];
-        const oscs = freqs.map((f, i) => {
-          const osc = audioCtx.createOscillator();
-          osc.type = 'sine';
-          osc.frequency.value = f;
-          const lfo = audioCtx.createOscillator();
-          const lfoGain = audioCtx.createGain();
-          lfo.frequency.value = 0.08 + i * 0.03;
-          lfoGain.gain.value = 3;
-          lfo.connect(lfoGain);
-          lfoGain.connect(osc.frequency);
-          osc.connect(master);
-          osc.start();
-          lfo.start();
-          return { osc, lfo };
-        });
-        ambientNodes = { master, oscs };
-      } catch (e) { /* ignore */ }
+      return;
     }
     function stopAmbientPad() {
-      if (!ambientNodes) return;
-      try {
-        ambientNodes.oscs.forEach(({ osc, lfo }) => {
-          osc.stop();
-          lfo.stop();
-        });
-        ambientNodes.master.disconnect();
-      } catch (e) { /* ignore */ }
-      ambientNodes = null;
+      return;
     }
 
     window.addEventListener('keydown', handleKonamiKey);
@@ -4017,8 +3999,7 @@ function toggleAudio() {
         };
         // Thử phát ngay, nếu失败 thì chờ tương tác
         tryPlay();
-        document.addEventListener('click', tryPlay, { once: true });
-        document.addEventListener('touchstart', tryPlay, { once: true });
+        document.addEventListener('pointerdown', tryPlay, { once: true, capture: true });
         document.addEventListener('keydown', tryPlay, { once: true });
       }
     });
