@@ -2456,6 +2456,10 @@
 
   <div class="cursor-glow" id="cursorGlow"></div>
 
+  <!-- Background music: video with muted autoplay + loop, controlled by the audio toggle -->
+  <video id="bgMusic" src="music/background.mp4" playsinline loop preload="auto"
+    style="position: fixed; inset: 0; width: 0; height: 0; opacity: 0; pointer-events: none;"></video>
+
   <canvas id="gridCanvas" aria-hidden="true"></canvas>
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
   <canvas id="fallCanvas" aria-hidden="true"></canvas>
@@ -2490,8 +2494,8 @@
         Developer IDE
       </button>
     </div>
-    <button class="audio-toggle pulse-hint" id="audioToggle" onclick="toggleAudio()" aria-label="Bật/Tắt âm thanh"
-      title="Bật/Tắt âm thanh (Hiệu ứng Synth & Gõ phím)">
+    <button class="audio-toggle pulse-hint" id="audioToggle" onclick="toggleAudio()" aria-label="Bật/Tắt nhạc nền"
+      title="Bật/Tắt nhạc nền (video.mp4)">
       <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
         <path
           d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z" />
@@ -2867,8 +2871,30 @@
     sessionRSVP = getSavedRSVPName();
 
     // Sound system
-    let soundEnabled = false;
+    let soundEnabled = true;  // 默认开启，首次用户交互后自动播放
     let audioCtx = null;
+    let musicStarted = false;
+
+    function startBackgroundMusic() {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic || musicStarted) return;
+      musicStarted = true;
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      bgMusic.muted = false;
+      bgMusic.play().catch(() => {});
+      startAmbientPad();
+      const audioBtn = document.getElementById('audioToggle');
+      if (audioBtn) audioBtn.classList.remove('pulse-hint');
+    }
+
+    // 首次任意点击/触摸即自动播放音乐（绕过浏览器自动播放限制）
+    function onFirstInteraction() {
+      if (!musicStarted) startBackgroundMusic();
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('touchstart', onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+    }
 
     function initAudio() {
       if (!audioCtx) {
@@ -2876,21 +2902,27 @@
       }
     }
 
-    function toggleAudio() {
+function toggleAudio() {
       soundEnabled = !soundEnabled;
       const audioBtn = document.getElementById('audioToggle');
       if (audioBtn) audioBtn.classList.remove('pulse-hint');
       const audioIcon = document.getElementById('audioIcon');
+      const bgMusic = document.getElementById('bgMusic');
       if (soundEnabled) {
         initAudio();
+        if (bgMusic) {
+          bgMusic.muted = false;
+          bgMusic.play().catch(() => {});
+        }
         audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
-        showToast("🔈 Đã bật âm thanh");
+        showToast("🔊 Đã bật nhạc nền");
         playBeep(800, 0.1, 'sine');
         startAmbientPad();
       } else {
         stopAmbientPad();
+        if (bgMusic) bgMusic.muted = true;
         audioIcon.innerHTML = `<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/>`;
-        showToast("🔇 Đã tắt âm thanh");
+        showToast("🔇 Đã tắt nhạc nền");
       }
     }
 
@@ -3967,6 +3999,27 @@
       const originalName = nameEl ? nameEl.innerText : '';
       if (nameEl && originalName) {
         scrambleText(nameEl, originalName, 1200);
+      }
+
+      // 自动播放背景音乐（浏览器可能需要一次用户交互才能解锁）
+      const bgMusic = document.getElementById('bgMusic');
+      if (bgMusic) {
+        const tryPlay = () => {
+          initAudio();
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          bgMusic.muted = false;
+          bgMusic.play().then(() => {
+            musicStarted = true;
+            startAmbientPad();
+            const audioBtn = document.getElementById('audioToggle');
+            if (audioBtn) audioBtn.classList.remove('pulse-hint');
+          }).catch(() => {});
+        };
+        // Thử phát ngay, nếu失败 thì chờ tương tác
+        tryPlay();
+        document.addEventListener('click', tryPlay, { once: true });
+        document.addEventListener('touchstart', tryPlay, { once: true });
+        document.addEventListener('keydown', tryPlay, { once: true });
       }
     });
   </script>
