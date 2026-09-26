@@ -36,6 +36,27 @@
       pointer-events: none !important;
     }
 
+    /* Preload thiệp trong cùng trang để mobile giữ được user gesture
+       từ nút "MỞ THIỆP" khi bắt đầu phát nhạc. */
+    #invitationFrame {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 20000;
+      background: #030711;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .45s ease, visibility .45s ease;
+    }
+    #invitationFrame.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
     @media (hover: hover) and (pointer: fine) {
       body {
         cursor: none;
@@ -849,6 +870,8 @@
   <div class="cursor" id="cursor"></div>
   <div class="cursor-follower" id="cursorFollower"></div>
 
+  <iframe id="invitationFrame" src="thiep.html" title="Thiệp mời tốt nghiệp" aria-hidden="true"></iframe>
+
   <div class="content">
     <div class="boot-log" id="bootLog"></div>
     <div class="eyebrow"><span class="eyebrow-dot"></span>HUTECH · CLASS OF 2026</div>
@@ -1125,18 +1148,64 @@
       createRipple(e);
       createConfetti();
 
-      // Đánh dấu thao tác "Mở Thiệp" để trang thiệp biết người dùng
-      // vừa chủ động tương tác và có thể thử phát nhạc ngay khi tải.
+      // Quan trọng cho mobile: thiep.html được preload trong iframe cùng
+      // document này. Vì vậy thao tác "MỞ THIỆP" vẫn còn user activation
+      // và audio có thể play() ngay trong chính click này.
+      const frame = document.getElementById('invitationFrame');
+      const content = document.querySelector('.content');
+
       try {
         sessionStorage.setItem('startInvitationMusic', '1');
       } catch (_) {}
 
-      const content = document.querySelector('.content');
-      content.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
-      content.style.transform = 'scale(0.96)';
-      content.style.opacity = '0.7';
+      const playInvitationMusic = () => {
+        try {
+          const frameDoc = frame?.contentDocument;
+          const bgMusic = frameDoc?.getElementById('bgMusic');
+          if (!bgMusic) return false;
 
-      setTimeout(() => { window.location.href = 'thiep.html'; }, 650);
+          bgMusic.muted = false;
+          bgMusic.volume = 0;
+          const playPromise = bgMusic.play();
+          if (playPromise && typeof playPromise.then === 'function') {
+            playPromise.then(() => {
+              // Fade-in do thiep.html quản lý; volume bắt đầu từ 0 để không bị giật.
+              try {
+                frame.contentWindow.musicStarted = true;
+              } catch (_) {}
+            }).catch(() => {});
+          }
+          return true;
+        } catch (_) {
+          return false;
+        }
+      };
+
+      // Gọi play() đồng bộ ngay trong click — đây là điểm quyết định
+      // để Safari/Chrome mobile nhận diện đây là user gesture.
+      playInvitationMusic();
+
+      if (content) {
+        content.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+        content.style.transform = 'scale(0.96)';
+        content.style.opacity = '0.7';
+      }
+
+      // Nếu iframe chưa tải xong, thử lại ngay khi load.
+      // Trường hợp này thường xảy ra chỉ khi người dùng bấm quá nhanh.
+      if (frame) {
+        frame.addEventListener('load', () => playInvitationMusic(), { once: true });
+        frame.classList.add('is-visible');
+      }
+
+      setTimeout(() => {
+        if (content) {
+          content.style.display = 'none';
+        }
+        if (frame) {
+          frame.setAttribute('aria-hidden', 'false');
+        }
+      }, 450);
     }
 
     document.getElementById('openBtn').addEventListener('keydown', (e) => {
