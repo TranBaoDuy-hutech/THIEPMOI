@@ -873,6 +873,63 @@
     .toolbar{padding:10px}
     .toolbar button{flex:1 1 140px}
     .btn-danger-outline{margin-left:0 !important}
+
+    .table-wrap{
+      overflow:visible;
+      border:0 !important;
+      border-radius:0 !important;
+      background:transparent;
+      box-shadow:none !important;
+    }
+
+    table,
+    tbody{
+      display:block;
+      width:100%;
+    }
+
+    thead{display:none}
+
+    #guestTableBody tr{
+      display:block;
+      margin-bottom:10px;
+      padding:8px 14px;
+      border:1px solid rgba(0,59,112,.12);
+      border-radius:12px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 5px 16px rgba(0,44,75,.06);
+    }
+
+    #guestTableBody td{
+      display:grid;
+      grid-template-columns:82px minmax(0,1fr);
+      gap:8px;
+      align-items:start;
+      padding:9px 0 !important;
+      border-bottom:1px solid rgba(0,59,112,.08) !important;
+      font-size:.9rem;
+      line-height:1.45;
+      overflow-wrap:anywhere;
+    }
+
+    #guestTableBody td::before{
+      color:var(--admin-muted);
+      font-size:.72rem;
+      font-weight:700;
+    }
+
+    #guestTableBody td:nth-child(1)::before{content:"#"}
+    #guestTableBody td:nth-child(2)::before{content:"Tên khách"}
+    #guestTableBody td:nth-child(3)::before{content:"Lời chúc"}
+    #guestTableBody td:nth-child(4)::before{content:"Trạng thái"}
+    #guestTableBody td:nth-child(5)::before{content:"Thời gian"}
+    #guestTableBody td:nth-child(6)::before{content:"Thao tác"}
+
+    #guestTableBody td:last-child{border-bottom:0 !important}
+    #guestTableBody td[colspan]::before{content:none}
+    #guestTableBody td[colspan]{display:block;text-align:center}
+    .wish-details{max-width:none}
+    .delete-button,.preview-button{min-height:36px}
   }
 </style>
 <style id="ticket-template-admin-style">

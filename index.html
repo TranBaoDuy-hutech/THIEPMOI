@@ -1125,6 +1125,12 @@
       createRipple(e);
       createConfetti();
 
+      // Đánh dấu thao tác "Mở Thiệp" để trang thiệp biết người dùng
+      // vừa chủ động tương tác và có thể thử phát nhạc ngay khi tải.
+      try {
+        sessionStorage.setItem('startInvitationMusic', '1');
+      } catch (_) {}
+
       const content = document.querySelector('.content');
       content.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
       content.style.transform = 'scale(0.96)';

@@ -50,18 +50,16 @@
       position: relative;
     }
 
-    /* Light page-load overlay */
+    /* Boot sequence overlay */
     .boot-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(3, 7, 17, 0.82);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: var(--bg-void);
       z-index: 500;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.45s ease, visibility 0.45s ease;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
     .boot-overlay.hide {
@@ -71,43 +69,16 @@
     }
 
     .boot-console {
-      width: min(260px, 78vw);
-      padding: 22px 24px;
-      text-align: center;
-      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
-      border-radius: 18px;
-      background: rgba(8, 16, 30, 0.72);
-      box-shadow: 0 18px 50px rgba(0,0,0,.28), 0 0 28px rgba(var(--accent-cyan-rgb),.08);
-      font-family: 'Inter', sans-serif;
-    }
-
-    .boot-console::before {
-      content: '✦';
-      display: block;
-      margin-bottom: 8px;
-      color: var(--accent-cyan);
-      font-size: 1.35rem;
-      text-shadow: 0 0 14px rgba(var(--accent-cyan-rgb), .55);
-      animation: softPulse 1.3s ease-in-out infinite;
-    }
-
-    @keyframes softPulse {
-      0%, 100% { opacity: .55; transform: scale(.94); }
-      50% { opacity: 1; transform: scale(1.05); }
+      width: min(300px, 82vw);
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .boot-line {
-      font-size: 0.76rem;
-      color: var(--text-light);
-      margin-bottom: 4px;
-      opacity: 0;
-      animation: fadeInUp 0.3s ease both;
-    }
-
-    .boot-line:first-child {
-      color: #fff;
-      font-weight: 600;
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
       margin-bottom: 7px;
+      opacity: 0;
+      animation: fadeInUp 0.4s ease both;
     }
 
     .boot-progress {
@@ -3623,8 +3594,10 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
 
   <div class="boot-overlay" id="bootOverlay" aria-hidden="true">
     <div class="boot-console">
-      <div class="boot-line" style="animation-delay:0.05s">Mở thiệp tốt nghiệp</div>
-      <div class="boot-line" style="animation-delay:0.15s">HUTECH · CLASS OF 2026</div>
+      <div class="boot-line" style="animation-delay:0.1s">[BOOT] Initializing invitation.exe</div>
+      <div class="boot-line" style="animation-delay:0.35s">[ OK ] Loading graduate profile</div>
+      <div class="boot-line" style="animation-delay:0.6s">[ OK ] Establishing secure connection</div>
+      <div class="boot-line" style="animation-delay:0.85s">[ OK ] Rendering interface</div>
       <div class="boot-progress">
         <div class="boot-progress-bar" id="bootBar"></div>
       </div>
@@ -4748,23 +4721,18 @@ function updateAudioButton() {
       document.querySelectorAll('.action-btn').forEach((el) => attachMagnetic(el, 10));
     }
 
-    // Boot sequence on first load
-    function runBootSequence(onComplete = () => {}) {
+    function runBootSequence() {
       const overlay = document.getElementById('bootOverlay');
-      if (!overlay) {
-        onComplete();
-        return;
-      }
+      if (!overlay) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         overlay.remove();
-        onComplete();
         return;
       }
       const bar = document.getElementById('bootBar');
       const status = document.getElementById('bootStatus');
       let pct = 0;
       const timer = setInterval(() => {
-        pct += Math.random() * 28 + 24;
+        pct += Math.random() * 16 + 9;
         if (pct >= 100) pct = 100;
         bar.style.width = pct + '%';
         status.textContent = Math.floor(pct) + '%';
@@ -4772,13 +4740,13 @@ function updateAudioButton() {
           clearInterval(timer);
           setTimeout(() => {
             overlay.classList.add('hide');
-              setTimeout(() => {
-                overlay.remove();
-                onComplete();
-              }, 450);
+            setTimeout(() => {
+              overlay.remove();
+              showRSVPGuide();
+            }, 700);
           }, 250);
         }
-      }, 90);
+      }, 170);
     }
 
     // View Switcher
@@ -5547,7 +5515,7 @@ function updateAudioButton() {
       initQRCode();
       initRipples();
       initMagnetic();
-      runBootSequence(showRSVPGuide);
+      runBootSequence();
       renderAchvPanel();
       initRSVPState();
       initWishCounter();
@@ -5559,26 +5527,54 @@ function updateAudioButton() {
         scrambleText(nameEl, originalName, 1200);
       }
 
-      // Nhạc nền: fade-in khi bắt đầu, fade-out ở 8 giây cuối và lặp lại mềm.
+      // Nhạc nền: ưu tiên phát ngay sau thao tác "MỞ THIỆP".
+      // Mobile có thể chặn autoplay sau navigation, nên nếu bị chặn,
+      // lần chạm đầu tiên trên chính trang thiệp sẽ kích hoạt nhạc.
       initMusicFade();
       const bgMusic = document.getElementById('bgMusic');
       if (bgMusic) {
-        const tryPlay = () => {
+        const startFromUserGesture = () => {
+          if (musicStarted || !soundEnabled) return;
+
           initAudio();
-          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+          }
+
           bgMusic.muted = false;
           bgMusic.play().then(() => {
             musicStarted = true;
             fadeMusicTo(MUSIC_TARGET_VOLUME, MUSIC_FADE_IN_MS);
             startAmbientPad();
+            try { sessionStorage.removeItem('startInvitationMusic'); } catch (_) {}
             const audioBtn = document.getElementById('audioToggle');
             if (audioBtn) audioBtn.classList.remove('pulse-hint');
           }).catch(() => {});
         };
-        // Thử phát ngay, nếu失败 thì chờ tương tác
-        tryPlay();
-        document.addEventListener('pointerdown', tryPlay, { once: true, capture: true });
-        document.addEventListener('keydown', tryPlay, { once: true });
+
+        // Đây là trạng thái được gửi từ nút "MỞ THIỆP" ở landing.
+        let openedFromLanding = false;
+        try {
+          openedFromLanding = sessionStorage.getItem('startInvitationMusic') === '1';
+        } catch (_) {}
+
+        // Thử autoplay ngay khi trang thiệp vừa mở.
+        startFromUserGesture();
+
+        // Nếu trình duyệt mobile chặn autoplay, tap đầu tiên trên thiệp
+        // sẽ phát nhạc — không cần đóng hướng dẫn hay bấm nút loa.
+        document.addEventListener('pointerdown', startFromUserGesture, {
+          once: true,
+          capture: true
+        });
+        document.addEventListener('keydown', startFromUserGesture, {
+          once: true
+        });
+
+        // Nếu đi thẳng vào thiep.html thì vẫn giữ hành vi autoplay cũ.
+        if (!openedFromLanding) {
+          startFromUserGesture();
+        }
       }
     });
   </script>
