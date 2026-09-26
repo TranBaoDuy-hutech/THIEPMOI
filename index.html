@@ -1185,6 +1185,13 @@
       // để Safari/Chrome mobile nhận diện đây là user gesture.
       playInvitationMusic();
 
+      // Bắt đầu lại màn BOOT đúng lúc người dùng bấm "MỞ THIỆP".
+      // Trước đó iframe preload đã chạy boot ngầm nên khi mở ra thì
+      // màn BOOT đã biến mất.
+      try {
+        frame?.contentWindow?.dispatchEvent(new Event('startInvitationExperience'));
+      } catch (_) {}
+
       if (content) {
         content.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
         content.style.transform = 'scale(0.96)';

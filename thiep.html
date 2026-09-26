@@ -4721,11 +4721,17 @@ function updateAudioButton() {
       document.querySelectorAll('.action-btn').forEach((el) => attachMagnetic(el, 10));
     }
 
+    let bootSequenceStarted = false;
+
     function runBootSequence() {
+      if (bootSequenceStarted) return;
+      bootSequenceStarted = true;
+
       const overlay = document.getElementById('bootOverlay');
       if (!overlay) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         overlay.remove();
+        showRSVPGuide();
         return;
       }
       const bar = document.getElementById('bootBar');
@@ -5515,7 +5521,18 @@ function updateAudioButton() {
       initQRCode();
       initRipples();
       initMagnetic();
-      runBootSequence();
+
+      // Khi thiep.html được preload trong iframe của landing, giữ màn boot
+      // lại để người dùng vẫn nhìn thấy BOOT sau khi bấm "MỞ THIỆP".
+      const isPreloadedInvitation = window.parent !== window;
+      if (!isPreloadedInvitation) {
+        runBootSequence();
+      } else {
+        window.addEventListener('startInvitationExperience', () => {
+          runBootSequence();
+        }, { once: true });
+      }
+
       renderAchvPanel();
       initRSVPState();
       initWishCounter();
