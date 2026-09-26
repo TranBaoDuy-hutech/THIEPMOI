@@ -50,16 +50,18 @@
       position: relative;
     }
 
-    /* Boot sequence overlay */
+    /* Light page-load overlay */
     .boot-overlay {
       position: fixed;
       inset: 0;
-      background: var(--bg-void);
+      background: rgba(3, 7, 17, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       z-index: 500;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
     }
 
     .boot-overlay.hide {
@@ -69,16 +71,43 @@
     }
 
     .boot-console {
-      width: min(300px, 82vw);
-      font-family: 'JetBrains Mono', monospace;
+      width: min(260px, 78vw);
+      padding: 22px 24px;
+      text-align: center;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.18);
+      border-radius: 18px;
+      background: rgba(8, 16, 30, 0.72);
+      box-shadow: 0 18px 50px rgba(0,0,0,.28), 0 0 28px rgba(var(--accent-cyan-rgb),.08);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .boot-console::before {
+      content: '✦';
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent-cyan);
+      font-size: 1.35rem;
+      text-shadow: 0 0 14px rgba(var(--accent-cyan-rgb), .55);
+      animation: softPulse 1.3s ease-in-out infinite;
+    }
+
+    @keyframes softPulse {
+      0%, 100% { opacity: .55; transform: scale(.94); }
+      50% { opacity: 1; transform: scale(1.05); }
     }
 
     .boot-line {
-      font-size: 0.78rem;
-      color: var(--accent-cyan);
-      margin-bottom: 7px;
+      font-size: 0.76rem;
+      color: var(--text-light);
+      margin-bottom: 4px;
       opacity: 0;
-      animation: fadeInUp 0.4s ease both;
+      animation: fadeInUp 0.3s ease both;
+    }
+
+    .boot-line:first-child {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 7px;
     }
 
     .boot-progress {
@@ -3136,19 +3165,15 @@
 
     .rsvp-guide {
       position: fixed;
-      top: 18px;
-      left: 50%;
-      z-index: 120;
-      width: min(440px, calc(100vw - 28px));
-      padding: 16px;
-      border: 1px solid rgba(var(--accent-cyan-rgb), 0.55);
-      border-radius: 12px;
-      background: rgba(5, 9, 16, 0.96);
-      color: var(--text-primary);
-      box-shadow: var(--neon-glow);
+      inset: 0;
+      z-index: 600;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3, 7, 17, 0.78);
+      backdrop-filter: blur(8px);
       opacity: 0;
-      transform: translate(-50%, -12px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition: opacity 0.2s ease;
     }
 
     .rsvp-guide[hidden] {
@@ -3157,25 +3182,51 @@
 
     .rsvp-guide.show {
       opacity: 1;
-      transform: translate(-50%, 0);
+    }
+
+    .rsvp-guide-panel {
+      width: min(420px, 100%);
+      padding: 24px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.5);
+      border-radius: 16px;
+      background: #08111f;
+      color: var(--text-primary);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55), var(--neon-glow);
+      transform: translateY(10px);
+      transition: transform 0.2s ease;
+    }
+
+    .rsvp-guide.show .rsvp-guide-panel {
+      transform: translateY(0);
     }
 
     .rsvp-guide-title {
-      margin-bottom: 7px;
+      margin-bottom: 10px;
       color: var(--accent-cyan);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
       font-weight: 700;
     }
 
     .rsvp-guide p {
-      font-size: 0.85rem;
-      line-height: 1.55;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      line-height: 1.6;
     }
 
     .rsvp-guide-actions {
       display: flex;
+      justify-content: flex-end;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rsvp-guide,
+      .rsvp-guide-panel {
+        transition: none;
+      }
     }
 
     .icon {
@@ -3572,10 +3623,8 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
 
   <div class="boot-overlay" id="bootOverlay" aria-hidden="true">
     <div class="boot-console">
-      <div class="boot-line" style="animation-delay:0.1s">[BOOT] Initializing invitation.exe</div>
-      <div class="boot-line" style="animation-delay:0.35s">[ OK ] Loading graduate profile</div>
-      <div class="boot-line" style="animation-delay:0.6s">[ OK ] Establishing secure connection</div>
-      <div class="boot-line" style="animation-delay:0.85s">[ OK ] Rendering interface</div>
+      <div class="boot-line" style="animation-delay:0.05s">Mở thiệp tốt nghiệp</div>
+      <div class="boot-line" style="animation-delay:0.15s">HUTECH · CLASS OF 2026</div>
       <div class="boot-progress">
         <div class="boot-progress-bar" id="bootBar"></div>
       </div>
@@ -3586,7 +3635,7 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <!-- Chỉ phát phần âm thanh của file MP4, không hiển thị video. -->
-  <audio id="bgMusic" src="music/background.mp4" autoplay loop preload="auto" aria-hidden="true"></audio>
+  <audio id="bgMusic" src="music/background.mp4" autoplay preload="auto" aria-hidden="true"></audio>
 
   <canvas id="gridCanvas" aria-hidden="true"></canvas>
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
@@ -3952,20 +4001,22 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
     </div>
   </div>
 
-  <aside class="rsvp-guide" id="rsvpGuide" aria-labelledby="rsvpGuideTitle" hidden>
-    <div class="rsvp-guide-title" id="rsvpGuideTitle">Hướng dẫn xác nhận tham dự</div>
-    <p id="rsvpGuideMessage">Nhập tên của bạn, viết lời chúc nếu muốn, rồi nhấn <strong>Confirm</strong> để gửi thông tin.</p>
-    <div class="rsvp-guide-actions">
-      <button type="button" class="terminal-btn" id="rsvpGuideAction" onclick="goToRSVP()">Đến phần nhập</button>
-      <button type="button" class="terminal-btn secondary" onclick="closeRSVPGuide()">Đóng</button>
-    </div>
-  </aside>
-
   <div class="toast" id="toast" role="status" aria-live="polite">
     <svg class="icon" style="color: var(--accent-cyan)" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
     </svg>
     <span id="toastMessage">Thông báo từ hệ thống</span>
+  </div>
+
+  <div class="rsvp-guide" id="rsvpGuide" hidden onclick="if (event.target === this) closeRSVPGuide()">
+    <section class="rsvp-guide-panel" role="dialog" aria-modal="true" aria-labelledby="rsvpGuideTitle" aria-describedby="rsvpGuideMessage">
+      <h2 class="rsvp-guide-title" id="rsvpGuideTitle">Hướng dẫn xác nhận tham dự</h2>
+      <p id="rsvpGuideMessage">Nhập tên của bạn, viết lời chúc nếu muốn, rồi nhấn <strong>Confirm</strong> để gửi thông tin.</p>
+      <div class="rsvp-guide-actions">
+        <button type="button" class="terminal-btn" id="rsvpGuideAction" onclick="goToRSVP()">Đến phần nhập</button>
+        <button type="button" class="terminal-btn secondary" onclick="closeRSVPGuide()">Đóng</button>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -4161,23 +4212,121 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
 
     sessionRSVP = getSavedRSVPName();
 
-    // Sound system
-    let soundEnabled = true;  // 默认开启，首次用户交互后自动播放
+    // Sound system + smooth music fade
+    let soundEnabled = true;
     let audioCtx = null;
     let musicStarted = false;
+    let musicFadeTimer = null;
+    // Track nhạc dài đúng 24 giây:
+    // 0–3s: fade-in | 3–20s: giữ volume | 20–24s: fade-out
+    const MUSIC_TRACK_DURATION = 24;
+    const MUSIC_FADE_IN_MS = 3000;
+    const MUSIC_FADE_OUT_MS = 4000;
+    const MUSIC_FULL_VOLUME_START = MUSIC_FADE_IN_MS / 1000;
+    const MUSIC_FADE_OUT_START = 20;
+    const MUSIC_TARGET_VOLUME = 0.55;
+
+    function setMusicVolume(volume) {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic) return;
+      bgMusic.volume = Math.max(0, Math.min(MUSIC_TARGET_VOLUME, volume));
+    }
+
+    function fadeMusicTo(target, duration = 3000) {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic) return;
+
+      clearInterval(musicFadeTimer);
+      const start = bgMusic.volume;
+      const end = Math.max(0, Math.min(MUSIC_TARGET_VOLUME, target));
+      const startedAt = performance.now();
+
+      if (duration <= 0) {
+        setMusicVolume(end);
+        return;
+      }
+
+      musicFadeTimer = setInterval(() => {
+        const progress = Math.min((performance.now() - startedAt) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setMusicVolume(start + (end - start) * eased);
+
+        if (progress >= 1) {
+          clearInterval(musicFadeTimer);
+          musicFadeTimer = null;
+        }
+      }, 40);
+    }
 
     function startBackgroundMusic() {
       const bgMusic = document.getElementById('bgMusic');
-      if (!bgMusic || musicStarted) return;
+      if (!bgMusic || musicStarted || !soundEnabled) return;
+
       initAudio();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
       bgMusic.muted = false;
+      setMusicVolume(0);
+
       bgMusic.play().then(() => {
         musicStarted = true;
+        fadeMusicTo(MUSIC_TARGET_VOLUME, MUSIC_FADE_IN_MS);
         startAmbientPad();
+
         const audioBtn = document.getElementById('audioToggle');
         if (audioBtn) audioBtn.classList.remove('pulse-hint');
       }).catch(() => {});
+    }
+
+    function handleMusicTimeUpdate() {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic || !soundEnabled) return;
+
+      const currentTime = bgMusic.currentTime;
+
+      // Chia cố định theo đúng track 24s, không phụ thuộc duration metadata của MP4.
+      if (currentTime < MUSIC_FULL_VOLUME_START) {
+        const progress = Math.max(0, Math.min(1, currentTime / MUSIC_FULL_VOLUME_START));
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setMusicVolume(MUSIC_TARGET_VOLUME * eased);
+        return;
+      }
+
+      if (currentTime < MUSIC_FADE_OUT_START) {
+        setMusicVolume(MUSIC_TARGET_VOLUME);
+        return;
+      }
+
+      const fadeProgress = Math.max(
+        0,
+        Math.min(1, (MUSIC_TRACK_DURATION - currentTime) / (MUSIC_FADE_OUT_MS / 1000))
+      );
+      const eased = fadeProgress * fadeProgress;
+      setMusicVolume(MUSIC_TARGET_VOLUME * eased);
+    }
+
+    function restartMusicWithFade() {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic || !soundEnabled) return;
+
+      clearInterval(musicFadeTimer);
+      musicFadeTimer = null;
+      bgMusic.currentTime = 0;
+      setMusicVolume(0);
+
+      bgMusic.play().then(() => {
+        musicStarted = true;
+        fadeMusicTo(MUSIC_TARGET_VOLUME, MUSIC_FADE_IN_MS);
+      }).catch(() => {});
+    }
+
+    function initMusicFade() {
+      const bgMusic = document.getElementById('bgMusic');
+      if (!bgMusic) return;
+
+      bgMusic.volume = 0;
+      bgMusic.addEventListener('timeupdate', handleMusicTimeUpdate);
+      bgMusic.addEventListener('ended', restartMusicWithFade);
     }
 
     // 首次任意点击/触摸即自动播放音乐（绕过浏览器自动播放限制）
@@ -4220,7 +4369,15 @@ function updateAudioButton() {
         initAudio();
         if (bgMusic) {
           bgMusic.muted = false;
-          bgMusic.play().catch(() => {});
+          if (!musicStarted) {
+            setMusicVolume(0);
+            bgMusic.play().then(() => {
+              musicStarted = true;
+              fadeMusicTo(MUSIC_TARGET_VOLUME, MUSIC_FADE_IN_MS);
+            }).catch(() => {});
+          } else {
+            fadeMusicTo(MUSIC_TARGET_VOLUME, MUSIC_FADE_IN_MS);
+          }
         }
         audioIcon.innerHTML = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
         showToast("🔊 Đã bật nhạc nền");
@@ -4228,7 +4385,12 @@ function updateAudioButton() {
         startAmbientPad();
       } else {
         stopAmbientPad();
-        if (bgMusic) bgMusic.muted = true;
+        if (bgMusic) {
+          clearInterval(musicFadeTimer);
+          musicFadeTimer = null;
+          bgMusic.muted = true;
+          setMusicVolume(0);
+        }
         audioIcon.innerHTML = `<path d="M3.63 3.63L2.22 5.04 7 9.83v9.17h4l5 5v-6.17l4.38 4.38c-.69.52-1.46.93-2.3 1.2l.88 2.64c1.23-.39 2.35-.99 3.32-1.76l2.04 2.04 1.41-1.41L3.63 3.63zM9 16.17V11.83l2.83 2.83L9 16.17zM16 4l-5 5h-1.17l5.17 5.17V4zm1 5c.58 0 1.11.1 1.62.27l1.32-1.32c-.89-.58-1.89-.99-2.94-1.17v2.22zm0 4.44v2.22c.32-.05.62-.15.91-.29l-1.38-1.38c-.15.15-.3.29-.53.37z"/>`;
         showToast("🔇 Đã tắt nhạc nền");
       }
@@ -4255,11 +4417,12 @@ function updateAudioButton() {
       if (!guide) return;
       if (sessionRSVP) {
         document.getElementById('rsvpGuideTitle').textContent = 'Bạn đã xác nhận tham dự';
-        document.getElementById('rsvpGuideMessage').textContent = 'Nếu cần chỉnh sửa thông tin hoặc lời chúc, hãy chọn nút bên dưới.';
+        document.getElementById('rsvpGuideMessage').textContent = 'Nếu cần cập nhật thông tin hoặc lời chúc, hãy chọn nút bên dưới.';
         document.getElementById('rsvpGuideAction').textContent = 'Cập nhật thông tin';
       }
       guide.hidden = false;
       requestAnimationFrame(() => guide.classList.add('show'));
+      document.getElementById('rsvpGuideAction').focus();
     }
 
     function closeRSVPGuide() {
@@ -4274,6 +4437,12 @@ function updateAudioButton() {
       if (sessionRSVP) reopenRSVPInput();
       document.querySelector('.terminal-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !document.getElementById('rsvpGuide').hidden) {
+        closeRSVPGuide();
+      }
+    });
 
     /* ============ ACHIEVEMENT SYSTEM ============ */
     const ACHIEVEMENTS = [
@@ -4580,18 +4749,22 @@ function updateAudioButton() {
     }
 
     // Boot sequence on first load
-    function runBootSequence() {
+    function runBootSequence(onComplete = () => {}) {
       const overlay = document.getElementById('bootOverlay');
-      if (!overlay) return;
+      if (!overlay) {
+        onComplete();
+        return;
+      }
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         overlay.remove();
+        onComplete();
         return;
       }
       const bar = document.getElementById('bootBar');
       const status = document.getElementById('bootStatus');
       let pct = 0;
       const timer = setInterval(() => {
-        pct += Math.random() * 16 + 9;
+        pct += Math.random() * 28 + 24;
         if (pct >= 100) pct = 100;
         bar.style.width = pct + '%';
         status.textContent = Math.floor(pct) + '%';
@@ -4599,10 +4772,13 @@ function updateAudioButton() {
           clearInterval(timer);
           setTimeout(() => {
             overlay.classList.add('hide');
-            setTimeout(() => overlay.remove(), 700);
+              setTimeout(() => {
+                overlay.remove();
+                onComplete();
+              }, 450);
           }, 250);
         }
-      }, 170);
+      }, 90);
     }
 
     // View Switcher
@@ -5371,10 +5547,9 @@ function updateAudioButton() {
       initQRCode();
       initRipples();
       initMagnetic();
-      runBootSequence();
+      runBootSequence(showRSVPGuide);
       renderAchvPanel();
       initRSVPState();
-      showRSVPGuide();
       initWishCounter();
       setTimeout(() => unlockAchievement('opened'), 2200);
 
@@ -5384,7 +5559,8 @@ function updateAudioButton() {
         scrambleText(nameEl, originalName, 1200);
       }
 
-      // 自动播放背景音乐（浏览器可能需要一次用户交互才能解锁）
+      // Nhạc nền: fade-in khi bắt đầu, fade-out ở 8 giây cuối và lặp lại mềm.
+      initMusicFade();
       const bgMusic = document.getElementById('bgMusic');
       if (bgMusic) {
         const tryPlay = () => {
@@ -5393,6 +5569,7 @@ function updateAudioButton() {
           bgMusic.muted = false;
           bgMusic.play().then(() => {
             musicStarted = true;
+            fadeMusicTo(MUSIC_TARGET_VOLUME, MUSIC_FADE_IN_MS);
             startAmbientPad();
             const audioBtn = document.getElementById('audioToggle');
             if (audioBtn) audioBtn.classList.remove('pulse-hint');
