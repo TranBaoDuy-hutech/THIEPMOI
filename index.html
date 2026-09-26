@@ -192,7 +192,27 @@
       }
     }
 
-    .logo-wrap {
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      padding:8px 15px;
+      margin-bottom:28px;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:999px;
+      background:rgba(255,255,255,.055);
+      color:#a8bfd0;
+      font:600 11px/1 'JetBrains Mono',monospace;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      box-shadow:0 8px 30px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter:blur(12px);
+      animation:fadeUp 1s cubic-bezier(.22,1,.36,1) .15s both;
+  }
+  .eyebrow-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 14px #34d399;animation:blinkDot 1.8s ease-in-out infinite}
+  @keyframes blinkDot{50%{opacity:.35;transform:scale(.7)}}
+
+  .logo-wrap {
       position: relative;
       display: inline-block;
       margin-bottom: 1.4rem;
@@ -304,10 +324,16 @@
       animation: fadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
     }
 
+    .mini-label{color:#6f8ca2;font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.28em;margin-bottom:9px;opacity:.9}
+
     p.sub span {
       color: #22d3ee;
       font-weight: 500;
     }
+
+    .event-meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:-1.4rem 0 2.25rem}
+    .meta-chip{padding:8px 13px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(255,255,255,.035);color:#8198aa;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.06em;backdrop-filter:blur(8px)}
+    .meta-chip strong{color:#dceaf2;font-weight:700}
 
     .btn-wrap {
       position: relative;
@@ -530,12 +556,15 @@
   <div class="cursor-follower" id="cursorFollower"></div>
 
   <div class="content">
+    <div class="eyebrow"><span class="eyebrow-dot"></span>HUTECH · CLASS OF 2026</div>
+
     <div class="logo-wrap">
       <div class="logo-ring"></div>
       <div class="logo-ring"></div>
       <div class="logo">🎓</div>
     </div>
 
+    <div class="mini-label">DIGITAL GRADUATION INVITATION</div>
     <h1>Thiệp Mời Tốt Nghiệp</h1>
     <div class="holo-line"></div>
 
@@ -543,6 +572,12 @@
       Lễ tốt nghiệp Kỹ sư <span>CNTT</span> — Trần Bảo Duy<br>
       HUTECH University, <span>10/2026</span>
     </p>
+
+    <div class="event-meta">
+      <div class="meta-chip">🎓 <strong>LỄ TỐT NGHIỆP</strong></div>
+      <div class="meta-chip">📍 <strong>HUTECH</strong></div>
+      <div class="meta-chip">✨ <strong>2026</strong></div>
+    </div>
 
     <div class="btn-wrap">
       <button class="open-btn" id="openBtn" onclick="openInvitation(event)">
