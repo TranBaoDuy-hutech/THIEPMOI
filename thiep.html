@@ -3113,6 +3113,63 @@
       transform: translateY(0);
     }
 
+    .toast.thank-you {
+      top: 50%;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      transform: translate(-50%, calc(-50% + 150px));
+      z-index: 250;
+    }
+
+    .toast.thank-you.show {
+      transform: translate(-50%, -50%);
+    }
+
+    .rsvp-guide {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      z-index: 120;
+      width: min(440px, calc(100vw - 28px));
+      padding: 16px;
+      border: 1px solid rgba(var(--accent-cyan-rgb), 0.55);
+      border-radius: 12px;
+      background: rgba(5, 9, 16, 0.96);
+      color: var(--text-primary);
+      box-shadow: var(--neon-glow);
+      opacity: 0;
+      transform: translate(-50%, -12px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .rsvp-guide[hidden] {
+      display: none;
+    }
+
+    .rsvp-guide.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .rsvp-guide-title {
+      margin-bottom: 7px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .rsvp-guide p {
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    .rsvp-guide-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
     .icon {
       width: 16px;
       height: 16px;
@@ -3488,8 +3545,8 @@
 <style id="ticket-template-style">
 .ticket-template-card{position:relative;width:100%;max-width:100%;aspect-ratio:1536/1024;overflow:hidden;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.45);background:#eee}
 .ticket-template-image{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(1.12) saturate(1.06) contrast(.98)}
-.ticket-template-name{position:absolute;left:24.4%;top:59.65%;width:28.3%;height:4.35%;display:flex;align-items:center;justify-content:center;padding:0 1.5%;overflow:hidden;background:#fffaf0;border:1.5px solid #c99a27;border-radius:7px;color:#164a78;font-family:Arial,sans-serif;font-size:clamp(10px,1.45vw,22px);font-weight:500;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-@media(max-width:600px){.ticket-template-card{border-radius:10px}.ticket-template-name{border-width:1px;border-radius:4px;font-size:clamp(7px,2.15vw,14px)}}
+.ticket-template-name{position:absolute;left:24.4%;top:59.55%;width:35.9%;height:6.65%;display:flex;align-items:center;justify-content:center;padding:0 2%;overflow:hidden;background:transparent;border:0;border-radius:0;color:#164a78;font-family:'Segoe Script','Brush Script MT',cursive;font-size:clamp(10px,1.25vw,18px);font-weight:600;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;text-shadow:0 1px 1px rgba(255,255,255,.45)}
+@media(max-width:600px){.ticket-template-card{border-radius:10px}.ticket-template-name{font-size:clamp(9px,2.9vw,18px)}}
 </style>
 <style id="ticket-template-edit-style">
 .ticket-template-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
@@ -3866,11 +3923,6 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
         </div>
       </div>
 
-      <div id="wishesPanel" style="margin-top:14px; padding:12px; background:rgba(52,211,153,.04); border:1px solid rgba(52,211,153,.16); border-radius:10px;">
-        <div class="terminal-line" style="color:var(--accent-green);">[WISHES] Lời chúc từ khách mời</div>
-        <div id="wishesList" style="margin-top:8px;"></div>
-      </div>
-
       <!-- Returning Guest Panel -->
       <div class="terminal-returning-guest" id="terminalReturningGuest"
         style="display: none; margin-top: 10px; padding: 10px 12px; background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px;">
@@ -3891,6 +3943,15 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
       </div>
     </div>
   </div>
+
+  <aside class="rsvp-guide" id="rsvpGuide" aria-labelledby="rsvpGuideTitle" hidden>
+    <div class="rsvp-guide-title" id="rsvpGuideTitle">Hướng dẫn xác nhận tham dự</div>
+    <p>Nhập tên của bạn, viết lời chúc nếu muốn, rồi nhấn <strong>Confirm</strong> để gửi thông tin.</p>
+    <div class="rsvp-guide-actions">
+      <button type="button" class="terminal-btn" onclick="goToRSVP()">Đến phần nhập</button>
+      <button type="button" class="terminal-btn secondary" onclick="closeRSVPGuide()">Đóng</button>
+    </div>
+  </aside>
 
   <div class="toast" id="toast" role="status" aria-live="polite">
     <svg class="icon" style="color: var(--accent-cyan)" viewBox="0 0 24 24" aria-hidden="true">
@@ -3959,7 +4020,7 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
         </article>
         <div class="ticket-template-actions">
           <button class="ticket-template-edit" type="button" onclick="reopenRSVPInput('${escapeTicketText(ticket.code)}')">✏️ Đổi tên người tham dự</button>
-          <button class="ticket-template-edit" type="button" onclick="downloadTicketCard(this, '${escapeTicketText(ticket.code)}')">⬇ Tải card về máy</button>
+          <button class="ticket-template-edit" type="button" onclick="downloadTicketCard(this, '${escapeTicketText(ticket.code)}')">📲 Lưu ảnh card</button>
         </div>
       ` : '';
     }
@@ -3998,22 +4059,52 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
 
       button.disabled = true;
       const originalLabel = button.textContent;
-      button.textContent = 'Đang xuất...';
+      button.textContent = 'Đang chuẩn bị ảnh...';
+
       try {
         const canvas = await html2canvas(card, {
           backgroundColor: '#ffffff',
-          scale: Math.min(window.devicePixelRatio || 1, 2),
+          scale: Math.min(Math.max(window.devicePixelRatio || 1, 2), 3),
           useCORS: true,
           logging: false
         });
+
+        const fileName = `${String(ticketCode || 'ticket').toLowerCase()}-graduation-card.png`;
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
+        if (!blob) throw new Error('Không tạo được ảnh PNG.');
+
+        const file = new File([blob], fileName, { type: 'image/png' });
+
+        // Điện thoại: mở menu chia sẻ của hệ điều hành để người dùng chọn
+        // "Lưu hình ảnh/Save Image" và đưa ảnh vào thư viện.
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          button.textContent = 'Đang mở chia sẻ...';
+          await navigator.share({
+            title: 'Graduation Ticket',
+            text: 'Card tốt nghiệp của bạn',
+            files: [file]
+          });
+          showToast('✅ Chọn "Lưu hình ảnh" để lưu card vào thư viện.');
+          return;
+        }
+
+        // PC hoặc trình duyệt không hỗ trợ chia sẻ file: tải PNG trực tiếp.
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.download = `${String(ticketCode || 'ticket').toLowerCase()}-graduation-card.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.download = fileName;
+        link.href = url;
+        document.body.appendChild(link);
         link.click();
-        showToast('✅ Đã tải card vé về máy.');
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('✅ Đã tải card PNG về máy.');
       } catch (error) {
-        console.warn('Không thể xuất card vé:', error);
-        showToast('❌ Không thể tải card lúc này.');
+        if (error?.name === 'AbortError') {
+          showToast('Đã hủy lưu card.');
+        } else {
+          console.warn('Không thể xuất card vé:', error);
+          showToast('❌ Không thể lưu card lúc này.');
+        }
       } finally {
         button.disabled = false;
         button.textContent = originalLabel;
@@ -4139,15 +4230,35 @@ function updateAudioButton() {
       return;
     }
 
-    function showToast(message, isAchv = false) {
+    function showToast(message, isAchv = false, isThankYou = false) {
       const toast = document.getElementById('toast');
       document.getElementById('toastMessage').innerText = message;
       toast.classList.toggle('achv', !!isAchv);
+      toast.classList.toggle('thank-you', !!isThankYou);
       toast.classList.add('show');
       clearTimeout(toast._hideTimer);
       toast._hideTimer = setTimeout(() => {
         toast.classList.remove('show');
       }, 3200);
+    }
+
+    function showRSVPGuide() {
+      const guide = document.getElementById('rsvpGuide');
+      if (!guide) return;
+      guide.hidden = false;
+      requestAnimationFrame(() => guide.classList.add('show'));
+    }
+
+    function closeRSVPGuide() {
+      const guide = document.getElementById('rsvpGuide');
+      if (!guide) return;
+      guide.classList.remove('show');
+      setTimeout(() => { guide.hidden = true; }, 200);
+    }
+
+    function goToRSVP() {
+      closeRSVPGuide();
+      document.querySelector('.terminal-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     /* ============ ACHIEVEMENT SYSTEM ============ */
@@ -4712,12 +4823,16 @@ function updateAudioButton() {
               const successLine = document.createElement('div');
               successLine.className = 'terminal-line';
               successLine.style.color = 'var(--accent-green)';
+              const thankYou = wish
+                ? `Cảm ơn ${guestName} đã xác nhận tham dự và gửi lời chúc!`
+                : `Cảm ơn ${guestName} đã xác nhận tham dự!`;
               successLine.innerText = saveResult.mode === 'remote'
-                ? `[SUCCESS] Đã lưu vào hệ thống — hẹn gặp bạn tại lễ tốt nghiệp, ${guestName}!`
-                : `[SAVED-LOCAL] Đã lưu vé trên thiết bị này cho ${guestName}. (Không kết nối được máy chủ trung tâm, vé vẫn có hiệu lực khi bạn quay lại trang này trên máy này.)`;
+                ? `[SUCCESS] Đã lưu vào hệ thống. ${thankYou} Hẹn gặp bạn tại lễ tốt nghiệp!`
+                : `[SAVED-LOCAL] Đã lưu vé trên thiết bị này cho ${guestName}. ${thankYou} (Vé chỉ lưu trên thiết bị này.)`;
               terminalBody.appendChild(successLine);
               terminalBody.scrollTop = terminalBody.scrollHeight;
-              showToast(saveResult.mode === 'remote' ? `✅ Đã lưu vào hệ thống: ${guestName}` : `💾 Đã lưu vé cục bộ cho: ${guestName}`);
+              const wasEditingTicket = !!editingTicketCode;
+              showToast(wasEditingTicket ? `💙 Cảm ơn ${guestName} đã cập nhật tên!` : (wish ? `💙 Cảm ơn ${guestName} đã xác nhận và gửi lời chúc!` : `💙 Cảm ơn ${guestName} đã xác nhận tham dự!`), false, true);
               fireConfetti();
               unlockAchievement('rsvp');
 
@@ -4742,41 +4857,6 @@ function updateAudioButton() {
           }
         }, idx * 250);
       });
-    }
-
-    function renderWishes(guests) {
-      const list = document.getElementById('wishesList');
-      if (!list) return;
-
-      if (!guests || !guests.length) {
-        list.innerHTML = '<div style="color:var(--text-secondary); font-size:.76rem; padding:8px 0;">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc! ✨</div>';
-        return;
-      }
-
-      list.innerHTML = guests.slice(-12).reverse().map(guest => {
-        const name = String(guest.name || 'Khách mời').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-        const wish = String(guest.wish || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-        return `<div style="padding:10px 0; border-bottom:1px solid rgba(148,163,184,.09);">
-          <div style="font-size:.76rem; font-weight:700; color:var(--accent-cyan);">♡ ${name}</div>
-          <div style="margin-top:4px; color:var(--text-light); font-size:.78rem; line-height:1.5;">${wish}</div>
-        </div>`;
-      }).join('');
-    }
-
-    async function loadWishes() {
-      const list = document.getElementById('wishesList');
-      if (!list) return;
-      if (!isGuestDBReady()) {
-        list.innerHTML = '<div style="color:var(--text-secondary); font-size:.76rem; padding:8px 0;">Đang chờ kết nối hệ thống lời chúc...</div>';
-        return;
-      }
-      try {
-        const wishes = await window.GuestDB.getGuests();
-        renderWishes(wishes);
-      } catch (error) {
-        console.warn('Không thể tải lời chúc:', error);
-        list.innerHTML = '<div style="color:#fca5a5; font-size:.76rem; padding:8px 0;">Không tải được lời chúc lúc này.</div>';
-      }
     }
 
     function initWishCounter() {
@@ -5278,9 +5358,8 @@ function updateAudioButton() {
       runBootSequence();
       renderAchvPanel();
       initRSVPState();
+      if (!sessionRSVP) showRSVPGuide();
       initWishCounter();
-      loadWishes();
-      setInterval(loadWishes, 30000);
       setTimeout(() => unlockAchievement('opened'), 2200);
 
       const nameEl = document.getElementById('gradName');

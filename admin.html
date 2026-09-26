@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Danh Sách Khách Dự - v4</title>
+  <title>Admin - Danh Sách Khách Dự</title>
   <style>
     * {
       box-sizing: border-box;
@@ -193,6 +193,48 @@
       padding: 12px 14px;
       border-bottom: 1px solid rgba(148, 163, 184, 0.08);
       color: #e2e8f0;
+    }
+
+    .wish-details {
+      max-width: 320px;
+    }
+
+    .wish-details summary {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      line-height: 1.45;
+      list-style: none;
+    }
+
+    .wish-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .wish-preview {
+      min-width: 0;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      line-clamp: 1;
+      -webkit-line-clamp: 1;
+      overflow-wrap: anywhere;
+    }
+
+    .wish-full {
+      display: none;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .wish-details[open] .wish-preview {
+      display: none;
+    }
+
+    .wish-details[open] .wish-full {
+      display: block;
     }
 
     tbody tr:last-child td {
@@ -587,11 +629,245 @@
 
   .ticket-card-admin{display:grid!important;grid-template-columns:18% minmax(0,58%) 24%!important;min-height:360px!important;padding:0!important;overflow:hidden!important;border-radius:18px!important;border:1px solid #c8a45d!important;background:#f8f0df!important;box-shadow:0 22px 55px rgba(0,24,40,.3)!important}.ticket-card-admin-left,.ticket-card-admin-main,.ticket-card-admin-right{position:relative!important;min-width:0!important;box-sizing:border-box!important}.ticket-card-admin-left{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:26px 17px 22px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#0a4265,#031d31)!important;border-right:1px solid rgba(200,164,93,.75)!important}.ticket-card-admin-left-brand{color:#f5dda3!important;font-size:.75rem!important;font-weight:900!important;letter-spacing:.18em!important}.ticket-card-admin-left-icon{margin:22px 0 8px!important;font-size:2.6rem!important}.ticket-card-admin-left-title{font-size:.86rem!important;font-weight:800!important;letter-spacing:.16em!important;line-height:1.55!important}.ticket-card-admin-left-script{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.55rem!important;line-height:1.02!important;transform:rotate(-5deg)!important}.ticket-card-admin-left-foot{color:#f5dda3!important;font-size:.48rem!important;letter-spacing:.2em!important}.ticket-card-admin-main{display:flex!important;flex-direction:column!important;padding:26px 28px 0!important;color:#123d58!important;background:radial-gradient(circle at 78% 35%,rgba(202,218,218,.7),transparent 24%),linear-gradient(145deg,#fffaf0,#f4ead2)!important}.ticket-card-admin-brand{display:flex!important;justify-content:space-between!important;gap:10px!important}.ticket-card-admin-wordmark{color:#123b57!important;font-family:Georgia,serif!important;font-size:1.05rem!important;font-weight:800!important}.ticket-card-admin-type{color:#8b6a2e!important;font-size:.48rem!important;letter-spacing:.1em!important}.ticket-card-admin-label{margin-top:38px!important;color:#123b57!important;font-size:.82rem!important;letter-spacing:.24em!important}.ticket-card-admin-name{margin-top:2px!important;color:#b18427!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:clamp(3rem,6vw,4.9rem)!important;line-height:.9!important;transform:rotate(-4deg)!important}.ticket-card-admin-subtitle{margin-top:24px!important;color:#214f66!important;font-size:.75rem!important;line-height:1.55!important}.ticket-card-admin-details{display:grid!important;grid-template-columns:1fr 1fr!important;gap:0!important;margin-top:auto!important;padding:16px 0!important;border-top:1px solid rgba(18,59,87,.22)!important}.ticket-card-admin-details>div{padding:0 12px!important;border-right:1px solid rgba(18,59,87,.22)!important}.ticket-card-admin-details>div:first-child{padding-left:0!important}.ticket-card-admin-details>div:last-child{border-right:0!important}.ticket-card-admin-detail-label{color:#183f57!important;font-size:.48rem!important;font-weight:900!important}.ticket-card-admin-detail-value{color:#183f57!important;font-size:.72rem!important;font-weight:700!important}.ticket-card-admin-name-small{color:#173c56!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.15rem!important}.ticket-card-admin-right{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:25px 15px 19px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#063c5a,#021d30)!important;border-left:1px solid rgba(200,164,93,.7)!important}.ticket-card-admin-right-label{color:#f5dda3!important;font-size:.5rem!important;font-weight:800!important;letter-spacing:.13em!important}.ticket-card-admin-countdown{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;margin:10px 0 15px!important}.ticket-card-admin-countdown>div{padding:7px 2px!important;border:1px solid rgba(200,164,93,.55)!important;border-radius:7px!important}.ticket-card-admin-countdown b{display:block!important;color:#f8e6ad!important;font-size:.78rem!important}.ticket-card-admin-countdown small{color:rgba(255,255,255,.58)!important;font-size:.33rem!important}.ticket-card-admin-right-message{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:.82rem!important;line-height:1.5!important}.ticket-card-admin-right-code{padding:8px!important;border:1px solid rgba(255,255,255,.2)!important}.ticket-card-admin-right-code small{font-size:.4rem!important}.ticket-card-admin-right-code strong{display:block!important;color:#f5dda3!important;font-size:.7rem!important}.ticket-card-admin-status{color:#d7f9df!important;font-size:.5rem!important;font-weight:800!important}@media(max-width:700px){.ticket-card-admin{grid-template-columns:1fr!important}.ticket-card-admin-left{min-height:180px!important;flex-direction:row!important;align-items:center!important}.ticket-card-admin-main{min-height:420px!important}.ticket-card-admin-right{min-height:280px!important}}
   </style>
+<style id="admin-polish-style">
+  :root{
+    --admin-blue:#003b70;
+    --admin-blue-2:#0b5b91;
+    --admin-red:#c8102e;
+    --admin-gold:#c8a45d;
+    --admin-ink:#173d55;
+    --admin-muted:#64748b;
+    --admin-surface:rgba(255,255,255,.88);
+    --admin-line:rgba(0,59,112,.11);
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 8% 0%,rgba(0,59,112,.12),transparent 34%),
+      radial-gradient(circle at 94% 8%,rgba(200,164,93,.14),transparent 30%),
+      linear-gradient(145deg,#dce7ed 0%,#f5f8fa 52%,#d2e0e7 100%) !important;
+    color:var(--admin-ink) !important;
+    padding:28px 18px 40px !important;
+  }
+
+  .container{
+    max-width:1180px !important;
+    background:rgba(255,255,255,.84) !important;
+    border:1px solid rgba(0,59,112,.12) !important;
+    border-radius:24px !important;
+    padding:30px !important;
+    box-shadow:0 24px 70px rgba(0,44,75,.16) !important;
+    backdrop-filter:blur(18px);
+  }
+
+  #loginView{
+    max-width:480px !important;
+    min-height:520px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  #loginView.hidden{display:none !important}
+
+  .login-box{
+    width:100%;
+    max-width:390px;
+    padding:10px 0 4px !important;
+  }
+
+  .login-box h1{
+    color:var(--admin-blue) !important;
+    font-size:1.7rem !important;
+  }
+
+  .login-box h1::before{
+    content:"🎓";
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--admin-blue),var(--admin-blue-2));
+    box-shadow:0 10px 24px rgba(0,59,112,.22);
+    font-size:1.35rem;
+  }
+
+  .subtitle{
+    color:var(--admin-muted) !important;
+    margin-bottom:24px !important;
+  }
+
+  .status{
+    color:#275a78 !important;
+    background:rgba(0,123,183,.065) !important;
+    border:1px solid rgba(0,123,183,.14) !important;
+  }
+
+  input{
+    border:1px solid rgba(0,59,112,.15) !important;
+    background:#f8fbfd !important;
+    color:var(--admin-ink) !important;
+    min-height:46px;
+  }
+
+  input:focus{
+    border-color:#0b78b8 !important;
+    box-shadow:0 0 0 4px rgba(11,120,184,.12) !important;
+  }
+
+  .btn-primary{
+    background:linear-gradient(135deg,var(--admin-blue),#075f98) !important;
+    color:#fff !important;
+    box-shadow:0 10px 22px rgba(0,59,112,.18);
+  }
+
+  #adminView h1{
+    color:var(--admin-blue) !important;
+    font-size:1.65rem !important;
+    margin-bottom:5px !important;
+  }
+
+  #adminView h1::after{
+    content:"";
+    display:inline-block;
+    width:42px;
+    height:3px;
+    margin-left:12px;
+    vertical-align:middle;
+    border-radius:999px;
+    background:linear-gradient(90deg,var(--admin-red),var(--admin-gold));
+  }
+
+  #adminView .subtitle{
+    margin-bottom:18px !important;
+  }
+
+  .toolbar{
+    align-items:center;
+    padding:12px;
+    margin-bottom:18px !important;
+    border:1px solid var(--admin-line);
+    border-radius:16px;
+    background:rgba(248,251,253,.78);
+  }
+
+  .toolbar button{
+    min-height:40px;
+  }
+
+  .btn-ghost{
+    background:#fff !important;
+    color:var(--admin-blue) !important;
+    border:1px solid rgba(0,59,112,.14) !important;
+  }
+
+  .btn-danger-outline{
+    color:#b4233c !important;
+    border-color:rgba(196,36,62,.22) !important;
+    background:#fff !important;
+  }
+
+  .table-wrap{
+    border:1px solid rgba(0,59,112,.10) !important;
+    border-radius:18px !important;
+    background:rgba(255,255,255,.78);
+    box-shadow:0 12px 35px rgba(0,44,75,.07);
+  }
+
+  table{
+    font-size:.88rem !important;
+  }
+
+  thead tr{
+    background:linear-gradient(180deg,#eef5f9,#e7f0f5) !important;
+  }
+
+  th{
+    color:var(--admin-blue) !important;
+    padding:14px 15px !important;
+    border-bottom:1px solid rgba(0,59,112,.12) !important;
+  }
+
+  td{
+    color:#28485d !important;
+    padding:14px 15px !important;
+    border-bottom:1px solid rgba(0,59,112,.07) !important;
+    vertical-align:middle;
+  }
+
+  tbody tr{
+    transition:background .18s ease,transform .18s ease;
+  }
+
+  tbody tr:hover{
+    background:rgba(0,91,145,.035) !important;
+  }
+
+  .status-pill{
+    color:#14733b !important;
+    background:rgba(34,197,94,.09) !important;
+    border-color:rgba(34,197,94,.20) !important;
+  }
+
+  .preview-button{
+    background:rgba(0,59,112,.07) !important;
+    color:var(--admin-blue) !important;
+    border:1px solid rgba(0,59,112,.16) !important;
+  }
+
+  .delete-button{
+    background:rgba(200,16,46,.06) !important;
+    color:#b4233c !important;
+    border-color:rgba(200,16,46,.16) !important;
+  }
+
+  .ticket-modal{
+    background:rgba(3,25,43,.62) !important;
+    backdrop-filter:blur(12px) !important;
+  }
+
+  .ticket-modal-panel{
+    width:min(1120px,100%) !important;
+    padding:20px !important;
+    border-radius:24px !important;
+    background:rgba(248,251,253,.96) !important;
+    border:1px solid rgba(200,164,93,.45) !important;
+    box-shadow:0 30px 100px rgba(0,35,60,.32) !important;
+  }
+
+  .ticket-modal-title{
+    color:var(--admin-blue) !important;
+    font-size:1rem !important;
+  }
+
+  .ticket-modal-close{
+    background:#fff !important;
+    color:var(--admin-blue) !important;
+    border-color:rgba(0,59,112,.14) !important;
+  }
+
+  .ticket-template-card-admin{
+    box-shadow:0 22px 65px rgba(0,44,75,.22) !important;
+  }
+
+  @media(max-width:700px){
+    body{padding:14px 10px 28px !important}
+    .container{padding:20px !important;border-radius:20px !important}
+    #loginView{min-height:calc(100vh - 42px)}
+    #adminView h1{font-size:1.35rem !important}
+    #adminView h1::after{display:none}
+    .toolbar{padding:10px}
+    .toolbar button{flex:1 1 140px}
+    .btn-danger-outline{margin-left:0 !important}
+  }
+</style>
 <style id="ticket-template-admin-style">
 .ticket-template-card-admin{position:relative;width:100%;max-width:1100px;margin:0 auto;aspect-ratio:1536/1024;overflow:hidden;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.45);background:#eee}
 .ticket-template-image-admin{display:block;width:100%;height:100%;object-fit:cover}
-.ticket-template-name-admin{position:absolute;left:24.4%;top:59.65%;width:28.3%;height:4.35%;display:flex;align-items:center;justify-content:center;padding:0 1.5%;overflow:hidden;background:#fffaf0;border:1.5px solid #c99a27;border-radius:7px;color:#164a78;font-family:Arial,sans-serif;font-size:clamp(10px,1.45vw,22px);font-weight:500;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-@media(max-width:600px){.ticket-template-card-admin{border-radius:10px}.ticket-template-name-admin{border-width:1px;border-radius:4px;font-size:clamp(7px,2.15vw,14px)}}
+.ticket-template-name-admin{position:absolute;left:24.4%;top:59.55%;width:35.9%;height:6.65%;display:flex;align-items:center;justify-content:center;padding:0 2%;overflow:hidden;background:transparent;border:0;border-radius:0;color:#164a78;font-family:'Segoe Script','Brush Script MT',cursive;font-size:clamp(10px,1.25vw,18px);font-weight:600;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;text-shadow:0 1px 1px rgba(255,255,255,.45)}
+@media(max-width:600px){.ticket-template-card-admin{border-radius:10px}.ticket-template-name-admin{font-size:clamp(9px,2.9vw,18px)}}
 </style>
 </head>
 <body>
@@ -609,7 +885,7 @@
   </div>
 
   <div class="container hidden" id="adminView">
-    <h1>Danh Sách Khách Dự <span class="badge">v4</span></h1>
+    <h1>Danh Sách Khách Dự</h1>
     <div class="subtitle">Quản lý khách mời trong thời gian thực</div>
     <div class="status" id="status">Đang kết nối dữ liệu...</div>
     <div class="toolbar">
@@ -721,7 +997,12 @@
           <tr>
             <td>${index + 1}</td>
             <td>${escapeHtml(guest.name)}</td>
-            <td style="max-width:320px; white-space:pre-wrap; line-height:1.45;">${escapeHtml(guest.wish || '—')}</td>
+            <td><details class="wish-details">
+              <summary>
+                <span class="wish-preview">${escapeHtml((guest.wish || '—').slice(0, 60))}${(guest.wish || '').length > 60 ? '…' : ''}</span>
+                <span class="wish-full">${escapeHtml(guest.wish || '—')}</span>
+              </summary>
+            </details></td>
             <td><span class="status-pill">${escapeHtml(guest.status || 'confirmed')}</span></td>
             <td>${new Date(guest.created_at).toLocaleString('vi-VN')}</td>
             <td>
