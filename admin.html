@@ -757,6 +757,18 @@
     min-height:40px;
   }
 
+  .admin-search{
+    flex:1 1 280px;
+    min-width:220px;
+    min-height:40px !important;
+    padding:10px 14px !important;
+    border:1px solid rgba(0,59,112,.14) !important;
+    background:#fff !important;
+    color:var(--admin-ink) !important;
+  }
+
+  .admin-search::placeholder{color:#7b93a3}
+
   .btn-ghost{
     background:#fff !important;
     color:var(--admin-blue) !important;
@@ -889,6 +901,7 @@
     <div class="subtitle">Quản lý khách mời trong thời gian thực</div>
     <div class="status" id="status">Đang kết nối dữ liệu...</div>
     <div class="toolbar">
+      <input class="admin-search" id="guestSearch" type="search" placeholder="🔎 Tìm tên khách..." autocomplete="off" oninput="filterGuests()" />
       <button type="button" class="btn-primary" onclick="loadGuests()">↻ Tải lại</button>
       <button type="button" class="btn-ghost" onclick="exportGuests()">⬇ Xuất file</button>
       <button type="button" class="btn-danger-outline" id="deleteAllBtn" onclick="deleteAllGuests()">🗑 Xóa tất cả</button>
@@ -1018,6 +1031,19 @@
         status.textContent = `Không đọc được database: ${err.message}`;
         body.innerHTML = '<tr><td colspan="6" class="empty">Lỗi tải dữ liệu.</td></tr>';
       }
+    }
+
+    function filterGuests() {
+      const keyword = (document.getElementById('guestSearch')?.value || '').trim().toLowerCase();
+      const rows = document.querySelectorAll('#guestTableBody tr');
+      let visible = 0;
+      rows.forEach(row => {
+        const nameCell = row.querySelector('td:nth-child(2)');
+        const name = nameCell?.textContent?.toLowerCase() || '';
+        const match = !keyword || name.includes(keyword);
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
     }
 
     function openTicketPreviewByIndex(index) {
