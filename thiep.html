@@ -3119,7 +3119,7 @@
       right: auto;
       bottom: auto;
       transform: translate(-50%, calc(-50% + 150px));
-      z-index: 250;
+      z-index: 450;
     }
 
     .toast.thank-you.show {
@@ -3946,9 +3946,9 @@ body{background:linear-gradient(145deg,#c8d7df 0%,#e5edf1 48%,#b9ccd6 100%)!impo
 
   <aside class="rsvp-guide" id="rsvpGuide" aria-labelledby="rsvpGuideTitle" hidden>
     <div class="rsvp-guide-title" id="rsvpGuideTitle">Hướng dẫn xác nhận tham dự</div>
-    <p>Nhập tên của bạn, viết lời chúc nếu muốn, rồi nhấn <strong>Confirm</strong> để gửi thông tin.</p>
+    <p id="rsvpGuideMessage">Nhập tên của bạn, viết lời chúc nếu muốn, rồi nhấn <strong>Confirm</strong> để gửi thông tin.</p>
     <div class="rsvp-guide-actions">
-      <button type="button" class="terminal-btn" onclick="goToRSVP()">Đến phần nhập</button>
+      <button type="button" class="terminal-btn" id="rsvpGuideAction" onclick="goToRSVP()">Đến phần nhập</button>
       <button type="button" class="terminal-btn secondary" onclick="closeRSVPGuide()">Đóng</button>
     </div>
   </aside>
@@ -4245,6 +4245,11 @@ function updateAudioButton() {
     function showRSVPGuide() {
       const guide = document.getElementById('rsvpGuide');
       if (!guide) return;
+      if (sessionRSVP) {
+        document.getElementById('rsvpGuideTitle').textContent = 'Bạn đã xác nhận tham dự';
+        document.getElementById('rsvpGuideMessage').textContent = 'Nếu cần chỉnh sửa thông tin hoặc lời chúc, hãy chọn nút bên dưới.';
+        document.getElementById('rsvpGuideAction').textContent = 'Cập nhật thông tin';
+      }
       guide.hidden = false;
       requestAnimationFrame(() => guide.classList.add('show'));
     }
@@ -4258,6 +4263,7 @@ function updateAudioButton() {
 
     function goToRSVP() {
       closeRSVPGuide();
+      if (sessionRSVP) reopenRSVPInput();
       document.querySelector('.terminal-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
@@ -4776,6 +4782,7 @@ function updateAudioButton() {
     }
 
     function executeRSVP(guestName, wish = "") {
+      const wasUpdating = !!sessionRSVP || !!editingTicketCode;
       const input = document.getElementById('guestName');
       if (input) input.value = "";
       const terminalBody = document.getElementById('terminalBody');
@@ -4823,18 +4830,19 @@ function updateAudioButton() {
               const successLine = document.createElement('div');
               successLine.className = 'terminal-line';
               successLine.style.color = 'var(--accent-green)';
-              const thankYou = wish
-                ? `Cảm ơn ${guestName} đã xác nhận tham dự và gửi lời chúc!`
-                : `Cảm ơn ${guestName} đã xác nhận tham dự!`;
+              const thankYou = wasUpdating
+                ? `Cảm ơn ${guestName} đã cập nhật thông tin tham dự!`
+                : wish
+                  ? `Cảm ơn ${guestName} đã xác nhận tham dự và gửi lời chúc!`
+                  : `Cảm ơn ${guestName} đã xác nhận tham dự!`;
               successLine.innerText = saveResult.mode === 'remote'
                 ? `[SUCCESS] Đã lưu vào hệ thống. ${thankYou} Hẹn gặp bạn tại lễ tốt nghiệp!`
                 : `[SAVED-LOCAL] Đã lưu vé trên thiết bị này cho ${guestName}. ${thankYou} (Vé chỉ lưu trên thiết bị này.)`;
               terminalBody.appendChild(successLine);
               terminalBody.scrollTop = terminalBody.scrollHeight;
-              const wasEditingTicket = !!editingTicketCode;
-              showToast(wasEditingTicket ? `💙 Cảm ơn ${guestName} đã cập nhật tên!` : (wish ? `💙 Cảm ơn ${guestName} đã xác nhận và gửi lời chúc!` : `💙 Cảm ơn ${guestName} đã xác nhận tham dự!`), false, true);
               fireConfetti();
               unlockAchievement('rsvp');
+              showToast(thankYou, false, true);
 
               const returning = document.getElementById('terminalReturningGuest');
               const returningName = document.getElementById('returningGuestName');
@@ -5358,7 +5366,7 @@ function updateAudioButton() {
       runBootSequence();
       renderAchvPanel();
       initRSVPState();
-      if (!sessionRSVP) showRSVPGuide();
+      showRSVPGuide();
       initWishCounter();
       setTimeout(() => unlockAchievement('opened'), 2200);
 
