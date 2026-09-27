@@ -17,17 +17,25 @@
       box-sizing: border-box;
     }
 
+    html {
+      height: 100%;
+    }
+
     body {
       background: #030711;
       color: #f1f5f9;
       font-family: 'Inter', sans-serif;
-      min-height: 100vh;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       position: relative;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
     .cursor,
@@ -131,6 +139,54 @@
       background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
       pointer-events: none;
       opacity: 0.4;
+    }
+
+    /* NEW: soft vignette for cinematic depth at the edges */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 45%, rgba(1, 4, 10, 0.55) 100%);
+    }
+
+    /* NEW: faint film grain for a less flat, more tactile surface */
+    .grain {
+      position: fixed;
+      inset: -20%;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grainShift 1.2s steps(4) infinite;
+    }
+
+    @keyframes grainShift {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(-1%, 1%);
+      }
+
+      50% {
+        transform: translate(1%, -1%);
+      }
+
+      75% {
+        transform: translate(-1%, -1%);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    ::selection {
+      background: rgba(34, 211, 238, 0.3);
+      color: #fff;
     }
 
     .particles {
@@ -561,6 +617,19 @@
       transform: translateY(-2px) scale(0.98);
     }
 
+    .open-btn:focus-visible {
+      outline: 2px solid #f1f5f9;
+      outline-offset: 4px;
+    }
+
+    .open-btn:disabled {
+      cursor: default;
+      transform: translateY(-2px) scale(0.98);
+      filter: saturate(0.85);
+    }
+
+
+
     .open-btn::before {
       content: '';
       position: absolute;
@@ -798,7 +867,8 @@
       h1.glitching::before,
       h1.glitching::after,
       .typed-cursor,
-      .boot-log {
+      .boot-log,
+      .grain {
         animation: none !important;
       }
 
@@ -841,6 +911,8 @@
   <div class="beams"></div>
   <div class="aurora"></div>
   <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
   <div class="particles" id="particles"></div>
   <div class="sparkles" id="sparkles"></div>
   <canvas id="matrix-canvas"></canvas>
@@ -875,7 +947,7 @@
     </div>
 
     <div class="btn-wrap">
-      <button class="open-btn" id="openBtn" onclick="openInvitation(event)">
+      <button class="open-btn" id="openBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
@@ -954,9 +1026,14 @@
       raf();
     }
 
+    // NEW: fewer particles on small/low-power screens for smoother motion
+    const isSmallScreen = window.innerWidth < 640;
+    const particleCount = isSmallScreen ? 22 : 42;
+    const sparkleCount = isSmallScreen ? 32 : 60;
+
     const container = document.getElementById('particles');
     const colors = ['#22d3ee', '#34d399', '#a78bfa', '#67e8f9', '#6ee7b7'];
-    for (let i = 0; i < 42; i++) {
+    for (let i = 0; i < particleCount; i++) {
       const p = document.createElement('div');
       p.className = 'particle';
       p.style.left = Math.random() * 100 + '%';
@@ -971,7 +1048,7 @@
 
     // NEW: twinkling sparkle field
     const sparkleField = document.getElementById('sparkles');
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < sparkleCount; i++) {
       const s = document.createElement('div');
       s.className = 'sparkle';
       s.style.left = Math.random() * 100 + '%';
@@ -1063,6 +1140,7 @@
     function createConfetti() {
       confetti = [];
       const colors = ['#22d3ee', '#34d399', '#a78bfa', '#f472b6', '#fbbf24', '#ffffff'];
+      const shapes = ['rect', 'circle', 'ribbon'];
       for (let i = 0; i < 140; i++) {
         confetti.push({
           x: canvas.width / 2 + (Math.random() - 0.5) * 80,
@@ -1071,6 +1149,7 @@
           vy: Math.random() * -14 - 6,
           size: Math.random() * 8 + 3,
           color: colors[Math.floor(Math.random() * colors.length)],
+          shape: shapes[Math.floor(Math.random() * shapes.length)],
           rotation: Math.random() * 360,
           rotSpeed: (Math.random() - 0.5) * 12,
           gravity: 0.28 + Math.random() * 0.12,
@@ -1098,7 +1177,17 @@
         ctx.rotate(p.rotation * Math.PI / 180);
         ctx.globalAlpha = Math.max(0, p.life);
         ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 6;
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.shape === 'ribbon') {
+          ctx.fillRect(-p.size / 4, -p.size, p.size / 2, p.size * 2);
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        }
         ctx.restore();
       });
 
@@ -1122,21 +1211,25 @@
     }
 
     function openInvitation(e) {
+      const openBtn = document.getElementById('openBtn');
+      if (openBtn.disabled) return;
+
       createRipple(e);
       createConfetti();
+      openBtn.disabled = true;
 
       // Trở về luồng cũ: landing (index.html) -> mở trực tiếp thiep.html.
       // Giữ cờ để thiep.html biết người dùng vừa bấm "Mở Thiệp".
       try {
         sessionStorage.setItem('startInvitationMusic', '1');
-      } catch (_) {}
+      } catch (_) { }
 
-      window.location.href = 'thiep.html';
+      setTimeout(() => {
+        window.location.href = 'thiep.html';
+      }, 700);
     }
 
-    document.getElementById('openBtn').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvitation(e); }
-    });
+    document.getElementById('openBtn').addEventListener('click', openInvitation);
   </script>
 </body>
 
