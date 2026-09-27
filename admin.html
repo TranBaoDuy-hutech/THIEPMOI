@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Danh Sách Khách Dự</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"
+    rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -503,15 +508,19 @@
       .container {
         padding: 20px;
       }
+
       .btn-danger-outline {
         margin-left: 0;
       }
+
       .ticket-card-admin {
         grid-template-columns: 1fr;
       }
+
       .ticket-card-admin-stub {
         min-height: 130px;
       }
+
       .ticket-card-admin-details {
         grid-template-columns: 1fr;
       }
@@ -521,6 +530,7 @@
       .container {
         padding: 20px;
       }
+
       .btn-danger-outline {
         margin-left: 0;
       }
@@ -534,7 +544,7 @@
       padding: 0 !important;
       overflow: hidden !important;
       border-radius: 18px !important;
-      border: 1px solid rgba(200,164,93,.8) !important;
+      border: 1px solid rgba(200, 164, 93, .8) !important;
       background: #fff8e9 !important;
     }
 
@@ -553,7 +563,7 @@
       color: #fff;
       text-align: center;
       background: linear-gradient(155deg, #0a3557, #041d32);
-      border-right: 1px solid rgba(200,164,93,.7);
+      border-right: 1px solid rgba(200, 164, 93, .7);
     }
 
     .ticket-card-admin-left-brand {
@@ -563,17 +573,39 @@
       letter-spacing: .18em;
     }
 
-    .ticket-card-admin-left-icon { font-size: 2.2rem; margin: 12px 0 4px; }
-    .ticket-card-admin-left-title { font-size: .85rem; font-weight: 800; letter-spacing: .14em; line-height: 1.55; }
-    .ticket-card-admin-left-script { margin-top: 16px; color: #fff; font-family: 'Segoe Script','Brush Script MT',cursive; font-size: 1.55rem; line-height: 1.05; transform: rotate(-4deg); }
-    .ticket-card-admin-left-foot { color: rgba(255,255,255,.62); font-size: .48rem; letter-spacing: .2em; }
+    .ticket-card-admin-left-icon {
+      font-size: 2.2rem;
+      margin: 12px 0 4px;
+    }
+
+    .ticket-card-admin-left-title {
+      font-size: .85rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      line-height: 1.55;
+    }
+
+    .ticket-card-admin-left-script {
+      margin-top: 16px;
+      color: #fff;
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: 1.55rem;
+      line-height: 1.05;
+      transform: rotate(-4deg);
+    }
+
+    .ticket-card-admin-left-foot {
+      color: rgba(255, 255, 255, .62);
+      font-size: .48rem;
+      letter-spacing: .2em;
+    }
 
     .ticket-card-admin-main {
       padding: 25px 25px 20px 28px !important;
       color: #173957;
       background:
-        radial-gradient(circle at 88% 8%, rgba(200,164,93,.18), transparent 30%),
-        radial-gradient(circle at 55% 65%, rgba(226,210,169,.18), transparent 38%);
+        radial-gradient(circle at 88% 8%, rgba(200, 164, 93, .18), transparent 30%),
+        radial-gradient(circle at 55% 65%, rgba(226, 210, 169, .18), transparent 38%);
     }
 
     .ticket-card-admin-brand {
@@ -584,15 +616,73 @@
       margin-bottom: 20px;
     }
 
-    .ticket-card-admin-wordmark { color: #003b70; font-size: .8rem; font-weight: 900; letter-spacing: .14em; }
-    .ticket-card-admin-type { color: #8b6a2e !important; border-color: rgba(200,164,93,.48) !important; background: rgba(200,164,93,.1) !important; }
-    .ticket-card-admin-label { color: #003b70; font-size: .58rem; font-weight: 900; letter-spacing: .22em; }
-    .ticket-card-admin-name { margin-top: 8px; color: #173957; font-family: 'Segoe Script','Brush Script MT',cursive; font-size: clamp(1.5rem,3.8vw,2.25rem); font-weight: 600; }
-    .ticket-card-admin-name-small { display: inline-block; margin-top: 5px; color: #173957; font-family: 'Segoe Script','Brush Script MT',cursive; font-size: 1.15rem; font-weight: 600; }
-    .ticket-card-admin-subtitle { margin-top: 7px; color: #315b75; font-size: .68rem; }
-    .ticket-card-admin-details { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 22px; padding-top: 16px; border-top: 1px solid rgba(0,59,112,.18); }
-    .ticket-card-admin-detail-label { color: #8b6a2e; font-size: .5rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
-    .ticket-card-admin-detail-value { margin-top: 4px; color: #173957; font-size: .72rem; font-weight: 800; line-height: 1.35; }
+    .ticket-card-admin-wordmark {
+      color: #003b70;
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+    }
+
+    .ticket-card-admin-type {
+      color: #8b6a2e !important;
+      border-color: rgba(200, 164, 93, .48) !important;
+      background: rgba(200, 164, 93, .1) !important;
+    }
+
+    .ticket-card-admin-label {
+      color: #003b70;
+      font-size: .58rem;
+      font-weight: 900;
+      letter-spacing: .22em;
+    }
+
+    .ticket-card-admin-name {
+      margin-top: 8px;
+      color: #173957;
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: clamp(1.5rem, 3.8vw, 2.25rem);
+      font-weight: 600;
+    }
+
+    .ticket-card-admin-name-small {
+      display: inline-block;
+      margin-top: 5px;
+      color: #173957;
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .ticket-card-admin-subtitle {
+      margin-top: 7px;
+      color: #315b75;
+      font-size: .68rem;
+    }
+
+    .ticket-card-admin-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 59, 112, .18);
+    }
+
+    .ticket-card-admin-detail-label {
+      color: #8b6a2e;
+      font-size: .5rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-admin-detail-value {
+      margin-top: 4px;
+      color: #173957;
+      font-size: .72rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
 
     .ticket-card-admin-right {
       display: flex;
@@ -602,376 +692,1271 @@
       color: #fff;
       text-align: center;
       background: linear-gradient(155deg, #073b5c, #031d30);
-      border-left: 1px solid rgba(200,164,93,.65);
+      border-left: 1px solid rgba(200, 164, 93, .65);
     }
 
-    .ticket-card-admin-right-label { color: #f6e2ac; font-size: .48rem; font-weight: 900; letter-spacing: .13em; line-height: 1.5; }
-    .ticket-card-admin-countdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin: 10px 0 13px; }
-    .ticket-card-admin-countdown > div { padding: 6px 2px; border: 1px solid rgba(200,164,93,.48); border-radius: 7px; background: rgba(255,255,255,.05); }
-    .ticket-card-admin-countdown b { display: block; color: #fff6d8; font-size: .75rem; }
-    .ticket-card-admin-countdown small { color: rgba(255,255,255,.58); font-size: .36rem; text-transform: uppercase; }
-    .ticket-card-admin-right-message { color: rgba(255,255,255,.86); font-family: 'Segoe Script','Brush Script MT',cursive; font-size: .78rem; line-height: 1.35; }
-    .ticket-card-admin-right-code { padding: 9px 6px; border: 1px solid rgba(255,255,255,.2); border-radius: 10px; background: rgba(255,255,255,.06); }
-    .ticket-card-admin-right-code small { display:block; color: rgba(255,255,255,.55); font-size:.38rem; letter-spacing:.12em; }
-    .ticket-card-admin-right-code strong { display:block; margin-top:4px; color:#f6e2ac; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.58rem; word-break:break-all; }
-    .ticket-card-admin-status { color:#d7f9df; font-size:.5rem; font-weight:800; letter-spacing:.08em; }
+    .ticket-card-admin-right-label {
+      color: #f6e2ac;
+      font-size: .48rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      line-height: 1.5;
+    }
+
+    .ticket-card-admin-countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin: 10px 0 13px;
+    }
+
+    .ticket-card-admin-countdown>div {
+      padding: 6px 2px;
+      border: 1px solid rgba(200, 164, 93, .48);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .ticket-card-admin-countdown b {
+      display: block;
+      color: #fff6d8;
+      font-size: .75rem;
+    }
+
+    .ticket-card-admin-countdown small {
+      color: rgba(255, 255, 255, .58);
+      font-size: .36rem;
+      text-transform: uppercase;
+    }
+
+    .ticket-card-admin-right-message {
+      color: rgba(255, 255, 255, .86);
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: .78rem;
+      line-height: 1.35;
+    }
+
+    .ticket-card-admin-right-code {
+      padding: 9px 6px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .ticket-card-admin-right-code small {
+      display: block;
+      color: rgba(255, 255, 255, .55);
+      font-size: .38rem;
+      letter-spacing: .12em;
+    }
+
+    .ticket-card-admin-right-code strong {
+      display: block;
+      margin-top: 4px;
+      color: #f6e2ac;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .58rem;
+      word-break: break-all;
+    }
+
+    .ticket-card-admin-status {
+      color: #d7f9df;
+      font-size: .5rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
 
     @media (max-width: 620px) {
-      .ticket-card-admin { grid-template-columns: 1fr !important; }
+      .ticket-card-admin {
+        grid-template-columns: 1fr !important;
+      }
+
       .ticket-card-admin-left,
       .ticket-card-admin-main,
-      .ticket-card-admin-right { border: 0 !important; }
-      .ticket-card-admin-left { min-height: 130px; flex-direction: row; align-items:center; padding:16px 20px; }
-      .ticket-card-admin-left-icon { margin:0; font-size:1.5rem; }
-      .ticket-card-admin-left-script { margin:0; font-size:1.15rem; }
-      .ticket-card-admin-right { min-height:160px; }
+      .ticket-card-admin-right {
+        border: 0 !important;
+      }
+
+      .ticket-card-admin-left {
+        min-height: 130px;
+        flex-direction: row;
+        align-items: center;
+        padding: 16px 20px;
+      }
+
+      .ticket-card-admin-left-icon {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+
+      .ticket-card-admin-left-script {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .ticket-card-admin-right {
+        min-height: 160px;
+      }
     }
 
-  .ticket-card-admin{display:grid!important;grid-template-columns:18% minmax(0,58%) 24%!important;min-height:360px!important;padding:0!important;overflow:hidden!important;border-radius:18px!important;border:1px solid #c8a45d!important;background:#f8f0df!important;box-shadow:0 22px 55px rgba(0,24,40,.3)!important}.ticket-card-admin-left,.ticket-card-admin-main,.ticket-card-admin-right{position:relative!important;min-width:0!important;box-sizing:border-box!important}.ticket-card-admin-left{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:26px 17px 22px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#0a4265,#031d31)!important;border-right:1px solid rgba(200,164,93,.75)!important}.ticket-card-admin-left-brand{color:#f5dda3!important;font-size:.75rem!important;font-weight:900!important;letter-spacing:.18em!important}.ticket-card-admin-left-icon{margin:22px 0 8px!important;font-size:2.6rem!important}.ticket-card-admin-left-title{font-size:.86rem!important;font-weight:800!important;letter-spacing:.16em!important;line-height:1.55!important}.ticket-card-admin-left-script{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.55rem!important;line-height:1.02!important;transform:rotate(-5deg)!important}.ticket-card-admin-left-foot{color:#f5dda3!important;font-size:.48rem!important;letter-spacing:.2em!important}.ticket-card-admin-main{display:flex!important;flex-direction:column!important;padding:26px 28px 0!important;color:#123d58!important;background:radial-gradient(circle at 78% 35%,rgba(202,218,218,.7),transparent 24%),linear-gradient(145deg,#fffaf0,#f4ead2)!important}.ticket-card-admin-brand{display:flex!important;justify-content:space-between!important;gap:10px!important}.ticket-card-admin-wordmark{color:#123b57!important;font-family:Georgia,serif!important;font-size:1.05rem!important;font-weight:800!important}.ticket-card-admin-type{color:#8b6a2e!important;font-size:.48rem!important;letter-spacing:.1em!important}.ticket-card-admin-label{margin-top:38px!important;color:#123b57!important;font-size:.82rem!important;letter-spacing:.24em!important}.ticket-card-admin-name{margin-top:2px!important;color:#b18427!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:clamp(3rem,6vw,4.9rem)!important;line-height:.9!important;transform:rotate(-4deg)!important}.ticket-card-admin-subtitle{margin-top:24px!important;color:#214f66!important;font-size:.75rem!important;line-height:1.55!important}.ticket-card-admin-details{display:grid!important;grid-template-columns:1fr 1fr!important;gap:0!important;margin-top:auto!important;padding:16px 0!important;border-top:1px solid rgba(18,59,87,.22)!important}.ticket-card-admin-details>div{padding:0 12px!important;border-right:1px solid rgba(18,59,87,.22)!important}.ticket-card-admin-details>div:first-child{padding-left:0!important}.ticket-card-admin-details>div:last-child{border-right:0!important}.ticket-card-admin-detail-label{color:#183f57!important;font-size:.48rem!important;font-weight:900!important}.ticket-card-admin-detail-value{color:#183f57!important;font-size:.72rem!important;font-weight:700!important}.ticket-card-admin-name-small{color:#173c56!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:1.15rem!important}.ticket-card-admin-right{display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:25px 15px 19px!important;color:#fff!important;text-align:center!important;background:linear-gradient(160deg,#063c5a,#021d30)!important;border-left:1px solid rgba(200,164,93,.7)!important}.ticket-card-admin-right-label{color:#f5dda3!important;font-size:.5rem!important;font-weight:800!important;letter-spacing:.13em!important}.ticket-card-admin-countdown{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;margin:10px 0 15px!important}.ticket-card-admin-countdown>div{padding:7px 2px!important;border:1px solid rgba(200,164,93,.55)!important;border-radius:7px!important}.ticket-card-admin-countdown b{display:block!important;color:#f8e6ad!important;font-size:.78rem!important}.ticket-card-admin-countdown small{color:rgba(255,255,255,.58)!important;font-size:.33rem!important}.ticket-card-admin-right-message{color:#fff!important;font-family:"Segoe Script","Brush Script MT",cursive!important;font-size:.82rem!important;line-height:1.5!important}.ticket-card-admin-right-code{padding:8px!important;border:1px solid rgba(255,255,255,.2)!important}.ticket-card-admin-right-code small{font-size:.4rem!important}.ticket-card-admin-right-code strong{display:block!important;color:#f5dda3!important;font-size:.7rem!important}.ticket-card-admin-status{color:#d7f9df!important;font-size:.5rem!important;font-weight:800!important}@media(max-width:700px){.ticket-card-admin{grid-template-columns:1fr!important}.ticket-card-admin-left{min-height:180px!important;flex-direction:row!important;align-items:center!important}.ticket-card-admin-main{min-height:420px!important}.ticket-card-admin-right{min-height:280px!important}}
+    .ticket-card-admin {
+      display: grid !important;
+      grid-template-columns: 18% minmax(0, 58%) 24% !important;
+      min-height: 360px !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      border-radius: 18px !important;
+      border: 1px solid #c8a45d !important;
+      background: #f8f0df !important;
+      box-shadow: 0 22px 55px rgba(0, 24, 40, .3) !important
+    }
+
+    .ticket-card-admin-left,
+    .ticket-card-admin-main,
+    .ticket-card-admin-right {
+      position: relative !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important
+    }
+
+    .ticket-card-admin-left {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      padding: 26px 17px 22px !important;
+      color: #fff !important;
+      text-align: center !important;
+      background: linear-gradient(160deg, #0a4265, #031d31) !important;
+      border-right: 1px solid rgba(200, 164, 93, .75) !important
+    }
+
+    .ticket-card-admin-left-brand {
+      color: #f5dda3 !important;
+      font-size: .75rem !important;
+      font-weight: 900 !important;
+      letter-spacing: .18em !important
+    }
+
+    .ticket-card-admin-left-icon {
+      margin: 22px 0 8px !important;
+      font-size: 2.6rem !important
+    }
+
+    .ticket-card-admin-left-title {
+      font-size: .86rem !important;
+      font-weight: 800 !important;
+      letter-spacing: .16em !important;
+      line-height: 1.55 !important
+    }
+
+    .ticket-card-admin-left-script {
+      color: #fff !important;
+      font-family: "Segoe Script", "Brush Script MT", cursive !important;
+      font-size: 1.55rem !important;
+      line-height: 1.02 !important;
+      transform: rotate(-5deg) !important
+    }
+
+    .ticket-card-admin-left-foot {
+      color: #f5dda3 !important;
+      font-size: .48rem !important;
+      letter-spacing: .2em !important
+    }
+
+    .ticket-card-admin-main {
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 26px 28px 0 !important;
+      color: #123d58 !important;
+      background: radial-gradient(circle at 78% 35%, rgba(202, 218, 218, .7), transparent 24%), linear-gradient(145deg, #fffaf0, #f4ead2) !important
+    }
+
+    .ticket-card-admin-brand {
+      display: flex !important;
+      justify-content: space-between !important;
+      gap: 10px !important
+    }
+
+    .ticket-card-admin-wordmark {
+      color: #123b57 !important;
+      font-family: Georgia, serif !important;
+      font-size: 1.05rem !important;
+      font-weight: 800 !important
+    }
+
+    .ticket-card-admin-type {
+      color: #8b6a2e !important;
+      font-size: .48rem !important;
+      letter-spacing: .1em !important
+    }
+
+    .ticket-card-admin-label {
+      margin-top: 38px !important;
+      color: #123b57 !important;
+      font-size: .82rem !important;
+      letter-spacing: .24em !important
+    }
+
+    .ticket-card-admin-name {
+      margin-top: 2px !important;
+      color: #b18427 !important;
+      font-family: "Segoe Script", "Brush Script MT", cursive !important;
+      font-size: clamp(3rem, 6vw, 4.9rem) !important;
+      line-height: .9 !important;
+      transform: rotate(-4deg) !important
+    }
+
+    .ticket-card-admin-subtitle {
+      margin-top: 24px !important;
+      color: #214f66 !important;
+      font-size: .75rem !important;
+      line-height: 1.55 !important
+    }
+
+    .ticket-card-admin-details {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 0 !important;
+      margin-top: auto !important;
+      padding: 16px 0 !important;
+      border-top: 1px solid rgba(18, 59, 87, .22) !important
+    }
+
+    .ticket-card-admin-details>div {
+      padding: 0 12px !important;
+      border-right: 1px solid rgba(18, 59, 87, .22) !important
+    }
+
+    .ticket-card-admin-details>div:first-child {
+      padding-left: 0 !important
+    }
+
+    .ticket-card-admin-details>div:last-child {
+      border-right: 0 !important
+    }
+
+    .ticket-card-admin-detail-label {
+      color: #183f57 !important;
+      font-size: .48rem !important;
+      font-weight: 900 !important
+    }
+
+    .ticket-card-admin-detail-value {
+      color: #183f57 !important;
+      font-size: .72rem !important;
+      font-weight: 700 !important
+    }
+
+    .ticket-card-admin-name-small {
+      color: #173c56 !important;
+      font-family: "Segoe Script", "Brush Script MT", cursive !important;
+      font-size: 1.15rem !important
+    }
+
+    .ticket-card-admin-right {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      padding: 25px 15px 19px !important;
+      color: #fff !important;
+      text-align: center !important;
+      background: linear-gradient(160deg, #063c5a, #021d30) !important;
+      border-left: 1px solid rgba(200, 164, 93, .7) !important
+    }
+
+    .ticket-card-admin-right-label {
+      color: #f5dda3 !important;
+      font-size: .5rem !important;
+      font-weight: 800 !important;
+      letter-spacing: .13em !important
+    }
+
+    .ticket-card-admin-countdown {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 4px !important;
+      margin: 10px 0 15px !important
+    }
+
+    .ticket-card-admin-countdown>div {
+      padding: 7px 2px !important;
+      border: 1px solid rgba(200, 164, 93, .55) !important;
+      border-radius: 7px !important
+    }
+
+    .ticket-card-admin-countdown b {
+      display: block !important;
+      color: #f8e6ad !important;
+      font-size: .78rem !important
+    }
+
+    .ticket-card-admin-countdown small {
+      color: rgba(255, 255, 255, .58) !important;
+      font-size: .33rem !important
+    }
+
+    .ticket-card-admin-right-message {
+      color: #fff !important;
+      font-family: "Segoe Script", "Brush Script MT", cursive !important;
+      font-size: .82rem !important;
+      line-height: 1.5 !important
+    }
+
+    .ticket-card-admin-right-code {
+      padding: 8px !important;
+      border: 1px solid rgba(255, 255, 255, .2) !important
+    }
+
+    .ticket-card-admin-right-code small {
+      font-size: .4rem !important
+    }
+
+    .ticket-card-admin-right-code strong {
+      display: block !important;
+      color: #f5dda3 !important;
+      font-size: .7rem !important
+    }
+
+    .ticket-card-admin-status {
+      color: #d7f9df !important;
+      font-size: .5rem !important;
+      font-weight: 800 !important
+    }
+
+    @media(max-width:700px) {
+      .ticket-card-admin {
+        grid-template-columns: 1fr !important
+      }
+
+      .ticket-card-admin-left {
+        min-height: 180px !important;
+        flex-direction: row !important;
+        align-items: center !important
+      }
+
+      .ticket-card-admin-main {
+        min-height: 420px !important
+      }
+
+      .ticket-card-admin-right {
+        min-height: 280px !important
+      }
+    }
   </style>
-<style id="admin-polish-style">
-  :root{
-    --admin-blue:#003b70;
-    --admin-blue-2:#0b5b91;
-    --admin-red:#c8102e;
-    --admin-gold:#c8a45d;
-    --admin-ink:#173d55;
-    --admin-muted:#64748b;
-    --admin-surface:rgba(255,255,255,.88);
-    --admin-line:rgba(0,59,112,.11);
-  }
-
-  body{
-    background:
-      radial-gradient(circle at 8% 0%,rgba(0,59,112,.12),transparent 34%),
-      radial-gradient(circle at 94% 8%,rgba(200,164,93,.14),transparent 30%),
-      linear-gradient(145deg,#dce7ed 0%,#f5f8fa 52%,#d2e0e7 100%) !important;
-    color:var(--admin-ink) !important;
-    padding:28px 18px 40px !important;
-  }
-
-  .container{
-    max-width:1180px !important;
-    background:rgba(255,255,255,.84) !important;
-    border:1px solid rgba(0,59,112,.12) !important;
-    border-radius:24px !important;
-    padding:30px !important;
-    box-shadow:0 24px 70px rgba(0,44,75,.16) !important;
-    backdrop-filter:blur(18px);
-  }
-
-  #loginView{
-    max-width:480px !important;
-    min-height:520px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-
-  #loginView.hidden{display:none !important}
-
-  .login-box{
-    width:100%;
-    max-width:390px;
-    padding:10px 0 4px !important;
-  }
-
-  .login-box h1{
-    color:var(--admin-blue) !important;
-    font-size:1.7rem !important;
-  }
-
-  .login-box h1::before{
-    content:"🎓";
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:46px;
-    height:46px;
-    border-radius:14px;
-    background:linear-gradient(135deg,var(--admin-blue),var(--admin-blue-2));
-    box-shadow:0 10px 24px rgba(0,59,112,.22);
-    font-size:1.35rem;
-  }
-
-  .subtitle{
-    color:var(--admin-muted) !important;
-    margin-bottom:24px !important;
-  }
-
-  .status{
-    color:#275a78 !important;
-    background:rgba(0,123,183,.065) !important;
-    border:1px solid rgba(0,123,183,.14) !important;
-  }
-
-  input{
-    border:1px solid rgba(0,59,112,.15) !important;
-    background:#f8fbfd !important;
-    color:var(--admin-ink) !important;
-    min-height:46px;
-  }
-
-  input:focus{
-    border-color:#0b78b8 !important;
-    box-shadow:0 0 0 4px rgba(11,120,184,.12) !important;
-  }
-
-  .btn-primary{
-    background:linear-gradient(135deg,var(--admin-blue),#075f98) !important;
-    color:#fff !important;
-    box-shadow:0 10px 22px rgba(0,59,112,.18);
-  }
-
-  #adminView h1{
-    color:var(--admin-blue) !important;
-    font-size:1.65rem !important;
-    margin-bottom:5px !important;
-  }
-
-  #adminView h1::after{
-    content:"";
-    display:inline-block;
-    width:42px;
-    height:3px;
-    margin-left:12px;
-    vertical-align:middle;
-    border-radius:999px;
-    background:linear-gradient(90deg,var(--admin-red),var(--admin-gold));
-  }
-
-  #adminView .subtitle{
-    margin-bottom:18px !important;
-  }
-
-  .toolbar{
-    align-items:center;
-    padding:12px;
-    margin-bottom:18px !important;
-    border:1px solid var(--admin-line);
-    border-radius:16px;
-    background:rgba(248,251,253,.78);
-  }
-
-  .toolbar button{
-    min-height:40px;
-  }
-
-  .admin-search{
-    flex:1 1 280px;
-    min-width:220px;
-    min-height:40px !important;
-    padding:10px 14px !important;
-    border:1px solid rgba(0,59,112,.14) !important;
-    background:#fff !important;
-    color:var(--admin-ink) !important;
-  }
-
-  .admin-search::placeholder{color:#7b93a3}
-
-  .btn-ghost{
-    background:#fff !important;
-    color:var(--admin-blue) !important;
-    border:1px solid rgba(0,59,112,.14) !important;
-  }
-
-  .btn-danger-outline{
-    color:#b4233c !important;
-    border-color:rgba(196,36,62,.22) !important;
-    background:#fff !important;
-  }
-
-  .table-wrap{
-    border:1px solid rgba(0,59,112,.10) !important;
-    border-radius:18px !important;
-    background:rgba(255,255,255,.78);
-    box-shadow:0 12px 35px rgba(0,44,75,.07);
-  }
-
-  table{
-    font-size:.88rem !important;
-  }
-
-  thead tr{
-    background:linear-gradient(180deg,#eef5f9,#e7f0f5) !important;
-  }
-
-  th{
-    color:var(--admin-blue) !important;
-    padding:14px 15px !important;
-    border-bottom:1px solid rgba(0,59,112,.12) !important;
-  }
-
-  td{
-    color:#28485d !important;
-    padding:14px 15px !important;
-    border-bottom:1px solid rgba(0,59,112,.07) !important;
-    vertical-align:middle;
-  }
-
-  tbody tr{
-    transition:background .18s ease,transform .18s ease;
-  }
-
-  tbody tr:hover{
-    background:rgba(0,91,145,.035) !important;
-  }
-
-  .status-pill{
-    color:#14733b !important;
-    background:rgba(34,197,94,.09) !important;
-    border-color:rgba(34,197,94,.20) !important;
-  }
-
-  .preview-button{
-    background:rgba(0,59,112,.07) !important;
-    color:var(--admin-blue) !important;
-    border:1px solid rgba(0,59,112,.16) !important;
-  }
-
-  .delete-button{
-    background:rgba(200,16,46,.06) !important;
-    color:#b4233c !important;
-    border-color:rgba(200,16,46,.16) !important;
-  }
-
-  .ticket-modal{
-    background:rgba(3,25,43,.62) !important;
-    backdrop-filter:blur(12px) !important;
-  }
-
-  .ticket-modal-panel{
-    width:min(1120px,100%) !important;
-    padding:20px !important;
-    border-radius:24px !important;
-    background:rgba(248,251,253,.96) !important;
-    border:1px solid rgba(200,164,93,.45) !important;
-    box-shadow:0 30px 100px rgba(0,35,60,.32) !important;
-  }
-
-  .ticket-modal-title{
-    color:var(--admin-blue) !important;
-    font-size:1rem !important;
-  }
-
-  .ticket-modal-close{
-    background:#fff !important;
-    color:var(--admin-blue) !important;
-    border-color:rgba(0,59,112,.14) !important;
-  }
-
-  .ticket-template-card-admin{
-    box-shadow:0 22px 65px rgba(0,44,75,.22) !important;
-  }
-
-  @media(max-width:700px){
-    body{padding:14px 10px 28px !important}
-    .container{padding:20px !important;border-radius:20px !important}
-    #loginView{min-height:calc(100vh - 42px)}
-    #adminView h1{font-size:1.35rem !important}
-    #adminView h1::after{display:none}
-    .toolbar{padding:10px}
-    .toolbar button{flex:1 1 140px}
-    .btn-danger-outline{margin-left:0 !important}
-
-    .table-wrap{
-      overflow:visible;
-      border:0 !important;
-      border-radius:0 !important;
-      background:transparent;
-      box-shadow:none !important;
+  <style id="admin-polish-style">
+    :root {
+      --admin-blue: #003b70;
+      --admin-blue-2: #0b5b91;
+      --admin-red: #c8102e;
+      --admin-gold: #c8a45d;
+      --admin-ink: #173d55;
+      --admin-muted: #64748b;
+      --admin-surface: rgba(255, 255, 255, .88);
+      --admin-line: rgba(0, 59, 112, .11);
     }
 
-    table,
-    tbody{
-      display:block;
-      width:100%;
+    body {
+      background:
+        radial-gradient(circle at 8% 0%, rgba(0, 59, 112, .12), transparent 34%),
+        radial-gradient(circle at 94% 8%, rgba(200, 164, 93, .14), transparent 30%),
+        linear-gradient(145deg, #dce7ed 0%, #f5f8fa 52%, #d2e0e7 100%) !important;
+      color: var(--admin-ink) !important;
+      padding: 28px 18px 40px !important;
     }
 
-    thead{display:none}
-
-    #guestTableBody tr{
-      display:block;
-      margin-bottom:10px;
-      padding:8px 14px;
-      border:1px solid rgba(0,59,112,.12);
-      border-radius:12px;
-      background:rgba(255,255,255,.94);
-      box-shadow:0 5px 16px rgba(0,44,75,.06);
+    .container {
+      max-width: 1180px !important;
+      background: rgba(255, 255, 255, .84) !important;
+      border: 1px solid rgba(0, 59, 112, .12) !important;
+      border-radius: 24px !important;
+      padding: 30px !important;
+      box-shadow: 0 24px 70px rgba(0, 44, 75, .16) !important;
+      backdrop-filter: blur(18px);
     }
 
-    #guestTableBody td{
-      display:grid;
-      grid-template-columns:82px minmax(0,1fr);
-      gap:8px;
-      align-items:start;
-      padding:9px 0 !important;
-      border-bottom:1px solid rgba(0,59,112,.08) !important;
-      font-size:.9rem;
-      line-height:1.45;
-      overflow-wrap:anywhere;
+    #loginView {
+      max-width: 480px !important;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    #guestTableBody td::before{
-      color:var(--admin-muted);
-      font-size:.72rem;
-      font-weight:700;
+    #loginView.hidden {
+      display: none !important
     }
 
-    #guestTableBody td:nth-child(1)::before{content:"#"}
-    #guestTableBody td:nth-child(2)::before{content:"Tên khách"}
-    #guestTableBody td:nth-child(3)::before{content:"Lời chúc"}
-    #guestTableBody td:nth-child(4)::before{content:"Trạng thái"}
-    #guestTableBody td:nth-child(5)::before{content:"Thời gian"}
-    #guestTableBody td:nth-child(6)::before{content:"Thao tác"}
+    .login-box {
+      width: 100%;
+      max-width: 390px;
+      padding: 10px 0 4px !important;
+    }
 
-    #guestTableBody td:last-child{border-bottom:0 !important}
-    #guestTableBody td[colspan]::before{content:none}
-    #guestTableBody td[colspan]{display:block;text-align:center}
-    .wish-details{max-width:none}
-    .delete-button,.preview-button{min-height:36px}
-  }
-</style>
-<style id="ticket-template-admin-style">
-.ticket-template-card-admin{position:relative;width:100%;max-width:1100px;margin:0 auto;aspect-ratio:1536/1024;overflow:hidden;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.45);background:#eee}
-.ticket-template-image-admin{display:block;width:100%;height:100%;object-fit:cover}
-.ticket-template-name-admin{position:absolute;left:24.4%;top:59.55%;width:35.9%;height:6.65%;display:flex;align-items:center;justify-content:center;padding:0 2%;overflow:hidden;background:transparent;border:0;border-radius:0;color:#164a78;font-family:'Segoe Script','Brush Script MT',cursive;font-size:clamp(10px,1.25vw,18px);font-weight:600;line-height:1;text-align:center;white-space:nowrap;text-overflow:ellipsis;text-shadow:0 1px 1px rgba(255,255,255,.45)}
-@media(max-width:600px){.ticket-template-card-admin{border-radius:10px}.ticket-template-name-admin{font-size:clamp(9px,2.9vw,18px)}}
-</style>
+    .login-box h1 {
+      color: var(--admin-blue) !important;
+      font-size: 1.7rem !important;
+    }
+
+    .login-box h1::before {
+      content: "🎓";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--admin-blue), var(--admin-blue-2));
+      box-shadow: 0 10px 24px rgba(0, 59, 112, .22);
+      font-size: 1.35rem;
+    }
+
+    .subtitle {
+      color: var(--admin-muted) !important;
+      margin-bottom: 24px !important;
+    }
+
+    .status {
+      color: #275a78 !important;
+      background: rgba(0, 123, 183, .065) !important;
+      border: 1px solid rgba(0, 123, 183, .14) !important;
+    }
+
+    /* Requested: hide the "Đã đăng nhập ... · Đã tải N khách" banner in the dashboard */
+    #adminView .status {
+      display: none !important;
+    }
+
+    input {
+      border: 1px solid rgba(0, 59, 112, .15) !important;
+      background: #f8fbfd !important;
+      color: var(--admin-ink) !important;
+      min-height: 46px;
+    }
+
+    input:focus {
+      border-color: #0b78b8 !important;
+      box-shadow: 0 0 0 4px rgba(11, 120, 184, .12) !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--admin-blue), #075f98) !important;
+      color: #fff !important;
+      box-shadow: 0 10px 22px rgba(0, 59, 112, .18);
+    }
+
+    #adminView h1 {
+      color: var(--admin-blue) !important;
+      font-size: 1.65rem !important;
+      margin-bottom: 5px !important;
+    }
+
+    #adminView .subtitle {
+      margin-bottom: 18px !important;
+    }
+
+    /* NEW: eyebrow tag for consistent event branding across login & admin views */
+    .admin-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 59, 112, .14);
+      background: rgba(0, 59, 112, .05);
+      color: var(--admin-blue);
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .admin-eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .18);
+    }
+
+    /* NEW: overview stats cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 59, 112, .10);
+      background: linear-gradient(160deg, rgba(255, 255, 255, .92), rgba(248, 251, 253, .82));
+      box-shadow: 0 10px 26px rgba(0, 44, 75, .06);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: statCardIn .5s cubic-bezier(.22, 1, .36, 1) forwards;
+    }
+
+    .stat-card:nth-child(1) {
+      animation-delay: .02s
+    }
+
+    .stat-card:nth-child(2) {
+      animation-delay: .08s
+    }
+
+    .stat-card:nth-child(3) {
+      animation-delay: .14s
+    }
+
+    .stat-card:nth-child(4) {
+      animation-delay: .2s
+    }
+
+    @keyframes statCardIn {
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .stat-card-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--admin-muted);
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-card-value {
+      color: var(--admin-blue);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .stat-card-value small {
+      display: block;
+      margin-top: 2px;
+      color: var(--admin-muted);
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .stat-card.accent-gold .stat-card-value {
+      color: #8b6a2e
+    }
+
+    .stat-card.accent-red .stat-card-value {
+      color: var(--admin-red)
+    }
+
+    @media(max-width:760px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:420px) {
+      .stats-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .toolbar {
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 18px !important;
+      border: 1px solid var(--admin-line);
+      border-radius: 16px;
+      background: rgba(248, 251, 253, .78);
+    }
+
+    .toolbar button {
+      min-height: 40px;
+    }
+
+    .admin-search {
+      flex: 1 1 280px;
+      min-width: 220px;
+      min-height: 40px !important;
+      padding: 10px 14px !important;
+      border: 1px solid rgba(0, 59, 112, .14) !important;
+      background: #fff !important;
+      color: var(--admin-ink) !important;
+    }
+
+    .admin-search::placeholder {
+      color: #7b93a3
+    }
+
+    .btn-screenshot {
+      border-color: rgba(200, 164, 93, .42) !important;
+      color: #7a5b1d !important;
+      background: linear-gradient(135deg, #fffdf7, #fff7df) !important;
+    }
+
+    .btn-ghost {
+      background: #fff !important;
+      color: var(--admin-blue) !important;
+      border: 1px solid rgba(0, 59, 112, .14) !important;
+    }
+
+    .btn-danger-outline {
+      color: #b4233c !important;
+      border-color: rgba(196, 36, 62, .22) !important;
+      background: #fff !important;
+    }
+
+    .table-wrap {
+      border: 1px solid rgba(0, 59, 112, .10) !important;
+      border-radius: 18px !important;
+      background: rgba(255, 255, 255, .78);
+      box-shadow: 0 12px 35px rgba(0, 44, 75, .07);
+    }
+
+    table {
+      font-size: .88rem !important;
+    }
+
+    thead tr {
+      background: linear-gradient(180deg, #eef5f9, #e7f0f5) !important;
+    }
+
+    th {
+      color: var(--admin-blue) !important;
+      padding: 14px 15px !important;
+      border-bottom: 1px solid rgba(0, 59, 112, .12) !important;
+    }
+
+    td {
+      color: #28485d !important;
+      padding: 14px 15px !important;
+      border-bottom: 1px solid rgba(0, 59, 112, .07) !important;
+      vertical-align: middle;
+    }
+
+    tbody tr {
+      transition: background .18s ease, transform .18s ease;
+      animation: rowFadeIn .35s ease both;
+    }
+
+    @keyframes rowFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    tbody tr:hover {
+      background: rgba(0, 91, 145, .035) !important;
+    }
+
+    .status-pill {
+      color: #14733b !important;
+      background: rgba(34, 197, 94, .09) !important;
+      border-color: rgba(34, 197, 94, .20) !important;
+    }
+
+    .preview-button {
+      background: rgba(0, 59, 112, .07) !important;
+      color: var(--admin-blue) !important;
+      border: 1px solid rgba(0, 59, 112, .16) !important;
+    }
+
+    .delete-button {
+      background: rgba(200, 16, 46, .06) !important;
+      color: #b4233c !important;
+      border-color: rgba(200, 16, 46, .16) !important;
+    }
+
+    .ticket-modal {
+      background: rgba(3, 25, 43, .62) !important;
+      backdrop-filter: blur(12px) !important;
+    }
+
+    .ticket-modal-panel {
+      width: min(1120px, 100%) !important;
+      padding: 20px !important;
+      border-radius: 24px !important;
+      background: rgba(248, 251, 253, .96) !important;
+      border: 1px solid rgba(200, 164, 93, .45) !important;
+      box-shadow: 0 30px 100px rgba(0, 35, 60, .32) !important;
+    }
+
+    .ticket-modal-title {
+      color: var(--admin-blue) !important;
+      font-size: 1rem !important;
+    }
+
+    .ticket-modal-close {
+      background: #fff !important;
+      color: var(--admin-blue) !important;
+      border-color: rgba(0, 59, 112, .14) !important;
+    }
+
+    .ticket-template-card-admin {
+      box-shadow: 0 22px 65px rgba(0, 44, 75, .22) !important;
+    }
+
+    @media(max-width:700px) {
+      body {
+        padding: 14px 10px 28px !important
+      }
+
+      .container {
+        padding: 20px !important;
+        border-radius: 20px !important
+      }
+
+      #loginView {
+        min-height: calc(100vh - 42px)
+      }
+
+      #adminView h1 {
+        font-size: 1.35rem !important
+      }
+
+      .toolbar {
+        padding: 10px
+      }
+
+      .toolbar button {
+        flex: 1 1 140px
+      }
+
+      .btn-danger-outline {
+        margin-left: 0 !important
+      }
+
+      .table-wrap {
+        overflow: visible;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent;
+        box-shadow: none !important;
+      }
+
+      table,
+      tbody {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none
+      }
+
+      #guestTableBody tr {
+        display: block;
+        margin-bottom: 10px;
+        padding: 8px 14px;
+        border: 1px solid rgba(0, 59, 112, .12);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, .94);
+        box-shadow: 0 5px 16px rgba(0, 44, 75, .06);
+      }
+
+      #guestTableBody td {
+        display: grid;
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 8px;
+        align-items: start;
+        padding: 9px 0 !important;
+        border-bottom: 1px solid rgba(0, 59, 112, .08) !important;
+        font-size: .9rem;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      #guestTableBody td::before {
+        color: var(--admin-muted);
+        font-size: .72rem;
+        font-weight: 700;
+      }
+
+      #guestTableBody td:nth-child(1)::before {
+        content: "#"
+      }
+
+      #guestTableBody td:nth-child(2)::before {
+        content: "Tên khách"
+      }
+
+      #guestTableBody td:nth-child(3)::before {
+        content: "Lời chúc"
+      }
+
+      #guestTableBody td:nth-child(4)::before {
+        content: "Trạng thái"
+      }
+
+      #guestTableBody td:nth-child(5)::before {
+        content: "Thời gian"
+      }
+
+      #guestTableBody td:nth-child(6)::before {
+        content: "Thao tác"
+      }
+
+      #guestTableBody td:last-child {
+        border-bottom: 0 !important
+      }
+
+      #guestTableBody td[colspan]::before {
+        content: none
+      }
+
+      #guestTableBody td[colspan] {
+        display: block;
+        text-align: center
+      }
+
+      .wish-details {
+        max-width: none
+      }
+
+      .delete-button,
+      .preview-button {
+        min-height: 36px
+      }
+    }
+  </style>
+  <style id="admin-ux-upgrade-style">
+    /* Toast notifications: replaces silent status-line-only feedback */
+    #toastStack {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 1200;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      max-width: min(360px, calc(100vw - 36px));
+    }
+
+    .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(23, 61, 85, .96);
+      color: #f0f7fb;
+      font-size: .82rem;
+      line-height: 1.4;
+      box-shadow: 0 14px 34px rgba(0, 30, 50, .28);
+      border: 1px solid rgba(255, 255, 255, .08);
+      animation: toastIn .25s cubic-bezier(.22, 1, .36, 1) both;
+    }
+
+    .toast.toast-success {
+      border-color: rgba(74, 222, 128, .35);
+    }
+
+    .toast.toast-error {
+      background: rgba(120, 20, 30, .96);
+      border-color: rgba(248, 113, 113, .35);
+    }
+
+    .toast-icon {
+      flex: none;
+      font-size: 1rem;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .toast.toast-leaving {
+      animation: toastOut .2s ease forwards;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(.98)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateX(12px)
+      }
+    }
+
+    /* Password visibility toggle */
+    .password-field {
+      position: relative;
+    }
+
+    .password-field input {
+      width: 100%;
+      padding-right: 42px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      padding: 6px 8px;
+      font-size: .95rem;
+      color: #7b93a3;
+      cursor: pointer;
+    }
+
+    .password-toggle:hover {
+      filter: none;
+      color: var(--admin-blue, #003b70);
+    }
+
+    /* Sortable column headers */
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    th.sortable:hover {
+      color: #0b78b8;
+    }
+
+    .sort-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: .68rem;
+      opacity: .35;
+    }
+
+    th.sortable[data-dir="asc"] .sort-arrow,
+    th.sortable[data-dir="desc"] .sort-arrow {
+      opacity: 1;
+      color: #0b78b8;
+    }
+
+    /* Skeleton loading rows while fetching guests */
+    .skeleton-row td {
+      padding: 14px 15px !important;
+    }
+
+    .skeleton-bar {
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, rgba(0, 59, 112, .08) 25%, rgba(0, 59, 112, .14) 37%, rgba(0, 59, 112, .08) 63%);
+      background-size: 400% 100%;
+      animation: skeletonShimmer 1.3s ease infinite;
+    }
+
+    @keyframes skeletonShimmer {
+      0% {
+        background-position: 100% 0
+      }
+
+      100% {
+        background-position: 0 0
+      }
+    }
+
+    .no-results {
+      color: var(--admin-muted, #64748b);
+      padding: 28px 0;
+      text-align: center;
+    }
+
+    .btn-spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .5);
+      border-top-color: #fff;
+      vertical-align: -1px;
+      animation: spin .6s linear infinite;
+    }
+
+    .btn-ghost .btn-spinner,
+    .btn-danger-outline .btn-spinner {
+      border-color: rgba(0, 59, 112, .25);
+      border-top-color: var(--admin-blue, #003b70);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .ticket-download-btn {
+      margin-top: 14px;
+      background: linear-gradient(135deg, var(--admin-blue, #003b70), #075f98);
+      color: #fff;
+    }
+  </style>
+  <style id="visual-polish-v2">
+    /* Ceremonial display type for headings and key numbers */
+    .login-box h1,
+    #adminView h1,
+    .stat-card-value,
+    .ticket-modal-title {
+      font-family: "Fraunces", Georgia, serif;
+      font-optical-sizing: auto;
+    }
+
+    /* Header: eyebrow + gold hairline instead of a bare label */
+    .admin-eyebrow {
+      position: relative;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      background: none;
+      border: none;
+      border-radius: 0;
+    }
+
+    .admin-eyebrow::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 64px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--admin-gold, #c8a45d), transparent);
+    }
+
+    #adminView h1 {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* Login: swap the boxed emoji for a seal-style emblem */
+    .login-box h1 {
+      gap: 14px;
+      font-weight: 600;
+    }
+
+    .login-box h1::before {
+      content: "🔒";
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(150deg, var(--admin-blue, #003b70), #062a49);
+      box-shadow:
+        0 0 0 3px #fff,
+        0 0 0 4px rgba(200, 164, 93, .55),
+        0 12px 26px rgba(0, 59, 112, .22);
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    /* Stat cards: quiet gold/red edge instead of tinted numerals doing all the work */
+    .stat-card {
+      border-left-width: 3px;
+      border-left-style: solid;
+      border-left-color: rgba(0, 59, 112, .35);
+    }
+
+    .stat-card.accent-gold {
+      border-left-color: var(--admin-gold, #c8a45d);
+    }
+
+    .stat-card.accent-red {
+      border-left-color: var(--admin-red, #c8102e);
+    }
+
+    .stat-card-value {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* Toolbar buttons: consistent pill shape, calmer weight */
+    .toolbar button {
+      border-radius: 999px;
+      font-weight: 600;
+      padding: 10px 18px;
+    }
+
+    .btn-danger-outline {
+      font-weight: 600;
+    }
+
+    /* Table: a quiet left accent on hover instead of a flat tint only */
+    tbody tr {
+      box-shadow: inset 3px 0 0 transparent;
+      transition: background .18s ease, box-shadow .18s ease;
+    }
+
+    tbody tr:hover {
+      box-shadow: inset 3px 0 0 var(--admin-gold, #c8a45d);
+    }
+
+    /* Wish "read more" affordance: a chevron instead of the default marker */
+    .wish-details summary {
+      gap: 6px;
+    }
+
+    .wish-details summary::before {
+      content: "▸";
+      flex: none;
+      color: var(--admin-gold, #c8a45d);
+      font-size: .7rem;
+      margin-top: 3px;
+      transition: transform .15s ease;
+    }
+
+    .wish-details[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    /* Ticket modal title gets the same ceremonial weight as the rest */
+    .ticket-modal-title {
+      font-weight: 600;
+      font-size: 1.15rem;
+    }
+  </style>
+  <style id="ticket-template-admin-style">
+    .ticket-template-card-admin {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      aspect-ratio: 1536/1024;
+      overflow: hidden;
+      border-radius: 18px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, .45);
+      background: #eee
+    }
+
+    .ticket-template-image-admin {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .ticket-template-name-admin {
+      position: absolute;
+      left: 24.4%;
+      top: 59.55%;
+      width: 35.9%;
+      height: 6.65%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2%;
+      overflow: hidden;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      color: #164a78;
+      font-family: 'Segoe Script', 'Brush Script MT', cursive;
+      font-size: clamp(10px, 1.25vw, 18px);
+      font-weight: 600;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, .45)
+    }
+
+    @media(max-width:600px) {
+      .ticket-template-card-admin {
+        border-radius: 10px
+      }
+
+      .ticket-template-name-admin {
+        font-size: clamp(9px, 2.9vw, 18px)
+      }
+    }
+  </style>
 </head>
+
 <body>
   <div class="container" id="loginView">
     <div class="login-box">
-      <h1>🔐 Admin Login</h1>
+      <div class="admin-eyebrow" style="align-self:center;"><span class="admin-eyebrow-dot"></span>HUTECH · CLASS OF
+        2026</div>
+      <h1>Admin Login</h1>
       <label class="field-label" for="adminEmail">Email admin</label>
       <input type="email" id="adminEmail" placeholder="admin@example.com" autocomplete="email" />
       <label class="field-label" for="adminPassword">Mật khẩu Supabase</label>
-      <input type="password" id="adminPassword" placeholder="••••••••" autocomplete="current-password"
-        onkeydown="if (event.key === 'Enter') signInAdmin()" />
-      <button type="button" class="btn-primary" onclick="signInAdmin()">Đăng nhập</button>
+      <div class="password-field">
+        <input type="password" id="adminPassword" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if (event.key === 'Enter') signInAdmin()" />
+        <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePasswordVisibility()"
+          aria-label="Hiện mật khẩu" aria-pressed="false">👁</button>
+      </div>
+      <button type="button" class="btn-primary" id="signInBtn" onclick="signInAdmin()">Đăng nhập</button>
       <div class="status" id="loginStatus">Chỉ tài khoản admin mới xem được danh sách.</div>
     </div>
   </div>
 
   <div class="container hidden" id="adminView">
+    <div class="admin-eyebrow"><span class="admin-eyebrow-dot"></span>HUTECH · CLASS OF 2026</div>
     <h1>Danh Sách Khách Dự</h1>
-    <div class="subtitle">Quản lý khách mời trong thời gian thực</div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-card-label">👥 Tổng khách</div>
+        <div class="stat-card-value" id="statTotal">—</div>
+      </div>
+      <div class="stat-card accent-gold">
+        <div class="stat-card-label">✅ Đã xác nhận</div>
+        <div class="stat-card-value" id="statConfirmed">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">🕐 Khách mới nhất</div>
+        <div class="stat-card-value" id="statLatest">—</div>
+      </div>
+      <div class="stat-card accent-red">
+        <div class="stat-card-label">🔄 Cập nhật lúc</div>
+        <div class="stat-card-value" id="statUpdated">—</div>
+      </div>
+    </div>
+
     <div class="status" id="status">Đang kết nối dữ liệu...</div>
     <div class="toolbar">
-      <input class="admin-search" id="guestSearch" type="search" placeholder="🔎 Tìm tên khách..." autocomplete="off" oninput="filterGuests()" />
+      <input class="admin-search" id="guestSearch" type="search" placeholder="🔎 Tìm tên khách..." autocomplete="off"
+        oninput="filterGuests()" />
       <button type="button" class="btn-primary" onclick="loadGuests()">↻ Tải lại</button>
       <button type="button" class="btn-ghost" onclick="exportGuests()">⬇ Xuất file</button>
-      <button type="button" class="btn-danger-outline" id="deleteAllBtn" onclick="deleteAllGuests()">🗑 Xóa tất cả</button>
+      <button type="button" class="btn-ghost btn-screenshot" onclick="captureGuestScreen()">📸 Chụp danh sách</button>
+      <button type="button" class="btn-danger-outline" id="deleteAllBtn" onclick="deleteAllGuests()">🗑 Xóa tất
+        cả</button>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>#</th>
-            <th>Tên khách</th>
+            <th class="sortable" data-sort="name" onclick="sortGuests('name')">Tên khách<span
+                class="sort-arrow">↕</span></th>
             <th>Lời chúc</th>
             <th>Trạng thái</th>
-            <th>Thời gian</th>
+            <th class="sortable" data-sort="created_at" onclick="sortGuests('created_at')">Thời gian<span
+                class="sort-arrow">↕</span></th>
             <th>Thao tác</th>
           </tr>
         </thead>
@@ -990,7 +1975,10 @@
     </div>
   </div>
 
+  <div id="toastStack" aria-live="polite"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
     const supabaseClient = window.supabase
       ? window.supabase.createClient(
@@ -1004,6 +1992,42 @@
       document.getElementById('adminView').classList.remove('hidden');
     }
 
+    function showToast(message, type = 'info') {
+      const stack = document.getElementById('toastStack');
+      if (!stack) return;
+      const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
+      const el = document.createElement('div');
+      el.className = `toast toast-${type}`;
+      el.innerHTML = `<span class="toast-icon">${icon}</span><span>${escapeHtml(message)}</span>`;
+      stack.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('toast-leaving');
+        setTimeout(() => el.remove(), 220);
+      }, 3600);
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('adminPassword');
+      const btn = document.getElementById('passwordToggle');
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      btn.textContent = showing ? '👁' : '🙈';
+      btn.setAttribute('aria-label', showing ? 'Hiện mật khẩu' : 'Ẩn mật khẩu');
+      btn.setAttribute('aria-pressed', String(!showing));
+    }
+
+    function setButtonBusy(button, busy, busyLabel) {
+      if (!button) return;
+      if (busy) {
+        button.dataset.originalLabel = button.dataset.originalLabel || button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = `<span class="btn-spinner"></span>${busyLabel || 'Đang xử lý...'}`;
+      } else {
+        button.disabled = false;
+        if (button.dataset.originalLabel) button.innerHTML = button.dataset.originalLabel;
+      }
+    }
+
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -1014,6 +2038,7 @@
       const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
       const loginStatus = document.getElementById('loginStatus');
+      const signInBtn = document.getElementById('signInBtn');
 
       if (!supabaseClient) {
         loginStatus.textContent = 'Không tải được Supabase. Hãy tải lại trang hoặc kiểm tra mạng.';
@@ -1026,7 +2051,9 @@
       }
 
       loginStatus.textContent = 'Đang đăng nhập...';
+      setButtonBusy(signInBtn, true, 'Đang đăng nhập...');
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      setButtonBusy(signInBtn, false);
       if (!error) {
         showAdminView();
         loadGuests();
@@ -1035,10 +2062,46 @@
       }
     }
 
+    function renderStats(data) {
+      const total = data.length;
+      const confirmed = data.filter(g => (g.status || 'confirmed') === 'confirmed').length;
+      const latest = total ? data[total - 1] : null;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statConfirmed').innerHTML = total
+        ? `${confirmed}<small>${Math.round((confirmed / total) * 100)}% khách</small>`
+        : '0';
+      document.getElementById('statLatest').innerHTML = latest
+        ? `${escapeHtml(latest.name)}<small>${new Date(latest.created_at).toLocaleString('vi-VN')}</small>`
+        : '—';
+      document.getElementById('statUpdated').innerHTML =
+        `${new Date().toLocaleTimeString('vi-VN')}<small>${new Date().toLocaleDateString('vi-VN')}</small>`;
+    }
+
+    window.guestSortState = { key: null, dir: 'asc' };
+
+    function renderSkeletonRows(count = 4) {
+      const body = document.getElementById('guestTableBody');
+      body.innerHTML = Array.from({ length: count }).map(() => `
+        <tr class="skeleton-row">
+          <td><div class="skeleton-bar" style="width:16px"></div></td>
+          <td><div class="skeleton-bar" style="width:70%"></div></td>
+          <td><div class="skeleton-bar" style="width:85%"></div></td>
+          <td><div class="skeleton-bar" style="width:60px"></div></td>
+          <td><div class="skeleton-bar" style="width:90px"></div></td>
+          <td><div class="skeleton-bar" style="width:110px"></div></td>
+        </tr>
+      `).join('');
+    }
+
     async function loadGuests() {
       const status = document.getElementById('status');
       const body = document.getElementById('guestTableBody');
       const deleteAllBtn = document.getElementById('deleteAllBtn');
+      const reloadBtn = document.querySelector('.toolbar .btn-primary');
+
+      renderSkeletonRows();
+      setButtonBusy(reloadBtn, true, 'Đang tải...');
 
       try {
         const { data: sessionData } = await supabaseClient.auth.getSession();
@@ -1058,12 +2121,35 @@
           body.innerHTML = '<tr><td colspan="6" class="empty">Chưa có khách nào được lưu.</td></tr>';
           status.textContent = `Đã đăng nhập ${user.email}, nhưng database đang rỗng`;
           deleteAllBtn.disabled = true;
+          window.adminGuestData = [];
+          renderStats([]);
           return;
         }
 
         deleteAllBtn.disabled = false;
         window.adminGuestData = data;
-        body.innerHTML = data.map((guest, index) => `
+        window.guestSortState = { key: null, dir: 'asc' };
+        renderStats(data);
+        renderGuestRows(data);
+
+        status.textContent = `Đã đăng nhập ${user.email} · Đã tải ${data.length} khách`;
+        showToast(`Đã tải ${data.length} khách`, 'success');
+      } catch (err) {
+        console.error(err);
+        status.textContent = `Không đọc được database: ${err.message}`;
+        body.innerHTML = '<tr><td colspan="6" class="empty">Lỗi tải dữ liệu.</td></tr>';
+        showToast(`Không tải được danh sách: ${err.message}`, 'error');
+        ['statTotal', 'statConfirmed', 'statLatest', 'statUpdated'].forEach(id => {
+          document.getElementById(id).textContent = '—';
+        });
+      } finally {
+        setButtonBusy(reloadBtn, false);
+      }
+    }
+
+    function renderGuestRows(data) {
+      const body = document.getElementById('guestTableBody');
+      body.innerHTML = data.map((guest, index) => `
           <tr>
             <td>${index + 1}</td>
             <td>${escapeHtml(guest.name)}</td>
@@ -1081,26 +2167,65 @@
             </td>
           </tr>
         `).join('');
+      filterGuests();
+    }
 
-        status.textContent = `Đã đăng nhập ${user.email} · Đã tải ${data.length} khách`;
-      } catch (err) {
-        console.error(err);
-        status.textContent = `Không đọc được database: ${err.message}`;
-        body.innerHTML = '<tr><td colspan="6" class="empty">Lỗi tải dữ liệu.</td></tr>';
-      }
+    function sortGuests(key) {
+      const data = window.adminGuestData;
+      if (!data || !data.length) return;
+
+      const state = window.guestSortState;
+      const dir = state.key === key && state.dir === 'asc' ? 'desc' : 'asc';
+      window.guestSortState = { key, dir };
+
+      const sorted = [...data].sort((a, b) => {
+        let av = a[key], bv = b[key];
+        if (key === 'created_at') { av = new Date(av).getTime(); bv = new Date(bv).getTime(); }
+        else { av = String(av || '').toLowerCase(); bv = String(bv || '').toLowerCase(); }
+        if (av < bv) return dir === 'asc' ? -1 : 1;
+        if (av > bv) return dir === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      document.querySelectorAll('th.sortable').forEach(th => {
+        if (th.dataset.sort === key) {
+          th.dataset.dir = dir;
+          th.querySelector('.sort-arrow').textContent = dir === 'asc' ? '↑' : '↓';
+        } else {
+          th.removeAttribute('data-dir');
+          th.querySelector('.sort-arrow').textContent = '↕';
+        }
+      });
+
+      renderGuestRows(sorted);
     }
 
     function filterGuests() {
       const keyword = (document.getElementById('guestSearch')?.value || '').trim().toLowerCase();
-      const rows = document.querySelectorAll('#guestTableBody tr');
+      const body = document.getElementById('guestTableBody');
+      const rows = body.querySelectorAll('tr:not(.no-results-row)');
       let visible = 0;
       rows.forEach(row => {
+        if (row.querySelector('.empty')) { row.style.display = ''; return; }
         const nameCell = row.querySelector('td:nth-child(2)');
         const name = nameCell?.textContent?.toLowerCase() || '';
         const match = !keyword || name.includes(keyword);
         row.style.display = match ? '' : 'none';
         if (match) visible++;
       });
+
+      let noResultsRow = body.querySelector('.no-results-row');
+      const hasDataRows = rows.length > 0 && !body.querySelector('.empty');
+      if (keyword && hasDataRows && visible === 0) {
+        if (!noResultsRow) {
+          noResultsRow = document.createElement('tr');
+          noResultsRow.className = 'no-results-row';
+          noResultsRow.innerHTML = `<td colspan="6" class="no-results">Không tìm thấy khách nào khớp với "${escapeHtml(document.getElementById('guestSearch').value)}"</td>`;
+          body.appendChild(noResultsRow);
+        }
+      } else if (noResultsRow) {
+        noResultsRow.remove();
+      }
     }
 
     function openTicketPreviewByIndex(index) {
@@ -1115,13 +2240,37 @@
       const name = escapeHtml(guest?.name || 'Khách mời');
 
       preview.innerHTML =
-        '<article class="ticket-template-card-admin">' +
-          '<img class="ticket-template-image-admin" src="assets/Card.png" alt="HUTECH Graduation Ticket">' +
-          '<div class="ticket-template-name-admin">' + name + '</div>' +
-        '</article>';
+        '<article class="ticket-template-card-admin" id="ticketCardToDownload">' +
+        '<img class="ticket-template-image-admin" src="assets/Card.png" alt="HUTECH Graduation Ticket">' +
+        '<div class="ticket-template-name-admin">' + name + '</div>' +
+        '</article>' +
+        '<button type="button" class="ticket-download-btn" onclick="downloadTicketCard(\'' + name.replace(/'/g, "\\'") + '\')">⬇ Tải card này</button>';
 
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+    }
+
+    async function downloadTicketCard(name) {
+      const card = document.getElementById('ticketCardToDownload');
+      const btn = document.querySelector('.ticket-download-btn');
+      if (!card || !window.html2canvas) {
+        showToast('Không thể tải card. Hãy thử lại.', 'error');
+        return;
+      }
+      setButtonBusy(btn, true, 'Đang tạo ảnh...');
+      try {
+        const canvas = await html2canvas(card, { scale: 2, useCORS: true, backgroundColor: '#fff8e9', logging: false });
+        const link = document.createElement('a');
+        link.download = `ve-${(name || 'khach').toLowerCase().replace(/\s+/g, '-')}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('Đã tải card vé', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Tải card thất bại. Hãy thử lại.', 'error');
+      } finally {
+        setButtonBusy(btn, false);
+      }
     }
 
     function closeTicketPreview() {
@@ -1142,38 +2291,118 @@
       }
     })();
 
+    async function captureGuestScreen() {
+      const source = document.getElementById('adminView');
+      const status = document.getElementById('status');
+      const button = document.querySelector('.btn-screenshot');
+      if (!source || !window.html2canvas) {
+        if (status) status.textContent = 'Không thể chụp ảnh. Hãy tải lại trang và thử lại.';
+        return;
+      }
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = '⏳ Đang tạo ảnh...';
+      }
+
+      const clone = source.cloneNode(true);
+      const toolbar = clone.querySelector('.toolbar');
+      const statusBar = clone.querySelector('.status');
+      if (toolbar) toolbar.remove();
+      if (statusBar) statusBar.remove();
+
+      clone.classList.remove('hidden');
+      clone.style.cssText = [
+        'display:block',
+        'position:absolute',
+        'left:-100000px',
+        'top:0',
+        'width:1180px',
+        'max-width:none',
+        'margin:0',
+        'padding:36px',
+        'background:#f5f8fa',
+        'color:#173d55',
+        'border-radius:0',
+        'box-shadow:none',
+        'backdrop-filter:none'
+      ].join(';');
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:absolute;left:-100000px;top:0;width:1180px;background:#f5f8fa;padding:0;';
+      wrap.appendChild(clone);
+      document.body.appendChild(wrap);
+
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#f5f8fa',
+          logging: false,
+          windowWidth: 1180
+        });
+
+        const link = document.createElement('a');
+        link.download = 'danh-sach-khach-du-hutech-2026.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        if (status) status.textContent = '📸 Đã chụp toàn bộ danh sách khách và lưu ảnh PNG để đăng Facebook.';
+        showToast('Đã lưu ảnh danh sách khách', 'success');
+      } catch (error) {
+        console.error(error);
+        if (status) status.textContent = 'Chụp ảnh thất bại. Hãy thử lại.';
+        showToast('Chụp ảnh thất bại. Hãy thử lại.', 'error');
+      } finally {
+        wrap.remove();
+        if (button) {
+          button.disabled = false;
+          button.textContent = '📸 Chụp danh sách';
+        }
+      }
+    }
+
     async function exportGuests() {
-      const { data, error } = await supabaseClient
-        .from('guests')
-        .select('name, wish, status, created_at')
-        .order('created_at', { ascending: true });
+      const exportBtn = document.querySelectorAll('.toolbar .btn-ghost')[0];
+      setButtonBusy(exportBtn, true, 'Đang xuất...');
+      try {
+        const { data, error } = await supabaseClient
+          .from('guests')
+          .select('name, wish, status, created_at')
+          .order('created_at', { ascending: true });
 
-      if (error) {
-        document.getElementById('status').textContent = 'Không thể xuất file: lỗi kết nối database.';
-        return;
+        if (error) {
+          document.getElementById('status').textContent = 'Không thể xuất file: lỗi kết nối database.';
+          showToast('Không thể xuất file: lỗi kết nối database.', 'error');
+          return;
+        }
+
+        if (!data || !data.length) {
+          document.getElementById('status').textContent = 'Chưa có khách để xuất file.';
+          showToast('Chưa có khách để xuất file.', 'error');
+          return;
+        }
+
+        const header = 'STT,Tên khách,Lời chúc,Trạng thái,Thời gian';
+        const rows = data.map((guest, index) => [
+          index + 1,
+          guest.name,
+          guest.wish || '',
+          guest.status || 'confirmed',
+          new Date(guest.created_at).toLocaleString('vi-VN')
+        ].map(value => `"${String(value).replace(/"/g, '""')}"`).join(','));
+        const blob = new Blob(['\ufeff' + [header, ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = 'danh-sach-khach-du.csv';
+        anchor.click();
+        URL.revokeObjectURL(url);
+        document.getElementById('status').textContent = `Đã xuất ${data.length} khách ra file CSV`;
+        showToast(`Đã xuất ${data.length} khách ra file CSV`, 'success');
+      } finally {
+        setButtonBusy(exportBtn, false);
       }
-
-      if (!data || !data.length) {
-        document.getElementById('status').textContent = 'Chưa có khách để xuất file.';
-        return;
-      }
-
-      const header = 'STT,Tên khách,Lời chúc,Trạng thái,Thời gian';
-      const rows = data.map((guest, index) => [
-        index + 1,
-        guest.name,
-        guest.wish || '',
-        guest.status || 'confirmed',
-        new Date(guest.created_at).toLocaleString('vi-VN')
-      ].map(value => `"${String(value).replace(/"/g, '""')}"`).join(','));
-      const blob = new Blob(['\ufeff' + [header, ...rows].join('\n')], { type: 'text/csv;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = 'danh-sach-khach-du.csv';
-      anchor.click();
-      URL.revokeObjectURL(url);
-      document.getElementById('status').textContent = `Đã xuất ${data.length} khách ra file CSV`;
     }
 
     async function deleteGuest(id) {
@@ -1186,10 +2415,12 @@
 
       if (error) {
         document.getElementById('status').textContent = `Xóa thất bại: ${error.message}`;
+        showToast(`Xóa thất bại: ${error.message}`, 'error');
         return;
       }
 
       document.getElementById('status').textContent = 'Đã xóa khách khỏi database.';
+      showToast('Đã xóa khách khỏi database.', 'success');
       loadGuests();
     }
 
@@ -1227,13 +2458,16 @@
 
       if (error) {
         status.textContent = `Xóa tất cả thất bại: ${error.message}`;
+        showToast(`Xóa tất cả thất bại: ${error.message}`, 'error');
         deleteAllBtn.disabled = false;
         return;
       }
 
       status.textContent = `Đã xóa toàn bộ ${total} khách khỏi database.`;
+      showToast(`Đã xóa toàn bộ ${total} khách khỏi database.`, 'success');
       loadGuests();
     }
   </script>
 </body>
+
 </html>
