@@ -44,3 +44,12 @@ on public.guests
 for delete
 to authenticated
 using (true);
+
+drop policy if exists "Authenticated admins can update guest wishes" on public.guests;
+
+create policy "Authenticated admins can update guest wishes"
+on public.guests
+for update
+to authenticated
+using (true)
+with check (true);

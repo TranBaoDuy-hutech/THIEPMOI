@@ -269,6 +269,84 @@
       font-size: 0.78rem;
     }
 
+    .wish-edit-button {
+      padding: 6px 10px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-size: 0.78rem;
+    }
+
+    .wish-edit-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(8px);
+    }
+
+    .wish-edit-modal.open {
+      display: flex;
+    }
+
+    .wish-edit-panel {
+      width: min(480px, 100%);
+      padding: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 14px;
+      background: #0b1220;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+    }
+
+    .wish-edit-title {
+      margin: 0 0 14px;
+      color: #f8fafc;
+      font-size: 1rem;
+    }
+
+    .wish-edit-panel label {
+      display: block;
+      margin-bottom: 6px;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    .wish-edit-input {
+      width: 100%;
+      min-height: 132px;
+      padding: 11px 12px;
+      resize: vertical;
+      border: 1px solid #263041;
+      border-radius: 8px;
+      background: #0c1322;
+      color: #f1f5f9;
+      font: inherit;
+      line-height: 1.5;
+    }
+
+    .wish-edit-meta,
+    .wish-edit-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .wish-edit-meta {
+      margin-top: 5px;
+      color: #64748b;
+      font-size: 0.75rem;
+    }
+
+    .wish-edit-actions {
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
     .empty {
       color: #64748b;
       padding: 24px 0;
@@ -1530,7 +1608,8 @@
       }
 
       .delete-button,
-      .preview-button {
+      .preview-button,
+      .wish-edit-button {
         min-height: 36px
       }
     }
@@ -1975,7 +2054,23 @@
     </div>
   </div>
 
-  <div id="toastStack" aria-live="polite"></div>
+    <div class="wish-edit-modal" id="wishEditModal" onclick="if (event.target === this) closeWishEditor()">
+      <section class="wish-edit-panel" role="dialog" aria-modal="true" aria-labelledby="wishEditTitle">
+        <h2 class="wish-edit-title" id="wishEditTitle">Cập nhật lời chúc</h2>
+        <label for="wishEditInput">Lời chúc của khách</label>
+        <textarea class="wish-edit-input" id="wishEditInput" maxlength="500"></textarea>
+        <div class="wish-edit-meta">
+          <span>Tối đa 500 ký tự</span>
+          <span id="wishEditCount">0/500</span>
+        </div>
+        <div class="wish-edit-actions">
+          <button type="button" class="btn-ghost" onclick="closeWishEditor()">Hủy</button>
+          <button type="button" class="btn-primary" id="saveWishBtn" onclick="saveWishEdit()">Lưu lời chúc</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="toastStack" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -2150,7 +2245,7 @@
     function renderGuestRows(data) {
       const body = document.getElementById('guestTableBody');
       body.innerHTML = data.map((guest, index) => `
-          <tr>
+          <tr class="guest-row" data-guest-id="${escapeHtml(guest.id)}">
             <td>${index + 1}</td>
             <td>${escapeHtml(guest.name)}</td>
             <td><details class="wish-details">
@@ -2163,12 +2258,87 @@
             <td>${new Date(guest.created_at).toLocaleString('vi-VN')}</td>
             <td>
               <button class="preview-button" type="button" onclick="openTicketPreviewByIndex(${index})">🎟️ Card</button>
+              <button class="wish-edit-button" type="button" onclick="openWishEditor('${escapeHtml(guest.id)}')">Sửa lời chúc</button>
               <button class="delete-button" type="button" onclick="deleteGuest('${guest.id}')">Xóa</button>
             </td>
           </tr>
         `).join('');
       filterGuests();
     }
+
+    let editingWishGuestId = null;
+    let previousBodyOverflow = '';
+
+    function openWishEditor(id) {
+      const guest = window.adminGuestData?.find(item => String(item.id) === String(id));
+      if (!guest) return;
+
+      editingWishGuestId = guest.id;
+      const input = document.getElementById('wishEditInput');
+      input.value = guest.wish || '';
+      document.getElementById('wishEditCount').textContent = `${input.value.length}/500`;
+      previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.getElementById('wishEditModal').classList.add('open');
+      input.focus();
+    }
+
+    function closeWishEditor() {
+      document.getElementById('wishEditModal').classList.remove('open');
+      document.body.style.overflow = previousBodyOverflow;
+      editingWishGuestId = null;
+    }
+
+    async function saveWishEdit() {
+      if (!editingWishGuestId) return;
+
+      const input = document.getElementById('wishEditInput');
+      const saveButton = document.getElementById('saveWishBtn');
+      const wish = input.value.trim();
+      if (wish.length > 500) return;
+
+      setButtonBusy(saveButton, true, 'Đang lưu...');
+      try {
+        const { data, error } = await supabaseClient
+          .from('guests')
+          .update({ wish: wish || null })
+          .eq('id', editingWishGuestId)
+          .select('id')
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) throw new Error('Không cập nhật được. Hãy kiểm tra quyền UPDATE trong Supabase.');
+
+        const guest = window.adminGuestData.find(item => String(item.id) === String(editingWishGuestId));
+        if (guest) guest.wish = wish;
+
+        const row = document.querySelector(`.guest-row[data-guest-id="${CSS.escape(String(editingWishGuestId))}"]`);
+        const wishCell = row?.querySelector('td:nth-child(3)');
+        if (wishCell) {
+          const preview = (wish || '—').slice(0, 60);
+          wishCell.innerHTML = `<details class="wish-details"><summary><span class="wish-preview">${escapeHtml(preview)}${wish.length > 60 ? '…' : ''}</span><span class="wish-full">${escapeHtml(wish || '—')}</span></summary></details>`;
+        }
+
+        closeWishEditor();
+        document.getElementById('status').textContent = 'Đã cập nhật lời chúc.';
+        showToast('Đã cập nhật lời chúc.', 'success');
+      } catch (error) {
+        console.error(error);
+        showToast(`Cập nhật lời chúc thất bại: ${error.message}`, 'error');
+      } finally {
+        setButtonBusy(saveButton, false);
+      }
+    }
+
+    document.getElementById('wishEditInput').addEventListener('input', event => {
+      document.getElementById('wishEditCount').textContent = `${event.target.value.length}/500`;
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.getElementById('wishEditModal').classList.contains('open')) {
+        closeWishEditor();
+      }
+    });
 
     function sortGuests(key) {
       const data = window.adminGuestData;

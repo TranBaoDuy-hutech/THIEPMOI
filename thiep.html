@@ -2562,6 +2562,7 @@
       opacity: .38 !important;
       mix-blend-mode: multiply !important
     }
+
     /* HUTECH GOLD / WHITE THEME — giữ nguyên cấu trúc, chỉ đổi màu giao diện */
     :root {
       --bg-void: #ffffff;
@@ -2578,19 +2579,57 @@
       --hairline: rgba(200, 164, 93, 0.24);
     }
 
-    body { background: #ffffff; color: #c8a45d; }
-    .boot-overlay { background: #ffffff; }
+    body {
+      background: #ffffff;
+      color: #c8a45d;
+    }
 
-    .boot-line, .boot-status, .mode-btn, .audio-toggle, .control-panel,
-    .terminal-wrap, .content, .info-chip, .code-window, .ide-window,
-    .secret-card, .wish-panel, .rsvp-guide, .confirm-box, .toast,
-    .footer, .section-title, .section-subtitle, .label, .value,
-    .headline, .eyebrow, .terminal-title, .terminal-body,
-    .terminal-input, .terminal-output, .wish-text, .wish-author,
-    .wish-counter, .ticket-template-actions { color: #c8a45d; }
+    .boot-overlay {
+      background: #ffffff;
+    }
 
-    .mode-switch-container, .audio-toggle, .terminal-wrap, .code-window,
-    .ide-window, .info-chip, .wish-panel, .rsvp-guide, .confirm-box,
+    .boot-line,
+    .boot-status,
+    .mode-btn,
+    .audio-toggle,
+    .control-panel,
+    .terminal-wrap,
+    .content,
+    .info-chip,
+    .code-window,
+    .ide-window,
+    .secret-card,
+    .wish-panel,
+    .rsvp-guide,
+    .confirm-box,
+    .toast,
+    .footer,
+    .section-title,
+    .section-subtitle,
+    .label,
+    .value,
+    .headline,
+    .eyebrow,
+    .terminal-title,
+    .terminal-body,
+    .terminal-input,
+    .terminal-output,
+    .wish-text,
+    .wish-author,
+    .wish-counter,
+    .ticket-template-actions {
+      color: #c8a45d;
+    }
+
+    .mode-switch-container,
+    .audio-toggle,
+    .terminal-wrap,
+    .code-window,
+    .ide-window,
+    .info-chip,
+    .wish-panel,
+    .rsvp-guide,
+    .confirm-box,
     .secret-card {
       background: rgba(255, 255, 255, 0.96);
       border-color: rgba(200, 164, 93, 0.32);
@@ -2598,27 +2637,48 @@
       backdrop-filter: blur(10px);
     }
 
-    .mode-btn.active, .secret-card button, .terminal-button,
-    .confirm-button, .rsvp-guide-action {
+    .mode-btn.active,
+    .secret-card button,
+    .terminal-button,
+    .confirm-button,
+    .rsvp-guide-action {
       background: #c8a45d;
       color: #ffffff;
       box-shadow: 0 8px 24px rgba(200, 164, 93, 0.22);
     }
 
-    .mode-btn:hover, .audio-toggle:hover { color: #9f7d36; }
+    .mode-btn:hover,
+    .audio-toggle:hover {
+      color: #9f7d36;
+    }
 
-    input, textarea, .terminal-input, .wish-input {
+    input,
+    textarea,
+    .terminal-input,
+    .wish-input {
       background: #ffffff !important;
       color: #8f7134 !important;
       border-color: rgba(200, 164, 93, 0.42) !important;
     }
 
-    input::placeholder, textarea::placeholder {
+    input::placeholder,
+    textarea::placeholder {
       color: rgba(143, 113, 52, 0.62) !important;
     }
 
-    a, .phone-link, .link, .highlight, .accent, svg { color: #c8a45d; }
-    svg { fill: currentColor; stroke: currentColor; }
+    a,
+    .phone-link,
+    .link,
+    .highlight,
+    .accent,
+    svg {
+      color: #c8a45d;
+    }
+
+    svg {
+      fill: currentColor;
+      stroke: currentColor;
+    }
 
     .crt-overlay {
       background:
@@ -2628,13 +2688,29 @@
       opacity: 0.45;
     }
 
-    .cursor-glow { background: radial-gradient(circle, rgba(200, 164, 93, 0.10), transparent 70%); }
-    .boot-progress { background: rgba(200, 164, 93, 0.14); }
-    .boot-progress-bar { background: #c8a45d; box-shadow: 0 0 8px rgba(200, 164, 93, 0.45); }
+    .cursor-glow {
+      background: radial-gradient(circle, rgba(200, 164, 93, 0.10), transparent 70%);
+    }
 
-    #gridCanvas, #particleCanvas, #fallCanvas { opacity: 0.12; }
+    .boot-progress {
+      background: rgba(200, 164, 93, 0.14);
+    }
 
-    .terminal-output, .terminal-body, .ide-editor, .code-window pre {
+    .boot-progress-bar {
+      background: #c8a45d;
+      box-shadow: 0 0 8px rgba(200, 164, 93, 0.45);
+    }
+
+    #gridCanvas,
+    #particleCanvas,
+    #fallCanvas {
+      opacity: 0.12;
+    }
+
+    .terminal-output,
+    .terminal-body,
+    .ide-editor,
+    .code-window pre {
       color: #8f7134 !important;
     }
 
@@ -2644,9 +2720,13 @@
       color: #ffffff;
     }
 
-    .ticket-template-edit:hover { background: #9f7d36; }
+    .ticket-template-edit:hover {
+      background: #9f7d36;
+    }
 
-    button:focus-visible, input:focus-visible, a:focus-visible {
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible {
       outline-color: #c8a45d;
     }
 
@@ -2656,39 +2736,63 @@
       color: #c8a45d;
     }
 
-    .ide-editor-container, .ide-tabs, .ide-tab, .ide-tab.active,
-    .terminal-header, .terminal-body, .terminal-wrap,
-    .confirmed-tickets, .guest-action-btn.secondary {
-      background: #ffffff !important;
-      color: #c8a45d !important;
+    .ide-editor-container,
+    .ide-tabs,
+    .ide-tab,
+    .ide-tab.active,
+    .terminal-header,
+    .terminal-body,
+    .terminal-wrap,
+    .confirmed-tickets,
+    .guest-action-btn.secondary {
+      background: #fffdf7 !important;
+      color: #493817 !important;
     }
 
-    .ide-tabs, .ide-tab, .terminal-header {
-      border-color: rgba(200, 164, 93, 0.22) !important;
+    .ide-tabs,
+    .ide-tab,
+    .terminal-header {
+      border-color: rgba(138, 100, 18, 0.28) !important;
     }
 
     .ide-tab.active {
-      border-top-color: #c8a45d !important;
-      color: #c8a45d !important;
+      border-top-color: #8a6412 !important;
+      color: #493817 !important;
     }
 
-    .terminal-prompt, .terminal-btn, .terminal-btn.secondary,
+    .terminal-prompt,
+    .terminal-btn,
+    .terminal-btn.secondary,
     .confirmed-tickets-title {
-      color: #c8a45d !important;
+      color: #805b10 !important;
     }
 
     .terminal-btn {
-      background: #c8a45d !important;
+      background: #a77b19 !important;
       color: #ffffff !important;
     }
 
     .terminal-input {
       background: transparent !important;
-      color: #8f7134 !important;
+      color: #76520b !important;
     }
 
     .confirmed-tickets {
-      border-color: rgba(200, 164, 93, 0.24) !important;
+      border-color: rgba(138, 100, 18, 0.3) !important;
+    }
+
+    #terminalConfirmBox {
+      background: #fff8e8 !important;
+      border-color: rgba(138, 100, 18, 0.4) !important;
+    }
+
+    #terminalConfirmBox .terminal-line,
+    #terminalConfirmBox .terminal-line[style],
+    #terminalStatusPrompt,
+    #confirmGuestNameText {
+      color: #493817 !important;
+      -webkit-text-fill-color: #493817 !important;
+      opacity: 1 !important;
     }
 
     /* RSVP guide: tăng tương phản để chữ và nút luôn rõ trên nền trắng */
@@ -2813,6 +2917,8 @@
     }
 
     .card .corner-sash {
+      top: 38px;
+      right: -48px;
       background: #ead39a;
       border-color: #b58a2b;
     }
@@ -2843,7 +2949,6 @@
       background: #5f4108;
       color: #fffdf7;
     }
-
   </style>
 </head>
 
@@ -2955,7 +3060,7 @@
             <div class="corner-sash" aria-hidden="true">
               <div class="line">
                 <span class="school">HUTECH</span>
-                <span class="sep">•</span>
+                <span class="sep">-</span>
                 <span class="faculty">KHOA CNTT</span>
               </div>
             </div>
@@ -2964,15 +3069,9 @@
             <div class="glow"></div>
 
             <div class="content">
-              <div class="sys-bar">
-                <span class="sys-item"><span class="sys-dot online"></span>SYS: ONLINE</span>
-                <span class="sys-item">🔒 SECURE SSL</span>
-              </div>
-
-              <span class="eyebrow" id="secretTapZone"><span class="dot"></span>Graduation 2026</span>
-                <h1 class="headline" id="gradName" data-text="Trần Bảo Duy"><a href="https://tranbaoduy.netlify.app/"
-                  target="_self"
-                  style="color:inherit;text-decoration:none;display:block;">Trần Bảo Duy</a></h1>
+              <span class="eyebrow" id="secretTapZone"><span class="dot"></span>Lễ tốt nghiệp 2026</span>
+              <h1 class="headline" id="gradName" data-text="Trần Bảo Duy"><a href="https://tranbaoduy.netlify.app/"
+                  target="_self" style="color:inherit;text-decoration:none;display:block;">Trần Bảo Duy</a></h1>
 
               <div class="photo-wrap">
                 <div class="photo-frame">
