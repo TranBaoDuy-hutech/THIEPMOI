@@ -814,20 +814,6 @@
       animation: blink 0.9s step-end infinite;
     }
 
-    .boot-log {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: #3fae9a;
-      margin-bottom: 14px;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.05s forwards;
-      min-height: 1em;
-    }
-
-    .boot-log .ok {
-      color: #34d399;
-    }
-
     #boot-bar {
       position: fixed;
       top: 0;
@@ -933,7 +919,6 @@
       h1.glitching::before,
       h1.glitching::after,
       .typed-cursor,
-      .boot-log,
       .grain,
       #boot-bar,
       .countdown {
@@ -944,7 +929,6 @@
       p.sub,
       .open-btn,
       .hint,
-      .boot-log,
       .countdown {
         opacity: 1;
         transform: none;
@@ -980,7 +964,6 @@
 
 <body>
   <div id="boot-bar" aria-hidden="true"></div>
-  <div class="status-badge" id="statusBadge" aria-hidden="true">SYSTEM ONLINE · UPTIME 00:00:00</div>
   <div class="bg-canvas" aria-hidden="true"></div>
   <div class="beams" aria-hidden="true"></div>
   <div class="aurora" aria-hidden="true"></div>
@@ -996,7 +979,6 @@
   <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
   <div class="content">
-    <div class="boot-log" id="bootLog" aria-hidden="true"></div>
     <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>HUTECH · CLASS OF 2026</div>
 
     <div class="logo-wrap">
@@ -1036,8 +1018,6 @@
         Mở Thiệp
       </button>
     </div>
-
-    <p class="hint" aria-hidden="true">// tap to open invitation &amp; start music <span>_</span></p>
   </div>
 
   <script>
@@ -1083,16 +1063,6 @@
     }
     tickCountdown();
     setInterval(tickCountdown, 1000);
-
-    const statusEl = document.getElementById('statusBadge');
-    const t0 = Date.now();
-    setInterval(() => {
-      const s = Math.floor((Date.now() - t0) / 1000);
-      const hh = String(Math.floor(s / 3600)).padStart(2, '0');
-      const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
-      const ss = String(s % 60).padStart(2, '0');
-      statusEl.textContent = `SYSTEM ONLINE · UPTIME ${hh}:${mm}:${ss}`;
-    }, 1000);
 
     if (isFinePointer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const contentEl = document.querySelector('.content');
@@ -1188,24 +1158,6 @@
     }
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(drawMatrix);
     document.addEventListener('visibilitychange', () => { matrixPaused = document.hidden; });
-
-    const bootLines = ['> khởi tạo thiệp mời...', '> load HUTECH.class(2026) [ok]', '> render invitation.exe'];
-    const bootEl = document.getElementById('bootLog');
-    let bi = 0;
-    function typeBootLine() {
-      if (bi >= bootLines.length) return;
-      let ci = 0; const line = bootLines[bi];
-      bootEl.textContent = '';
-      const iv = setInterval(() => {
-        bootEl.textContent = line.slice(0, ++ci);
-        if (ci >= line.length) {
-          clearInterval(iv);
-          bi++;
-          setTimeout(typeBootLine, bi === bootLines.length ? 0 : 260);
-        }
-      }, 22);
-    }
-    setTimeout(typeBootLine, 150);
 
     const subHTML = 'Lễ tốt nghiệp Kỹ sư <span>CNTT</span> — Trần Bảo Duy<br>HUTECH University, <span>10/2026</span>';
     const subEl = document.getElementById('typedSub');
