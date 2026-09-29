@@ -37,6 +37,10 @@
       padding: 0;
     }
 
+    html {
+      overflow-x: hidden;
+    }
+
     body {
       background-color: var(--bg-void);
       color: var(--text-primary);
@@ -175,15 +179,20 @@
       opacity: 0.6;
     }
 
-    /* Control Panel */
-    .control-panel {
+    .card-quick-controls {
+      position: absolute;
+      top: 6px;
+      left: 34px;
+      z-index: 12;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      width: 100%;
-      max-width: 480px;
-      margin-bottom: 1.5rem;
-      z-index: 10;
+      gap: 8px;
+    }
+
+    .card-quick-controls .audio-toggle,
+    .card-quick-controls .trophy-toggle {
+      width: 32px;
+      height: 32px;
     }
 
     .mode-switch-container {
@@ -729,7 +738,7 @@
     }
 
     .content {
-      padding: 2.6rem 2.2rem 0;
+      padding: 3rem 2.2rem 0;
     }
 
     .sys-bar {
@@ -782,11 +791,13 @@
     }
 
     .eyebrow {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 0.5rem;
+      width: fit-content;
+      margin-inline: auto;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 600;
       letter-spacing: 0.15em;
       color: var(--accent-cyan);
@@ -847,6 +858,7 @@
 
     .headline {
       margin: 1rem 0 0.2rem;
+      text-align: center;
       font-family: 'Segoe Script', 'Brush Script MT', cursive;
       font-weight: 600;
       font-size: clamp(2.15rem, 8.5vw, 2.9rem);
@@ -2990,39 +3002,6 @@
     </div>
   </div>
 
-  <div class="control-panel">
-    <div class="mode-switch-container" role="tablist" aria-label="Chuyển đổi giao diện thiệp mời">
-      <button class="mode-btn active" id="btnVisualMode" onclick="toggleMode('visual')" role="tab" aria-selected="true">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-        </svg>
-        Visual Card
-      </button>
-      <button class="mode-btn" id="btnCodeMode" onclick="toggleMode('code')" role="tab" aria-selected="false">
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-        </svg>
-        Developer IDE
-      </button>
-    </div>
-    <button class="audio-toggle pulse-hint is-on" id="audioToggle" onclick="toggleAudio()" aria-label="Tắt nhạc nền"
-      aria-pressed="true" title="Tắt nhạc nền">
-      <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-4.02 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-      </svg>
-    </button>
-    <button class="trophy-toggle" id="trophyToggle" onclick="toggleAchvPanel()" aria-label="Xem thành tích"
-      title="Thành tích đã mở khóa">
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.95V18H8v2h8v-2h-3v-2.11c1.63-.32 2.98-1.45 3.61-2.95C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
-      </svg>
-      <span class="trophy-badge-count" id="achvCount">0</span>
-    </button>
-  </div>
-
   <div class="achv-panel" id="achvPanel">
     <div class="achv-panel-title">
       <span>🏆 Thành tích</span>
@@ -3056,6 +3035,23 @@
             <div class="hud-corner top-right"></div>
             <div class="hud-corner bottom-left"></div>
             <div class="hud-corner bottom-right"></div>
+            <div class="card-quick-controls">
+              <button class="audio-toggle pulse-hint is-on" id="audioToggle" onclick="toggleAudio()" aria-label="Tắt nhạc nền"
+                aria-pressed="true" title="Tắt nhạc nền">
+                <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-4.02 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+              </button>
+              <button class="trophy-toggle" id="trophyToggle" onclick="toggleAchvPanel()" aria-label="Xem thành tích"
+                title="Thành tích đã mở khóa">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.95V18H8v2h8v-2h-3v-2.11c1.63-.32 2.98-1.45 3.61-2.95C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
+                </svg>
+                <span class="trophy-badge-count" id="achvCount">0</span>
+              </button>
+            </div>
 
             <div class="corner-sash" aria-hidden="true">
               <div class="line">
@@ -3096,7 +3092,7 @@
               </div>
 
               <div class="formal-note">
-                <p>Tôi xin trân trọng kính mời các bạn đến tham dự buổi lễ tốt nghiệp, cùng chia sẻ và chứng kiến khoảnh
+                <p>Bảo Duy kính mời bạn đến tham dự buổi lễ tốt nghiệp, cùng chia sẻ và chứng kiến khoảnh
                   khắc đánh dấu một cột mốc quan trọng trong hành trình học tập và trưởng thành của Bảo Duy.
                 </p>
               </div>
@@ -3180,12 +3176,6 @@
                   </span>
                 </button>
               </div>
-            </div>
-
-            <div class="content" style="padding-top: 0; padding-bottom: 1.2rem;">
-              <p class="sign-off">// Với tất cả sự trân trọng, hẹn gặp bạn tại buổi lễ.</p>
-              <p class="konami-hint">// gợi ý: có một cổng bí mật ẩn trong hệ thống — chạm đúng nơi liên tiếp, hoặc gõ
-                đúng mã, sẽ mở ra.</p>
             </div>
 
             <div class="perforation">
@@ -3295,10 +3285,10 @@
       </div>
 
       <div class="terminal-input-row" id="terminalInputRow">
-        <span class="terminal-prompt">Guest Name:</span>
+        <span class="terminal-prompt">Tên:</span>
         <input type="text" class="terminal-input" id="guestName" placeholder="Nhập tên của bạn..." autocomplete="off"
           aria-label="Tên khách mời" onkeydown="handleTerminalKey(event)">
-        <button class="terminal-btn" id="btnTerminalSubmit" onclick="submitRSVP()">Confirm</button>
+        <button class="terminal-btn" id="btnTerminalSubmit" onclick="submitRSVP()">Xác nhận</button>
       </div>
 
       <div id="wishInputPanel"
@@ -3344,7 +3334,7 @@
     <section class="rsvp-guide-panel" role="dialog" aria-modal="true" aria-labelledby="rsvpGuideTitle"
       aria-describedby="rsvpGuideMessage">
       <h2 class="rsvp-guide-title" id="rsvpGuideTitle">Hướng dẫn xác nhận tham dự</h2>
-      <p id="rsvpGuideMessage">Nhập tên của bạn, viết lời chúc, rồi nhấn <strong>Confirm</strong> để gửi thông
+      <p id="rsvpGuideMessage">Nhập tên của bạn, viết lời chúc, rồi nhấn <strong>Xác nhận</strong> để gửi thông
         tin.</p>
       <div class="rsvp-guide-actions">
         <button type="button" class="terminal-btn" id="rsvpGuideAction" onclick="goToRSVP()">Đến phần nhập</button>
@@ -3784,7 +3774,7 @@
       clearTimeout(toast._hideTimer);
       toast._hideTimer = setTimeout(() => {
         toast.classList.remove('show');
-      }, 3200);
+      }, isThankYou ? 5000 : 3200);
     }
 
     function showRSVPGuide() {
@@ -3823,7 +3813,6 @@
     const ACHIEVEMENTS = [
       { id: 'opened', icon: '🎬', t: 'Đã mở thiệp', d: 'Chào mừng bạn đến với hệ thống' },
       { id: 'glitch', icon: '⚡', t: 'Chạm vào tên', d: 'Kích hoạt hiệu ứng glitch trên tiêu đề' },
-      { id: 'ide', icon: '👨‍💻', t: 'Developer Mode', d: 'Mở giao diện IDE' },
       { id: 'action', icon: '🗺️', t: 'Chuẩn bị lên đường', d: 'Thêm lịch hoặc mở bản đồ' },
       { id: 'rsvp', icon: '✅', t: 'Xác nhận tham dự', d: 'Hoàn tất RSVP qua terminal' },
       { id: 'hacker', icon: '🕵️', t: 'Tìm ra cổng bí mật', d: 'Nhập đúng mã Konami huyền thoại' },
@@ -4157,30 +4146,6 @@
       }, 170);
     }
 
-    // View Switcher
-    function toggleMode(mode) {
-      const container = document.getElementById('appContainer');
-      const btnVisual = document.getElementById('btnVisualMode');
-      const btnCode = document.getElementById('btnCodeMode');
-
-      playBeep(900, 0.05, 'triangle');
-
-      if (mode === 'code') {
-        container.classList.add('show-code-mode');
-        btnVisual.classList.remove('active');
-        btnVisual.setAttribute('aria-selected', 'false');
-        btnCode.classList.add('active');
-        btnCode.setAttribute('aria-selected', 'true');
-        unlockAchievement('ide');
-      } else {
-        container.classList.remove('show-code-mode');
-        btnVisual.classList.add('active');
-        btnVisual.setAttribute('aria-selected', 'true');
-        btnCode.classList.remove('active');
-        btnCode.setAttribute('aria-selected', 'false');
-      }
-    }
-
     const invitationJSON = {
       "version": "1.0.0",
       "build": {
@@ -4255,7 +4220,6 @@
       });
 
       setTimeout(() => {
-        toggleMode('visual');
         showToast("✨ Biên dịch hoàn tất!");
       }, 1400);
     }

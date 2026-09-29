@@ -53,3 +53,6 @@ for update
 to authenticated
 using (true)
 with check (true);
+
+-- Cấp quyền UPDATE cột wish cho phiên đăng nhập admin (authenticated).
+grant update (wish) on table public.guests to authenticated;
