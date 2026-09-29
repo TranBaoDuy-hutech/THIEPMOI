@@ -7,7 +7,8 @@
   <title>Admin - Danh Sách Khách Tham Dự</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Great+Vibes&family=Dancing+Script:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Great+Vibes&family=Dancing+Script:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
     * {
@@ -1265,6 +1266,19 @@
       margin-bottom: 20px;
     }
 
+    .stat-card-clickable {
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .stat-card-clickable:hover,
+    .stat-card-clickable:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 59, 112, .14);
+      outline: 2px solid rgba(0, 95, 152, .35);
+      outline-offset: 2px;
+    }
+
     .stat-card {
       padding: 16px 18px;
       border-radius: 16px;
@@ -2114,6 +2128,56 @@
       }
     }
   </style>
+  <style>
+    .latest-guest-panel {
+      margin: 0 0 20px;
+      border: 1px solid rgba(200, 164, 93, .42);
+      border-radius: 15px;
+      background: linear-gradient(145deg, #fffdf7, #f7f0df);
+      color: #173d55;
+      box-shadow: 0 8px 24px rgba(0, 44, 75, .07);
+      overflow: hidden;
+    }
+
+    .latest-guest-panel summary {
+      padding: 15px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #805b10;
+      list-style: none;
+    }
+
+    .latest-guest-panel summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .latest-guest-panel summary::after {
+      content: "＋";
+      float: right;
+      color: #b18427;
+    }
+
+    .latest-guest-panel[open] summary::after {
+      content: "－";
+    }
+
+    .latest-guest-content {
+      padding: 0 18px 18px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .latest-guest-content strong {
+      color: #003b70;
+    }
+
+    .latest-guest-meta {
+      color: #64748b;
+      font-size: .82rem;
+      margin-bottom: 8px;
+    }
+  </style>
 </head>
 
 <body>
@@ -2142,15 +2206,17 @@
 
     <div class="stats-grid" id="statsGrid">
       <div class="stat-card">
-        <div class="stat-card-label">👥 Tổng khách</div>
+        <div class="stat-card-label">👥 Tổng số khách</div>
         <div class="stat-card-value" id="statTotal">—</div>
       </div>
       <div class="stat-card accent-gold">
-        <div class="stat-card-label">✅ Đã xác nhận</div>
-        <div class="stat-card-value" id="statConfirmed">—</div>
+        <div class="stat-card-label">💌 Tỷ lệ lời chúc</div>
+        <div class="stat-card-value" id="statWishRate">—</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-card-label">🕐 Khách mới nhất</div>
+      <div class="stat-card stat-card-clickable" role="button" tabindex="0" title="Nhấn để đến danh sách khách"
+        aria-label="Đi đến danh sách khách" onclick="scrollToGuestList()"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); scrollToGuestList(); }">
+        <div class="stat-card-label">🕐 Khách mới nhất <span aria-hidden="true">↘</span></div>
         <div class="stat-card-value" id="statLatest">—</div>
       </div>
       <div class="stat-card accent-red">
@@ -2183,7 +2249,8 @@
         <button type="button" class="btn-ghost" onclick="downloadMemoryAlbum()">⬇ Tải toàn bộ PNG (ZIP)</button>
       </div>
       <button type="button" class="btn-ghost memory-album-toggle" id="memoryAlbumToggle"
-        aria-controls="memoryAlbumPreview" aria-expanded="false" onclick="toggleMemoryAlbumPreview()">Hiện đầy đủ album</button>
+        aria-controls="memoryAlbumPreview" aria-expanded="false" onclick="toggleMemoryAlbumPreview()">Hiện đầy đủ
+        album</button>
       <div class="memory-album-preview" id="memoryAlbumPreview">
         <div class="empty">Nhấn “Tạo / cập nhật xem trước” sau khi tải danh sách khách.</div>
       </div>
@@ -2330,15 +2397,21 @@
       }
     }
 
+    function scrollToGuestList() {
+      const latestGuestRow = document.querySelector('#guestTableBody tr:last-child');
+      const pageBottom = document.documentElement;
+      (latestGuestRow || pageBottom).scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
     function renderStats(data) {
       const total = data.length;
-      const confirmed = data.filter(g => (g.status || 'confirmed') === 'confirmed').length;
+      const guestsWithWish = data.filter(g => String(g.wish || '').trim()).length;
       const latest = total ? data[total - 1] : null;
 
       document.getElementById('statTotal').textContent = total;
-      document.getElementById('statConfirmed').innerHTML = total
-        ? `${confirmed}<small>${Math.round((confirmed / total) * 100)}% khách</small>`
-        : '0';
+      document.getElementById('statWishRate').innerHTML = total
+        ? `${Math.round((guestsWithWish / total) * 100)}%<small>${guestsWithWish}/${total} khách có lời chúc</small>`
+        : '0%<small>0/0 khách có lời chúc</small>';
       document.getElementById('statLatest').innerHTML = latest
         ? `${escapeHtml(latest.name)}<small>${new Date(latest.created_at).toLocaleString('vi-VN')}</small>`
         : '—';
@@ -2583,18 +2656,21 @@
         x.strokeStyle = '#e30613'; x.lineWidth = 2; x.strokeRect(38, 38, 1004, 1274);
         x.fillStyle = '#fff200'; x.font = '28px Georgia'; x.fillText('✦', 48, 78); x.fillText('✦', 1000, 78);
       }
-      albumBrand(x);
+      // Bìa và trang cuối dùng ảnh riêng: không chèn logo hoặc số trang lên hai trang này.
+      if (!isCover) albumBrand(x);
       if (title) {
         x.textAlign = 'center'; x.fillStyle = '#8a6412'; x.font = '700 48px "Fraunces", Georgia, serif'; x.fillText(title, 540, 205);
       }
       if (subtitle) {
         x.fillStyle = '#8b7652'; x.font = '700 44px "Dancing Script", cursive'; x.fillText(subtitle, 540, 260, 960);
       }
-      x.textAlign = 'left';
-      x.fillStyle = '#805b10'; x.font = '18px Arial'; x.textAlign = 'center';
-      x.fillText('HUTECH · CLASS OF 2026', 540, 1284);
-      x.fillStyle = '#8a6412'; x.font = '16px Arial'; x.fillText('TRANG ' + pageNo + '/' + totalPages, 540, 1308);
-      x.textAlign = 'left';
+      if (!isCover) {
+        x.textAlign = 'left';
+        x.fillStyle = '#805b10'; x.font = '18px Arial'; x.textAlign = 'center';
+        x.fillText('HUTECH · CLASS OF 2026', 540, 1284);
+        x.fillStyle = '#8a6412'; x.font = '16px Arial'; x.fillText('TRANG ' + pageNo + '/' + totalPages, 540, 1308);
+        x.textAlign = 'left';
+      }
       return { canvas: c, ctx: x };
     }
 
@@ -2636,7 +2712,15 @@
         const date = g.created_at ? new Date(g.created_at).toLocaleDateString('vi-VN') : '';
         x.textAlign = 'right'; x.fillStyle = '#a18a61'; x.font = 'italic 15px Georgia, "Times New Roman", serif'; x.fillText(date, bx + cardW - 24, by + cardH - 20); x.textAlign = 'left';
       });
-      return canvas;
+      // Thu toàn bộ trang lời chúc vào cùng khung lề như ảnh bìa và trang cuối.
+      const framed = document.createElement('canvas');
+      framed.width = 1080; framed.height = 1350;
+      const framedCtx = framed.getContext('2d');
+      const padding = 36;
+      const scale = Math.min((framed.width - padding * 2) / canvas.width, (framed.height - padding * 2) / canvas.height);
+      const w = canvas.width * scale, h = canvas.height * scale;
+      framedCtx.drawImage(canvas, (framed.width - w) / 2, (framed.height - h) / 2, w, h);
+      return framed;
     }
 
     function drawAlbumCoverBotanical(ctx, originX, originY, direction) {
@@ -2689,24 +2773,36 @@
     }
 
     function drawAlbumCoverArtwork(ctx) {
-      const x=ctx; x.save();
-      const bg=x.createLinearGradient(0,0,0,1350); bg.addColorStop(0,'#fffdf8');bg.addColorStop(.58,'#fffaf0');bg.addColorStop(1,'#f5ead2');x.fillStyle=bg;x.fillRect(0,0,1080,1350);albumBrand(x);
-      x.save();x.globalAlpha=.42;drawAlbumCoverBotanical(x,1035,310,-1);x.restore();
+      const x = ctx; x.save();
+      const bg = x.createLinearGradient(0, 0, 0, 1350); bg.addColorStop(0, '#fffdf8'); bg.addColorStop(.58, '#fffaf0'); bg.addColorStop(1, '#f5ead2'); x.fillStyle = bg; x.fillRect(0, 0, 1080, 1350); albumBrand(x);
+      x.save(); x.globalAlpha = .42; drawAlbumCoverBotanical(x, 1035, 310, -1); x.restore();
       // Soft fabric and flowing champagne ribbon.
-      const fabric=x.createLinearGradient(0,850,0,1350);fabric.addColorStop(0,'rgba(255,253,247,0)');fabric.addColorStop(.3,'#f4e8d0');fabric.addColorStop(1,'#e9d8b8');x.fillStyle=fabric;x.beginPath();x.moveTo(0,960);x.bezierCurveTo(220,890,360,1080,570,1040);x.bezierCurveTo(790,990,900,910,1080,980);x.lineTo(1080,1350);x.lineTo(0,1350);x.closePath();x.fill();
-      x.strokeStyle='#d5a33e';x.lineWidth=38;x.lineCap='round';x.beginPath();x.moveTo(-25,1110);x.bezierCurveTo(150,1020,190,1225,365,1190);x.bezierCurveTo(470,1170,485,1085,575,1100);x.stroke();
+      const fabric = x.createLinearGradient(0, 850, 0, 1350); fabric.addColorStop(0, 'rgba(255,253,247,0)'); fabric.addColorStop(.3, '#f4e8d0'); fabric.addColorStop(1, '#e9d8b8'); x.fillStyle = fabric; x.beginPath(); x.moveTo(0, 960); x.bezierCurveTo(220, 890, 360, 1080, 570, 1040); x.bezierCurveTo(790, 990, 900, 910, 1080, 980); x.lineTo(1080, 1350); x.lineTo(0, 1350); x.closePath(); x.fill();
+      x.strokeStyle = '#d5a33e'; x.lineWidth = 38; x.lineCap = 'round'; x.beginPath(); x.moveTo(-25, 1110); x.bezierCurveTo(150, 1020, 190, 1225, 365, 1190); x.bezierCurveTo(470, 1170, 485, 1085, 575, 1100); x.stroke();
       // Baby's breath sprigs.
-      [[70,1000,1],[160,1080,.8],[230,965,.65],[880,965,.8],[980,1050,1],[1030,1150,.7]].forEach(([cx,cy,sc])=>{x.save();x.translate(cx,cy);x.scale(sc,sc);x.strokeStyle='#aaa080';x.lineWidth=2;x.beginPath();x.moveTo(0,85);x.bezierCurveTo(-10,35,20,0,0,-48);x.moveTo(0,30);x.lineTo(-35,-8);x.moveTo(5,12);x.lineTo(35,-30);x.stroke();[ [0,-48],[-35,-8],[35,-30] ].forEach(([a,b])=>drawAlbumCoverFlower(x,a,b,8));x.restore();});
+      [[70, 1000, 1], [160, 1080, .8], [230, 965, .65], [880, 965, .8], [980, 1050, 1], [1030, 1150, .7]].forEach(([cx, cy, sc]) => { x.save(); x.translate(cx, cy); x.scale(sc, sc); x.strokeStyle = '#aaa080'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 85); x.bezierCurveTo(-10, 35, 20, 0, 0, -48); x.moveTo(0, 30); x.lineTo(-35, -8); x.moveTo(5, 12); x.lineTo(35, -30); x.stroke();[[0, -48], [-35, -8], [35, -30]].forEach(([a, b]) => drawAlbumCoverFlower(x, a, b, 8)); x.restore(); });
       // Diploma roll and gold tie.
-      x.save();x.translate(410,1190);x.rotate(-.12);x.fillStyle='#fffdf6';x.strokeStyle='#c7ad78';x.lineWidth=3;x.beginPath();x.roundRect(-175,-45,350,90,40);x.fill();x.stroke();x.fillStyle='#c89a3b';x.fillRect(-15,-46,30,92);x.beginPath();x.moveTo(0,-42);x.bezierCurveTo(-65,-95,-85,-55,-30,-22);x.bezierCurveTo(-5,-10,0,-25,0,-42);x.fill();x.beginPath();x.moveTo(0,-42);x.bezierCurveTo(65,-95,85,-55,30,-22);x.bezierCurveTo(5,-10,0,-25,0,-42);x.fill();x.restore();
+      x.save(); x.translate(410, 1190); x.rotate(-.12); x.fillStyle = '#fffdf6'; x.strokeStyle = '#c7ad78'; x.lineWidth = 3; x.beginPath(); x.roundRect(-175, -45, 350, 90, 40); x.fill(); x.stroke(); x.fillStyle = '#c89a3b'; x.fillRect(-15, -46, 30, 92); x.beginPath(); x.moveTo(0, -42); x.bezierCurveTo(-65, -95, -85, -55, -30, -22); x.bezierCurveTo(-5, -10, 0, -25, 0, -42); x.fill(); x.beginPath(); x.moveTo(0, -42); x.bezierCurveTo(65, -95, 85, -55, 30, -22); x.bezierCurveTo(5, -10, 0, -25, 0, -42); x.fill(); x.restore();
       // Black cap is the dark focal point.
-      x.save();x.translate(755,1040);x.rotate(-.06);x.fillStyle='#171817';x.shadowColor='rgba(65,45,18,.2)';x.shadowBlur=20;x.shadowOffsetY=10;x.beginPath();x.moveTo(-245,-40);x.lineTo(15,-125);x.lineTo(270,-38);x.lineTo(15,55);x.closePath();x.fill();x.shadowColor='transparent';x.fillStyle='#282a27';x.beginPath();x.moveTo(-165,5);x.lineTo(15,70);x.lineTo(195,5);x.lineTo(180,115);x.quadraticCurveTo(15,205,-165,115);x.closePath();x.fill();x.strokeStyle='#d6a63e';x.lineWidth=7;x.beginPath();x.moveTo(245,-38);x.lineTo(260,120);x.stroke();x.fillStyle='#d6a63e';x.beginPath();x.arc(260,125,9,0,Math.PI*2);x.fill();x.restore();
-      const fade=x.createLinearGradient(0,850,0,1035);fade.addColorStop(0,'#fffaf0');fade.addColorStop(1,'rgba(255,250,240,0)');x.fillStyle=fade;x.fillRect(0,850,1080,190);
-      x.textAlign='center';x.fillStyle='#b08325';x.font='small-caps 78px Georgia, "Times New Roman", serif';x.fillText('GRADUATION',540,285);x.font='118px "Great Vibes", "Brush Script MT", cursive';x.fillText('Memory Album',540,390);
-      x.fillStyle='#5b4426';x.font='26px Georgia, serif';x.fillText('TRẦN BẢO DUY',540,510);x.strokeStyle='#c8a45d';x.lineWidth=2;x.beginPath();x.moveTo(390,550);x.lineTo(475,550);x.moveTo(605,550);x.lineTo(690,550);x.stroke();x.font='20px Arial';x.fillText('HUTECH 2026',540,557);
-      x.beginPath();x.moveTo(275,625);x.lineTo(505,625);x.moveTo(575,625);x.lineTo(805,625);x.stroke();x.fillStyle='#b08325';x.font='24px Georgia';x.fillText('✦',540,633);
-      x.save();x.translate(610,735);x.rotate(-.14);x.fillStyle='#b08325';x.font='42px "Great Vibes", "Brush Script MT", cursive';x.fillText('Cảm ơn bạn đã là một phần',0,0);x.fillText('trong hành trình của mình!',0,48);x.restore();
-      x.fillStyle='#5b4426';x.font='16px Arial';x.fillText('TRANG 1/N',540,1320);x.restore();
+      x.save(); x.translate(755, 1040); x.rotate(-.06); x.fillStyle = '#171817'; x.shadowColor = 'rgba(65,45,18,.2)'; x.shadowBlur = 20; x.shadowOffsetY = 10; x.beginPath(); x.moveTo(-245, -40); x.lineTo(15, -125); x.lineTo(270, -38); x.lineTo(15, 55); x.closePath(); x.fill(); x.shadowColor = 'transparent'; x.fillStyle = '#282a27'; x.beginPath(); x.moveTo(-165, 5); x.lineTo(15, 70); x.lineTo(195, 5); x.lineTo(180, 115); x.quadraticCurveTo(15, 205, -165, 115); x.closePath(); x.fill(); x.strokeStyle = '#d6a63e'; x.lineWidth = 7; x.beginPath(); x.moveTo(245, -38); x.lineTo(260, 120); x.stroke(); x.fillStyle = '#d6a63e'; x.beginPath(); x.arc(260, 125, 9, 0, Math.PI * 2); x.fill(); x.restore();
+      const fade = x.createLinearGradient(0, 850, 0, 1035); fade.addColorStop(0, '#fffaf0'); fade.addColorStop(1, 'rgba(255,250,240,0)'); x.fillStyle = fade; x.fillRect(0, 850, 1080, 190);
+      x.textAlign = 'center'; x.fillStyle = '#b08325'; x.font = 'small-caps 78px Georgia, "Times New Roman", serif'; x.fillText('GRADUATION', 540, 285); x.font = '118px "Great Vibes", "Brush Script MT", cursive'; x.fillText('Memory Album', 540, 390);
+      x.fillStyle = '#5b4426'; x.font = '26px Georgia, serif'; x.fillText('TRẦN BẢO DUY', 540, 510); x.strokeStyle = '#c8a45d'; x.lineWidth = 2; x.beginPath(); x.moveTo(390, 550); x.lineTo(475, 550); x.moveTo(605, 550); x.lineTo(690, 550); x.stroke(); x.font = '20px Arial'; x.fillText('HUTECH 2026', 540, 557);
+      x.beginPath(); x.moveTo(275, 625); x.lineTo(505, 625); x.moveTo(575, 625); x.lineTo(805, 625); x.stroke(); x.fillStyle = '#b08325'; x.font = '24px Georgia'; x.fillText('✦', 540, 633);
+      x.save(); x.translate(610, 735); x.rotate(-.14); x.fillStyle = '#b08325'; x.font = '42px "Great Vibes", "Brush Script MT", cursive'; x.fillText('Cảm ơn bạn đã là một phần', 0, 0); x.fillText('trong hành trình của mình!', 0, 48); x.restore();
+      x.fillStyle = '#5b4426'; x.font = '16px Arial'; x.fillText('TRANG 1/N', 540, 1320); x.restore();
+    }
+
+    // Bìa, trang cuối và trang lời chúc dùng cùng lề 36px trên canvas 1080x1350.
+    function drawAlbumArtworkContain(ctx, img, canvas) {
+      // Lấp nền canvas trước để phần ngoài ảnh không hiện màu nền modal/ô trống khác tông.
+      ctx.fillStyle = '#fffaf0';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const padding = 36;
+      const scale = Math.min((canvas.width - padding * 2) / img.naturalWidth, (canvas.height - padding * 2) / img.naturalHeight);
+      const w = img.naturalWidth * scale;
+      const h = img.naturalHeight * scale;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
     }
 
     function loadAlbumArtwork(src) {
@@ -2749,13 +2845,13 @@
         loadAlbumArtwork('assets/cuoi.png?v=' + Date.now())
       ]);
       const cover = albumBase('', '', 1, total, true);
-      cover.ctx.drawImage(coverArtwork, 0, 0, cover.canvas.width, cover.canvas.height);
+      drawAlbumArtworkContain(cover.ctx, coverArtwork, cover.canvas);
       memoryAlbumCanvases.push(cover.canvas);
       // Bỏ bìa khỏi hệ thống đánh số: trang lời chúc đầu tiên là trang 1.
       const numberedPages = chunks.length + 1; // gồm các trang lời chúc và trang cảm ơn cuối
       chunks.forEach((chunk, i) => memoryAlbumCanvases.push(drawAlbumWishPage(chunk, i + 1, numberedPages)));
       const end = albumBase('', '', total, total, true);
-      end.ctx.drawImage(endArtwork, 0, 0, end.canvas.width, end.canvas.height);
+      drawAlbumArtworkContain(end.ctx, endArtwork, end.canvas);
       memoryAlbumCanvases.push(end.canvas);
       preview.innerHTML = '';
       preview.classList.remove('expanded');
