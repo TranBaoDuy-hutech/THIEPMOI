@@ -7,7 +7,7 @@
   <title>Admin - Danh Sách Khách Tham Dự</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Great+Vibes&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Great+Vibes&family=Dancing+Script:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
     * {
@@ -2585,10 +2585,10 @@
       }
       albumBrand(x);
       if (title) {
-        x.textAlign = 'center'; x.fillStyle = '#8a6412'; x.font = 'bold 48px Georgia, "Times New Roman", serif'; x.fillText(title, 540, 205);
+        x.textAlign = 'center'; x.fillStyle = '#8a6412'; x.font = '700 48px "Fraunces", Georgia, serif'; x.fillText(title, 540, 205);
       }
       if (subtitle) {
-        x.fillStyle = '#8b7652'; x.font = '600 32px "Segoe Script", "Brush Script MT", cursive'; x.fillText(subtitle, 540, 247);
+        x.fillStyle = '#8b7652'; x.font = '700 44px "Dancing Script", cursive'; x.fillText(subtitle, 540, 260, 960);
       }
       x.textAlign = 'left';
       x.fillStyle = '#805b10'; x.font = '18px Arial'; x.textAlign = 'center';
@@ -2617,17 +2617,19 @@
     }
 
     function drawAlbumWishPage(guests, page, total) {
-      const { canvas, ctx: x } = albumBase('LỜI CHÚC TỪ BẠN BÈ', 'NHỮNG LỜI CHÚC CHÂN THÀNH DÀNH CHO DUY', page, total);
+      const { canvas, ctx: x } = albumBase('GRADUATION MEMORY ALBUM', 'LỜI CHÚC DÀNH CHO BẢO DUY', page, total);
       const cols = 2, rows = Math.ceil(guests.length / 2), gap = 24, left = 66, top = 295;
       const cardW = (948 - gap) / 2, cardH = Math.min(292, Math.floor((930 - (rows - 1) * 20) / rows));
       guests.forEach((g, i) => {
         const col = i % 2, row = Math.floor(i / 2), bx = left + col * (cardW + gap), by = top + row * (cardH + 20);
         x.fillStyle = '#fffdf7'; x.strokeStyle = '#dfc78e'; x.lineWidth = 2;
         x.beginPath(); x.roundRect(bx, by, cardW, cardH, 18); x.fill(); x.stroke();
-        x.fillStyle = '#9a7020'; x.font = 'bold 27px Arial, sans-serif'; albumWrap(x, g.name || 'Khách mời', bx + 24, by + 43, cardW - 48, 32, 1);
+        x.fillStyle = '#9a7020'; x.font = '700 32px "Dancing Script", cursive'; albumWrap(x, g.name || 'Khách mời', bx + 24, by + 43, cardW - 48, 36, 1);
         x.strokeStyle = '#e7d8b4'; x.beginPath(); x.moveTo(bx + 24, by + 60); x.lineTo(bx + cardW - 24, by + 60); x.stroke();
-        const wish = String(g.wish || '').trim() || 'Chưa có lời chúc được lưu.';
-        x.fillStyle = '#51432e'; x.font = '22px Georgia, "Times New Roman", serif';
+        // Chuẩn hóa Unicode NFC để dấu tiếng Việt không bị tách/rơi khi vẽ bằng Canvas.
+        const wish = (String(g.wish || '').normalize('NFC').trim()) || 'Chưa có lời chúc được lưu.';
+        // Be Vietnam Pro được thiết kế cho tiếng Việt; tăng độ rõ của dấu khi render Canvas.
+        x.fillStyle = '#51432e'; x.font = '500 22px "Be Vietnam Pro", Arial, sans-serif';
         const maxLines = Math.max(3, Math.floor((cardH - 112) / 33));
         albumWrap(x, wish, bx + 24, by + 99, cardW - 48, 33, maxLines);
         x.fillStyle = '#a77b19'; x.font = '17px Arial'; x.fillText('♥', bx + 24, by + cardH - 20);
@@ -2726,9 +2728,12 @@
       // Đợi font script tải xong trước khi vẽ Canvas để không bị rơi về font mặc định.
       if (document.fonts?.load) {
         await Promise.all([
+          document.fonts.load('700 44px "Dancing Script"'),
+          document.fonts.load('700 32px "Dancing Script"'),
           document.fonts.load('118px "Great Vibes"'),
           document.fonts.load('154px "Great Vibes"'),
-          document.fonts.load('42px "Great Vibes"')
+          document.fonts.load('42px "Great Vibes"'),
+          document.fonts.load('500 22px "Be Vietnam Pro"')
         ]);
       }
       const guests = (window.adminGuestData || []).filter(g => g && g.name);
