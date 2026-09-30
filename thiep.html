@@ -2904,6 +2904,24 @@
       color: #805b10 !important;
     }
 
+    .card .info-chip .event-time {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card .event-time strong {
+      font-size: 1.08rem;
+      line-height: 1.2;
+    }
+
+    .card .event-time span {
+      font-size: 1rem;
+      font-weight: 700;
+      opacity: 1;
+      white-space: nowrap;
+    }
+
     .card .formal-note,
     .card .countdown-card {
       background: #fffaf0;
@@ -3125,7 +3143,7 @@
                     </svg>
                     Thời gian
                   </div>
-                  <div class="value"> Ngày 29/10/2026</div>
+                  <div class="value event-time"><strong>07:30</strong><span>Ngày 08/11/2026</span></div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
@@ -4160,8 +4178,8 @@
         "university": "HUTECH University"
       },
       "schedule": {
-        "date": "2026-10-29",
-        "time": "08:00 - 12:00",
+        "date": "2026-11-08",
+        "time": "07:30 - 12:00",
         "timezone": "Asia/Ho_Chi_Minh"
       },
       "venue": {
@@ -4527,12 +4545,12 @@
 
     function getEventSchedule() {
       const schedule = invitationJSON && invitationJSON.schedule ? invitationJSON.schedule : {};
-      const dateStr = schedule.date || '2026-10-29';
-      const timeText = schedule.time || '08:00 - 12:00';
-      const timeMatches = timeText.match(/\d{1,2}:\d{2}/g) || ['08:00', '12:00'];
+      const dateStr = schedule.date || '2026-11-08';
+      const timeText = schedule.time || '07:30 - 12:00';
+      const timeMatches = timeText.match(/\d{1,2}:\d{2}/g) || ['07:30', '12:00'];
       return {
         date: dateStr,
-        startTime: timeMatches[0] || '08:00',
+        startTime: timeMatches[0] || '07:30',
         endTime: timeMatches[1] || '12:00'
       };
     }
