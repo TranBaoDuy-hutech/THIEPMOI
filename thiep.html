@@ -1384,6 +1384,37 @@
       position: relative;
     }
 
+    @media (max-width: 620px) {
+      .stub {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas: "qr status" "qr code";
+        justify-content: initial;
+        column-gap: 0.75rem;
+        row-gap: 0.5rem;
+        padding: 1.2rem 1rem 1.5rem;
+      }
+
+      .qr-ring-wrap {
+        grid-area: qr;
+        justify-self: center;
+      }
+
+      .status-line {
+        grid-area: status;
+        white-space: normal;
+        text-align: center;
+        justify-content: center;
+      }
+
+      .footer-code {
+        grid-area: code;
+        display: block;
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+    }
+
     .qr-ring-wrap {
       position: relative;
       flex-shrink: 0;
@@ -2922,6 +2953,13 @@
       white-space: nowrap;
     }
 
+    .card .event-time .event-start-time {
+      margin-top: 2px;
+      color: #805b10;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
     .card .formal-note,
     .card .countdown-card {
       background: #fffaf0;
@@ -3054,8 +3092,8 @@
             <div class="hud-corner bottom-left"></div>
             <div class="hud-corner bottom-right"></div>
             <div class="card-quick-controls">
-              <button class="audio-toggle pulse-hint is-on" id="audioToggle" onclick="toggleAudio()" aria-label="Tắt nhạc nền"
-                aria-pressed="true" title="Tắt nhạc nền">
+              <button class="audio-toggle pulse-hint is-on" id="audioToggle" onclick="toggleAudio()"
+                aria-label="Tắt nhạc nền" aria-pressed="true" title="Tắt nhạc nền">
                 <svg class="icon" id="audioIcon" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-4.02 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
@@ -3143,7 +3181,8 @@
                     </svg>
                     Giờ gặp mặt
                   </div>
-                  <div class="value event-time"><strong>10:30</strong><span>Ngày 08/11/2026</span><span>Lễ bắt đầu: 07:30</span></div>
+                  <div class="value event-time"><strong>10:30</strong><span>Ngày 08/11/2026</span><span
+                      class="event-start-time">Lễ bắt đầu: 07:30</span></div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
@@ -3168,7 +3207,7 @@
                     style="font-size: 0.65rem; color: var(--accent-cyan); margin-left: auto; letter-spacing: 0.04em;">[SAO
                     CHÉP]</span>
                 </div>
-                <div class="value">Cơ sở Thủ Đức: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM
+                <div class="value">Thu Duc Campus: Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM
                 </div>
               </div>
             </div>
@@ -3181,7 +3220,7 @@
                       <path
                         d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                     </svg>
-                    Bản Đồ Chỉ Đường
+                    Bản Đồ
                   </span>
                 </button>
                 <button class="action-btn" id="btnCalendar" onclick="addToCalendar()">
@@ -4539,7 +4578,7 @@
     function openMap() {
       playBeep(700, 0.1, 'sine');
       runButtonSequence('btnMap', 'btnMapContent', '', 'Bản Đồ Chỉ Đường');
-      window.open("https://www.google.com/maps/search/?api=1&query=HUTECH+C%C5%A1+s%E1%BB%9F+Th%E1%BB%A7+%C4%90%E1%BB%A9c+Khu+C%C3%B4ng+ngh%E1%BB%87+cao", "_blank");
+      window.open("https://maps.app.goo.gl/C8uJXG7YAF1vEdnH6", "_blank");
       unlockAchievement('action');
     }
 

@@ -1398,9 +1398,9 @@
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) requestAnimationFrame(drawMatrix);
     document.addEventListener('visibilitychange', () => { matrixPaused = document.hidden; });
 
-    const subHTML = 'Lễ tốt nghiệp Kỹ sư <span>CNTT</span> — <a class="name-link" href="https://tranbaoduy.netlify.app/" target="_self">Trần Bảo Duy</a><br>HUTECH University, <span>11/2026</span>';
+    const subHTML = 'Lễ tốt nghiệp Kỹ sư <span>CNTT</span> — <a class="name-link" href="https://tranbaoduy.netlify.app/" target="_self">Trần Bảo Duy</a><br><span>11/2026</span>';
     const subEl = document.getElementById('typedSub');
-    const plainSub = 'Lễ tốt nghiệp Kỹ sư CNTT — Trần Bảo Duy|HUTECH University, 11/2026';
+    const plainSub = 'Lễ tốt nghiệp Kỹ sư CNTT — Trần Bảo Duy|11/2026';
     let si = 0;
     function typeSub() {
       if (si > plainSub.length) { subEl.innerHTML = subHTML + '<span class="typed-cursor"></span>'; return; }
