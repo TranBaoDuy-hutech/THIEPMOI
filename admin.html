@@ -2993,7 +2993,7 @@
 
       preview.innerHTML =
         '<article class="ticket-template-card-admin" id="ticketCardToDownload">' +
-        '<img class="ticket-template-image-admin" src="assets/Card.png" alt="HUTECH Graduation Ticket">' +
+        '<img class="ticket-template-image-admin" src="assets/Card.png?v=' + Date.now() + '" alt="HUTECH Graduation Ticket">' +
         '<div class="ticket-template-name-admin">' + name + '</div>' +
         '</article>' +
         '<button type="button" class="ticket-download-btn" onclick="downloadTicketCard(\'' + name.replace(/'/g, "\\'") + '\')">⬇ Tải card này</button>';

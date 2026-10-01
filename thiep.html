@@ -3463,6 +3463,9 @@
           <button class="ticket-template-edit" type="button" onclick="downloadTicketCard(this, '${escapeTicketText(ticket.code)}')"> Lưu ảnh card</button>
         </div>
       ` : '';
+
+      const ticketImage = list.querySelector('.ticket-template-image');
+      if (ticketImage) ticketImage.src = 'assets/Card.png?v=' + Date.now();
     }
 
     function saveConfirmedTicket(name, code) {
