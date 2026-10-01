@@ -3110,8 +3110,8 @@
               </div>
 
               <div class="formal-note">
-                <p>Bảo Duy kính mời bạn đến tham dự buổi lễ tốt nghiệp, cùng chia sẻ và chứng kiến khoảnh
-                  khắc đánh dấu một cột mốc quan trọng trong hành trình học tập và trưởng thành của Bảo Duy.
+                <p>Lễ tốt nghiệp chính thức bắt đầu lúc 07:30. Sau buổi lễ, Bảo Duy kính mời bạn đến chung vui
+                  và chụp ảnh lưu niệm lúc 10:30, cùng chia sẻ cột mốc quan trọng trong hành trình trưởng thành.
                 </p>
               </div>
 
@@ -3120,7 +3120,7 @@
                   class="node"></span><span class="line"></span>
               </div>
 
-              <div class="countdown-card" aria-label="Đếm ngược tới lễ tốt nghiệp">
+              <div class="countdown-card" aria-label="Đếm ngược tới giờ gặp mặt sau lễ tốt nghiệp">
                 <div class="countdown-label">// Khoảnh khắc ấy đang đến gần</div>
                 <div class="countdown-grid">
                   <div class="countdown-unit"><span class="countdown-number" id="countDays">--</span><small>Ngày</small>
@@ -3141,9 +3141,9 @@
                       <path
                         d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                     </svg>
-                    Thời gian
+                    Giờ gặp mặt
                   </div>
-                  <div class="value event-time"><strong>07:30</strong><span>Ngày 08/11/2026</span></div>
+                  <div class="value event-time"><strong>10:30</strong><span>Ngày 08/11/2026</span><span>Lễ bắt đầu: 07:30</span></div>
                 </div>
                 <div class="info-chip">
                   <div class="label">
@@ -4179,7 +4179,7 @@
       },
       "schedule": {
         "date": "2026-11-08",
-        "time": "07:30 - 12:00",
+        "time": "10:30 - 12:00",
         "timezone": "Asia/Ho_Chi_Minh"
       },
       "venue": {
@@ -4546,11 +4546,11 @@
     function getEventSchedule() {
       const schedule = invitationJSON && invitationJSON.schedule ? invitationJSON.schedule : {};
       const dateStr = schedule.date || '2026-11-08';
-      const timeText = schedule.time || '07:30 - 12:00';
-      const timeMatches = timeText.match(/\d{1,2}:\d{2}/g) || ['07:30', '12:00'];
+      const timeText = schedule.time || '10:30 - 12:00';
+      const timeMatches = timeText.match(/\d{1,2}:\d{2}/g) || ['10:30', '12:00'];
       return {
         date: dateStr,
-        startTime: timeMatches[0] || '07:30',
+        startTime: timeMatches[0] || '10:30',
         endTime: timeMatches[1] || '12:00'
       };
     }
@@ -4558,8 +4558,8 @@
     function addToCalendar() {
       playBeep(750, 0.08, 'sine');
       runButtonSequence('btnCalendar', 'btnCalContent', '', 'Đã Lưu Lịch');
-      const title = encodeURIComponent("Lễ Tốt Nghiệp — Trần Bảo Duy (HUTECH IT 2026)");
-      const details = encodeURIComponent("Lễ tốt nghiệp Kỹ sư CNTT - Trần Bảo Duy tại Đại học Công nghệ TP.HCM (HUTECH).\nĐịa điểm: Khu Công nghệ cao TP.HCM, Phường Tăng Nhơn Phú, TP.HCM\nLiên hệ: 0329810650\nTrân trọng kính mời!");
+      const title = encodeURIComponent("Gặp mặt sau lễ tốt nghiệp — Trần Bảo Duy (HUTECH IT 2026)");
+      const details = encodeURIComponent("Lễ tốt nghiệp chính thức bắt đầu lúc 07:30. Thời gian gặp mặt và chụp ảnh lưu niệm: 10:30.\nĐịa điểm: Khu Công nghệ cao TP.HCM, Phường Tăng Nhơn Phú, TP.HCM\nLiên hệ: 0329810650\nTrân trọng kính mời!");
       const location = encodeURIComponent("HUTECH Cơ sở Thủ Đức, Khu Công nghệ cao TP.HCM, Xa lộ Hà Nội, Phường Tăng Nhơn Phú, TP.HCM");
       const { date, startTime, endTime } = getEventSchedule();
       const formatCalendarStamp = (value) => {
